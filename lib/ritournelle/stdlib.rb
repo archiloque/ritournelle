@@ -1,0 +1,2 @@
+module Ritournelle::StdLib
+end
