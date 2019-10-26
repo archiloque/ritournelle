@@ -1,7 +1,6 @@
 class Ritournelle::IntermediateRepresentation::MethodCall
 
-  def initialize(value)
-
+  def initialize
   end
 
 end

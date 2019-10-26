@@ -12,12 +12,12 @@ class Ritournelle::CodeGenerator
 end
 
 require_relative 'code_generator/assignment'
-require_relative 'code_generator/variable_declaration'
+require_relative 'code_generator/variable'
 require_relative 'code_generator/world'
 
 class Ritournelle::CodeGenerator
   GENERATORS = {
       Ritournelle::IntermediateRepresentation::Assignment => Ritournelle::CodeGenerator::Assignment,
-      Ritournelle::IntermediateRepresentation::VariableDeclaration => Ritournelle::CodeGenerator::VariableDeclaration,
+      Ritournelle::IntermediateRepresentation::Variable => Ritournelle::CodeGenerator::Variable,
   }
 end

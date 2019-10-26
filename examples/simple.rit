@@ -1,2 +1,4 @@
 Int i
 i = 10
+Int j
+j = i.plus(10)

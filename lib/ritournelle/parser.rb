@@ -45,7 +45,7 @@ class Ritournelle::Parser
       raise 'Not implemented'
     elsif /[[:upper:]]/.match(@line[0])
       # Variable declaration
-      parse_variable_declaration
+      parse_variable
     else
       parse_assignment
     end
@@ -53,14 +53,14 @@ class Ritournelle::Parser
 
   DECLARATION_REGEX = /\A(?<type>[A-Z][a-zA-Z]*) (?<name>[a-z_]+)\z/
 
-  def parse_variable_declaration
+  def parse_variable
     match = DECLARATION_REGEX.match(@line)
     unless match
       raise "Can't parse [#{@line}]"
     end
-    @stack.last.statements << Ritournelle::IntermediateRepresentation::VariableDeclaration.new(
+    add_statement(Ritournelle::IntermediateRepresentation::Variable.new(
         match['type'],
-        match['name'])
+        match['name']))
   end
 
 
@@ -71,15 +71,22 @@ class Ritournelle::Parser
     unless match
       raise "Can't parse [#{@line}]"
     end
-    @stack.last.statements << Ritournelle::IntermediateRepresentation::Assignment.new(
-        match['name'],
+    constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
         match['value'])
+    add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
+        match['name'],
+        constructor_call))
   end
 
   def fetch_current_line
     @line = @splitted_code[@line_index]
     @column_index = @line.index(/\S/)
     @line.strip!
+  end
+
+  # @param [Object] statement
+  def add_statement(statement)
+    @stack.last.statements << statement
   end
 
 end
