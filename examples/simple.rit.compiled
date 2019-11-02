@@ -1,0 +1,5 @@
+i =
+  Ritournelle::Runtime::StdLib::Int.new(10)
+j =
+  Ritournelle::Runtime::StdLib::Int.new(20)
+i.plus_int(10)

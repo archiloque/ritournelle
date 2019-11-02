@@ -1,5 +1,7 @@
 require_relative '../runtime'
 
-module Runtime::StdLib
+module Ritournelle::Runtime::StdLib
 
 end
+
+require_relative 'stdlib/int'

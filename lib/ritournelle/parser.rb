@@ -73,7 +73,7 @@ class Ritournelle::Parser
   # @param [MatchData] match
   def parse_assignment(match)
     constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
-        match['value'])
+        [match['value']])
     add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
         match['name'],
         constructor_call))

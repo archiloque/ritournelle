@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+if ARGV.length != 1
+  raise 'Path to the ritournelle file compiled file, please !'
+end
+
+ritounelle_file = ARGV[0]
+p "Processing [#{ritounelle_file}]"
+require 'bundler/setup'
+require 'ritournelle/runtime'
+
+p eval(IO.read(ritounelle_file), nil, ritounelle_file, 0)
