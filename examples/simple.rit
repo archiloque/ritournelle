@@ -4,3 +4,4 @@ Int j
 Int k
 j = 20
 i.plus(10)
+i.plus(j)

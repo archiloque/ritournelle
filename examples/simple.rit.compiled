@@ -3,3 +3,4 @@ i =
 j =
   Ritournelle::Runtime::StdLib::Int.new(20)
 i.plus_int(10)
+i.plus_Int(j)
