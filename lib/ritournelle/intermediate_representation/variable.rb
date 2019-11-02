@@ -10,6 +10,7 @@ class Ritournelle::IntermediateRepresentation::Variable
 
   # @return [String]
   attr_reader :type
+
   # @return [String]
   attr_reader :name
   

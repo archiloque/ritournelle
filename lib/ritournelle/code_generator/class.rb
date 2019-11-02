@@ -1,11 +1,13 @@
-class Ritournelle::IntermediateRepresentation::Class
+class Ritournelle::CodeGenerator::Class
 
   # @return [Array<String>]
   attr_reader :result
 
   # @param [Ritournelle::IntermediateRepresentation::Class] clazz
-  def initialize(clazz)
-    @clazz = clazz
+  # @param [Ritournelle::CodeGenerator::Context] context
+  def initialize(clazz, context)
+    @result = []
+    raise
   end
 
 end

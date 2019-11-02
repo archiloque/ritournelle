@@ -1,4 +1,6 @@
 Int i
 i = 10
 Int j
-j = i.plus(10)
+Int k
+j = 20
+i.plus(10)

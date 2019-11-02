@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+if ARGV.length != 1
+  raise 'Path to the ritournelle file, please !'
+end
+
+ritounelle_file = ARGV[0]
+p "Processing [#{ritounelle_file}]"
+require 'bundler/setup'
+require 'ritournelle'
+
+parser = Ritournelle::Parser.new(IO.read(ritounelle_file))
+world = parser.world
+generator = Ritournelle::CodeGenerator.new(world)
+STDOUT << generator.result.join("\n")
