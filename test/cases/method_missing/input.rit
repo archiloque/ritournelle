@@ -1,0 +1,6 @@
+Int i
+i = 10
+Float f
+f = 10.5
+Float g
+g = f.plus(i)

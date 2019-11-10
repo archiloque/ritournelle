@@ -6,8 +6,18 @@ class Ritournelle::CodeGenerator::ConstructorCall
   # @param [Ritournelle::IntermediateRepresentation::ConstructorCall] constructor_call
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(constructor_call, context)
+
+    parameter = constructor_call.parameters[0]
+
+    if parameter.is_a?(Integer)
+      clazz = "Ritournelle::Runtime::StdLib::Int"
+    elsif parameter.is_a?(Float)
+      clazz = "Ritournelle::Runtime::StdLib::Float"
+    else
+      raise
+    end
     @result = [
-        "Ritournelle::Runtime::StdLib::Int.new(#{constructor_call.parameters[0]})"
+        "#{clazz}.new(#{parameter})"
     ]
   end
 

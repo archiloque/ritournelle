@@ -2,6 +2,46 @@
 
 A WIP toy language, see link:https://archiloque.net/blog/prog-lang-idea/[here] for some info.
 
+== Syntax example
+
+[source]
+----
+Int i
+i = 10
+Int j
+Int k
+j = 20
+i.plus(10)
+i.plus(j)
+Float f
+f = 10.5
+Float g
+g = j.to_float()
+----
+
+== Commands
+
+=== Compile a file
+
+[source,sh]
+----
+bin/compile examples/simple.rit
+----
+
+=== Run a file
+
+[source,sh]
+----
+bin/run examples/simple.rit.rb
+----
+
+=== Run tests
+
+[source,sh]
+----
+rake test
+----
+
 == Contributing
 
 Bug reports and pull requests are welcome on GitHub link:https://github.com/archiloque/ritournelle[at this address].

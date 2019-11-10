@@ -13,4 +13,4 @@ parser = Ritournelle::Parser.new(IO.read(ritounelle_file))
 world = parser.world
 generator = Ritournelle::CodeGenerator.new(world)
 result = generator.result.join("\n")
-IO.write("#{ritounelle_file}.compiled", result)
+IO.write("#{ritounelle_file}.rb", result)
