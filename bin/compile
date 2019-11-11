@@ -8,6 +8,8 @@ ritounelle_file = ARGV[0]
 p "Processing [#{ritounelle_file}]"
 require 'bundler/setup'
 require 'ritournelle'
+require 'ritournelle/parser'
+require 'ritournelle/code_generator'
 
 parser = Ritournelle::Parser.new(IO.read(ritounelle_file))
 world = parser.world

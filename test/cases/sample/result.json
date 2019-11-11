@@ -1,0 +1,6 @@
+{
+  "class": "Ritournelle::Runtime::StdLib::Float",
+  "attributes": {
+    "value": 20.0
+  }
+}

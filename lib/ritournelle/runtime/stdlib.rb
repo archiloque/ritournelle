@@ -1,5 +1,3 @@
-require_relative '../runtime'
-
 module Ritournelle::Runtime::StdLib
 
 end
