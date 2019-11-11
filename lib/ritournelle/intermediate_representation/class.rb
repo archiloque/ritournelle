@@ -9,11 +9,15 @@ class Ritournelle::IntermediateRepresentation::Class
   # @return [Array<Ritournelle::IntermediateRepresentation::Method>]
   attr_reader :methods
 
+  # @return [Hash{String, Ritournelle::IntermediateRepresentation::Method}]
+  attr_reader :members
+
   # @param [String] name
   def initialize(name)
     @name = name
     @constructors = []
     @methods = []
+    @members = {}
   end
 
 end

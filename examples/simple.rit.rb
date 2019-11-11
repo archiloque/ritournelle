@@ -8,3 +8,5 @@ f =
   Ritournelle::Runtime::StdLib::Float.new(10.5)
 g =
   j.to_float()
+class Circle
+end

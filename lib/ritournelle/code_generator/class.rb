@@ -6,8 +6,10 @@ class Ritournelle::CodeGenerator::Class
   # @param [Ritournelle::IntermediateRepresentation::Class] clazz
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(clazz, context)
-    @result = []
-    raise
+    @result = [
+        "class #{clazz.name}",
+        "end"
+    ]
   end
 
 end

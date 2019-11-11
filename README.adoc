@@ -17,7 +17,12 @@ Float f
 f = 10.5
 Float g
 g = j.to_float()
+
+class Circle
+  Float @radius
+end
 ----
+
 
 == Commands
 

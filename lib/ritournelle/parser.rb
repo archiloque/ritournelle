@@ -4,7 +4,8 @@ class Ritournelle::Parser
 
   include Ritournelle::Keywords
 
-  STATUS_NOWHERE = :nowhere
+  CONTEXT_ROOT = :root
+  CONTEXT_IN_CLASS = :in_class
 
   # @return [Ritournelle::IntermediateRepresentation::World]
   attr_reader :world
@@ -13,59 +14,84 @@ class Ritournelle::Parser
   def initialize(code)
     @world = Ritournelle::IntermediateRepresentation::World.new
     @stack = [@world]
-    @status = STATUS_NOWHERE
+    @context = CONTEXT_ROOT
     @splitted_code = code.split("\n")
     @line_index = -1
     while @line_index < (@splitted_code.length - 1)
       @line_index += 1
       fetch_current_line
-      parse_next
+      parse_next_line
     end
   end
 
-  # Parse the next thing
-  def parse_next
-    case @status
-    when STATUS_NOWHERE
-      parse_next_nowhere
-    else
-      raise "Unknown status [#{@status}]"
-    end
-  end
+  REGEX_MATCH_VARIABLE = '[a-z_]+'
+  REGEX_MATCH_CLASS_NAME = '[A-Z][a-zA-Z]*'
+  REGEX_MATCH_METHOD_NAME = '[a-z_]+'
+  REGEX_MATCH_PRIMITIVE_INT = '\d+'
+  REGEX_MATCH_PRIMITIVE_FLOAT = '\d+\.\d*'
 
-  VARIABLE_REGEX_MATCH = '[a-z_]+'
-  CLASS_NAME_REGEX_MATCH = '[A-Z][a-zA-Z]*'
-  METHOD_NAME_REGEX_MATCH = '[a-z_]+'
-  PRIMITIVE_INT_REGEX_MATCH = '\d+'
-  PRIMITIVE_FLOAT_REGEX_MATCH = '\d+\.\d*'
+  REGEX_VARIABLE = /\A(?<type>#{REGEX_MATCH_CLASS_NAME}) (?<name>#{REGEX_MATCH_VARIABLE})\z/
+  REGEX_CLASS_MEMBER = /\A(?<type>#{REGEX_MATCH_CLASS_NAME}) @(?<name>#{REGEX_MATCH_VARIABLE})\z/
+  REGEX_INTEGER_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE}) = (?<value>#{REGEX_MATCH_PRIMITIVE_INT})\z/
+  REGEX_FLOAT_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE}) = (?<value>#{REGEX_MATCH_PRIMITIVE_FLOAT})\z/
+  REGEX_METHOD_CALL = /\A(?<variable>#{REGEX_MATCH_VARIABLE})\.(?<method>#{REGEX_MATCH_METHOD_NAME})\((?<parameters>.*)\)\z/
+  REGEX_METHOD_CALL_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE}) = (?<variable>#{REGEX_MATCH_VARIABLE})\.(?<method>#{REGEX_MATCH_METHOD_NAME})\((?<parameters>.*)\)\z/
+  REGEX_PARAMETER_INT = /\A(?<value>#{REGEX_MATCH_PRIMITIVE_INT})\z/
+  REGEX_CLASS_DECLARATION = /\Aclass (?<class>#{REGEX_MATCH_CLASS_NAME})\z/
+  REGEX_END = /\Aend\z/
 
-  DECLARATION_REGEX = /\A(?<type>#{CLASS_NAME_REGEX_MATCH}) (?<name>#{VARIABLE_REGEX_MATCH})\z/
-  INTEGER_ASSIGNMENT_REGEX = /\A(?<name>#{VARIABLE_REGEX_MATCH}) = (?<value>#{PRIMITIVE_INT_REGEX_MATCH})\z/
-  FLOAT_ASSIGNMENT_REGEX = /\A(?<name>#{VARIABLE_REGEX_MATCH}) = (?<value>#{PRIMITIVE_FLOAT_REGEX_MATCH})\z/
-  METHOD_CALL_REGEX = /\A(?<variable>#{VARIABLE_REGEX_MATCH})\.(?<method>#{METHOD_NAME_REGEX_MATCH})\((?<parameters>.*)\)\z/
-  METHOD_CALL_ASSIGNMENT_REGEX = /\A(?<name>#{VARIABLE_REGEX_MATCH}) = (?<variable>#{VARIABLE_REGEX_MATCH})\.(?<method>#{METHOD_NAME_REGEX_MATCH})\((?<parameters>.*)\)\z/
-  PARAMETER_INT_REGEX = /\A(?<value>#{PRIMITIVE_INT_REGEX_MATCH})\z/
+  PARSING_RULES = {
+      CONTEXT_ROOT => [
+          {
+              regex: REGEX_VARIABLE,
+              code: :parse_variable
+          },
+          {
+              regex: REGEX_INTEGER_ASSIGNMENT,
+              code: :parse_integer_assignment
+          },
+          {
+              regex: REGEX_FLOAT_ASSIGNMENT,
+              code: :parse_float_assignment
+          },
+          {
+              regex: REGEX_METHOD_CALL,
+              code: :parse_method_call
+          },
+          {
+              regex: REGEX_METHOD_CALL_ASSIGNMENT,
+              code: :parse_method_call_assignment
+          },
+          {
+              regex: REGEX_CLASS_DECLARATION,
+              code: :parse_class_declaration
+          },
+      ], CONTEXT_IN_CLASS => [
+          {
+              regex: REGEX_CLASS_MEMBER,
+              code: :parse_class_member
+          },
+          {
+              regex: REGEX_END,
+              code: :parse_class_end
+          },
+      ]
+  }
 
-  def parse_next_nowhere
+  def parse_next_line
+    STDOUT << "Parsing [#{@line}] in context #{@context}\n"
     if @line.empty?
-      @line_index += 1
-      fetch_current_line
-    elsif @line.start_with?(KEYWORD_CLASS)
-      # Class declaration
-      raise 'Not implemented'
-    elsif (m = DECLARATION_REGEX.match(@line))
-      # Variable declaration
-      parse_variable(m)
-    elsif (m = INTEGER_ASSIGNMENT_REGEX.match(@line))
-      parse_integer_assignment(m)
-    elsif (m = FLOAT_ASSIGNMENT_REGEX.match(@line))
-      parse_float_assignment(m)
-    elsif (m = METHOD_CALL_REGEX.match(@line))
-      parse_method_call(m)
-    elsif (m = METHOD_CALL_ASSIGNMENT_REGEX.match(@line))
-      parse_method_call_assignment(m)
     else
-      raise "Can't parse [#{@line}]"
+      parsed = PARSING_RULES[@context].any? do |rule|
+        if (m = rule[:regex].match(@line))
+          STDOUT << "Matched for #{rule[:code]}\n"
+          send(rule[:code], m)
+          true
+        end
+      end
+      unless parsed
+        raise "Can't parse [#{@line}] in context #{@context}"
+      end
     end
   end
 
@@ -106,6 +132,33 @@ class Ritournelle::Parser
     ))
   end
 
+  # @param [MatchData] match
+  def parse_class_declaration(match)
+    class_name = match['class']
+    clazz = Ritournelle::IntermediateRepresentation::Class.new(
+        class_name
+    )
+    @world.classes[class_name] = clazz
+    add_statement(clazz)
+    @context = CONTEXT_IN_CLASS
+    @stack << clazz
+  end
+
+  # @param [MatchData] match
+  def parse_class_member(match)
+    name = match['name']
+    @stack.last.members[name] = Ritournelle::IntermediateRepresentation::Member.new(
+        match['type'],
+        name)
+  end
+
+  # @param [MatchData] _
+  def parse_class_end(_)
+    @context = CONTEXT_ROOT
+    @stack.pop
+  end
+
+  # @param [MatchData] match
   def parse_method_call_assignment(match)
     call_parameters = process_method_call_parameters(match['parameters'])
     method_call = Ritournelle::IntermediateRepresentation::MethodCall.new(
@@ -134,7 +187,7 @@ class Ritournelle::Parser
   def process_method_call_parameters(call_parameters)
     call_parameters.strip.split(',').collect do |call_parameter|
       c = call_parameter.strip
-      if PARAMETER_INT_REGEX.match(c)
+      if REGEX_PARAMETER_INT.match(c)
         c.to_i
       else
         c
