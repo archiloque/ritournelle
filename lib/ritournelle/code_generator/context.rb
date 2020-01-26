@@ -47,7 +47,7 @@ class Ritournelle::CodeGenerator::Context
   end
 
   # @param [String] name
-  # @return [Ritournelle::IntermediateRepresentation::Class}]
+  # @return [Ritournelle::IntermediateRepresentation::Class]
   def clazz(name)
     if @clazzez.key?(name)
       @clazzez[name]
@@ -63,7 +63,7 @@ class Ritournelle::CodeGenerator::Context
   end
 
   # @param [String] name
-  # @param [Ritournelle::IntermediateRepresentation::Class}] clazz
+  # @param [Ritournelle::IntermediateRepresentation::Class] clazz
   # @return [void]
   def add_clazz(name, clazz)
     if @clazzez.key(name)
