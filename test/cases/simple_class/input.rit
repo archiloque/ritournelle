@@ -1,2 +1,3 @@
 class Circle
+  Float @radius
 end

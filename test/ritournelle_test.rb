@@ -8,6 +8,7 @@ class RitournelleTest < Minitest::Test
 
   def test_cases
     Dir[File.join(__dir__, 'cases', '*')].each do |test_case_dir|
+      puts "Testing #{test_case_dir}"
 
       test_case_file_name = File.join(test_case_dir, 'input.rit')
       output_file_name = File.join(test_case_dir, 'output.rit.rb')
@@ -16,9 +17,9 @@ class RitournelleTest < Minitest::Test
 
       test_case_content = IO.read(test_case_file_name)
       if File.exist?(output_file_name)
-        parser = Ritournelle::Parser.new(test_case_content)
+        parser = Ritournelle::Parser.new(code: test_case_content)
         world = parser.world
-        generator = Ritournelle::CodeGenerator.new(world)
+        generator = Ritournelle::CodeGenerator.new(world: world)
         generated_output = generator.result.join("\n")
         assert_equal(IO.read(output_file_name), generated_output)
         if File.exist?(result_file_name)
@@ -32,9 +33,9 @@ class RitournelleTest < Minitest::Test
         end
       elsif File.exist?(error_file_name)
         begin
-          parser = Ritournelle::Parser.new(test_case_content)
+          parser = Ritournelle::Parser.new(code: test_case_content)
           world = parser.world
-          generator = Ritournelle::CodeGenerator.new(world)
+          Ritournelle::CodeGenerator.new(world: world)
         rescue Exception => e
           assert_equal(IO.read(error_file_name), e.message)
         end

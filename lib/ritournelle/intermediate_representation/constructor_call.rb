@@ -4,7 +4,7 @@ class Ritournelle::IntermediateRepresentation::ConstructorCall
   attr_reader :parameters
 
   # @param [Array] parameters
-  def initialize(parameters)
+  def initialize(parameters:)
     @parameters = parameters
   end
 

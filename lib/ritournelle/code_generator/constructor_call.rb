@@ -3,11 +3,11 @@ class Ritournelle::CodeGenerator::ConstructorCall
   # @return [Array<String>]
   attr_reader :result
 
-  # @param [Ritournelle::IntermediateRepresentation::ConstructorCall] constructor_call
+  # @param [Ritournelle::IntermediateRepresentation::ConstructorCall] ir
   # @param [Ritournelle::CodeGenerator::Context] context
-  def initialize(constructor_call, context)
+  def initialize(ir:, context:)
 
-    parameter = constructor_call.parameters[0]
+    parameter = ir.parameters[0]
 
     if parameter.is_a?(Integer)
       clazz = "Ritournelle::Runtime::StdLib::Int"

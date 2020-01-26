@@ -10,6 +10,18 @@ f = 10.5
 Float g
 g = j.to_float()
 
+def Int two()
+    return 2
+end
+
+def Int add_two(Int number)
+    return number.plus(2)
+end
+
 class Circle
+  Float @x
+  Float @y
   Float @radius
+  def Void draw()
+  end
 end

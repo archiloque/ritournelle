@@ -1,5 +1,7 @@
 class Ritournelle::IntermediateRepresentation::Class
 
+  include Ritournelle::IntermediateRepresentation::WithStatements
+
   # @return [String]
   attr_reader :name
 
@@ -7,17 +9,20 @@ class Ritournelle::IntermediateRepresentation::Class
   attr_reader :constructors
 
   # @return [Array<Ritournelle::IntermediateRepresentation::Method>]
-  attr_reader :methods
+  attr_reader :methodz
 
   # @return [Hash{String, Ritournelle::IntermediateRepresentation::Method}]
   attr_reader :members
 
   # @param [String] name
-  def initialize(name)
+  def initialize(name:)
     @name = name
     @constructors = []
-    @methods = []
+    @methodz = []
     @members = {}
   end
 
+  def to_s
+    "Class #{@name}"
+  end
 end

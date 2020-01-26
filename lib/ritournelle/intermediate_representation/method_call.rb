@@ -12,10 +12,14 @@ class Ritournelle::IntermediateRepresentation::MethodCall
   # @param [String] variable_name
   # @param [String] method_name
   # @param [Array] parameters
-  def initialize(variable_name, method_name, parameters)
+  def initialize(variable_name:, method_name:, parameters:)
     @variable_name = variable_name
     @method_name = method_name
     @parameters = parameters
+  end
+
+  def to_s
+    "Method call #{variable_name}.#{method_name}(#{parameters.join(', ')})"
   end
 
 end

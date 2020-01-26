@@ -1,20 +1,21 @@
-class Ritournelle::CodeGenerator::Assignment
+class Ritournelle::CodeGenerator::Assignment < Ritournelle::CodeGenerator::Base
 
   # @return [Array<String>]
   attr_reader :result
 
-  # @param [Ritournelle::IntermediateRepresentation::Assignment] assignment
+  # @param [Ritournelle::IntermediateRepresentation::Assignment] ir
   # @param [Ritournelle::CodeGenerator::Context] context
-  def initialize(assignment, context)
-    value = assignment.value
+  def initialize(ir:, context:)
+    super(context)
+    value = ir.value
     if value.is_a?(String)
       @result = [
-          "#{assignment.name} = #{value}"
+          "#{ir.name} = #{value}"
       ]
     else
       @result = [
-          "#{assignment.name} ="
-      ] + context.generator(value).result.collect { |l| "  #{l}" }
+          "#{ir.name} ="
+      ] + generate([value]).collect { |l| "  #{l}" }
     end
   end
 end

@@ -6,15 +6,15 @@ class Ritournelle::Parser
 
   CONTEXT_ROOT = :root
   CONTEXT_IN_CLASS = :in_class
+  CONTEXT_IN_METHOD = :in_method
 
   # @return [Ritournelle::IntermediateRepresentation::World]
   attr_reader :world
 
   # @param [String] code
-  def initialize(code)
+  def initialize(code:)
     @world = Ritournelle::IntermediateRepresentation::World.new
     @stack = [@world]
-    @context = CONTEXT_ROOT
     @splitted_code = code.split("\n")
     @line_index = -1
     while @line_index < (@splitted_code.length - 1)
@@ -24,82 +24,139 @@ class Ritournelle::Parser
     end
   end
 
-  REGEX_MATCH_VARIABLE = '[a-z_]+'
+  REGEX_MATCH_VARIABLE_NAME = '[a-z_]+'
   REGEX_MATCH_CLASS_NAME = '[A-Z][a-zA-Z]*'
   REGEX_MATCH_METHOD_NAME = '[a-z_]+'
   REGEX_MATCH_PRIMITIVE_INT = '\d+'
   REGEX_MATCH_PRIMITIVE_FLOAT = '\d+\.\d*'
 
-  REGEX_VARIABLE = /\A(?<type>#{REGEX_MATCH_CLASS_NAME}) (?<name>#{REGEX_MATCH_VARIABLE})\z/
-  REGEX_CLASS_MEMBER = /\A(?<type>#{REGEX_MATCH_CLASS_NAME}) @(?<name>#{REGEX_MATCH_VARIABLE})\z/
-  REGEX_INTEGER_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE}) = (?<value>#{REGEX_MATCH_PRIMITIVE_INT})\z/
-  REGEX_FLOAT_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE}) = (?<value>#{REGEX_MATCH_PRIMITIVE_FLOAT})\z/
-  REGEX_METHOD_CALL = /\A(?<variable>#{REGEX_MATCH_VARIABLE})\.(?<method>#{REGEX_MATCH_METHOD_NAME})\((?<parameters>.*)\)\z/
-  REGEX_METHOD_CALL_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE}) = (?<variable>#{REGEX_MATCH_VARIABLE})\.(?<method>#{REGEX_MATCH_METHOD_NAME})\((?<parameters>.*)\)\z/
+  REGEX_VARIABLE_DECLARATION = /\A(?<type>#{REGEX_MATCH_CLASS_NAME}) (?<name>#{REGEX_MATCH_VARIABLE_NAME})\z/
+  REGEX_VARIABLE_RETURN = /\Areturn (?<name>#{REGEX_MATCH_VARIABLE_NAME})\z/
+  REGEX_CLASS_MEMBER = /\A(?<type>#{REGEX_MATCH_CLASS_NAME}) @(?<name>#{REGEX_MATCH_VARIABLE_NAME})\z/
+  REGEX_INTEGER_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE_NAME}) = (?<value>#{REGEX_MATCH_PRIMITIVE_INT})\z/
+  REGEX_INTEGER_RETURN = /\Areturn (?<value>#{REGEX_MATCH_PRIMITIVE_INT})\z/
+  REGEX_FLOAT_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE_NAME}) = (?<value>#{REGEX_MATCH_PRIMITIVE_FLOAT})\z/
+  REGEX_FLOAT_RETURN = /\Areturn (?<value>#{REGEX_MATCH_PRIMITIVE_FLOAT})\z/
+  REGEX_METHOD_CALL = /\A(?<variable>#{REGEX_MATCH_VARIABLE_NAME})\.(?<method>#{REGEX_MATCH_METHOD_NAME})\((?<parameters>.*)\)\z/
+  REGEX_METHOD_CALL_RETURN = /\Areturn (?<variable>#{REGEX_MATCH_VARIABLE_NAME})\.(?<method>#{REGEX_MATCH_METHOD_NAME})\((?<parameters>.*)\)\z/
+  REGEX_METHOD_CALL_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE_NAME}) = (?<variable>#{REGEX_MATCH_VARIABLE_NAME})\.(?<method>#{REGEX_MATCH_METHOD_NAME})\((?<parameters>.*)\)\z/
   REGEX_PARAMETER_INT = /\A(?<value>#{REGEX_MATCH_PRIMITIVE_INT})\z/
+  REGEX_PARAMETER_FLOAT = /\A(?<value>#{REGEX_MATCH_PRIMITIVE_FLOAT})\z/
   REGEX_CLASS_DECLARATION = /\Aclass (?<class>#{REGEX_MATCH_CLASS_NAME})\z/
+  REGEX_METHOD_DECLARATION = /\Adef (?<return_class>#{REGEX_MATCH_CLASS_NAME}) (?<name>#{REGEX_MATCH_VARIABLE_NAME})\(((?<parameter_class_0>#{REGEX_MATCH_CLASS_NAME}) (?<parameter_name_0>#{REGEX_MATCH_VARIABLE_NAME})(, (?<parameter_class_1>#{REGEX_MATCH_CLASS_NAME}) (?< parameter_name_1>#{REGEX_MATCH_VARIABLE_NAME})(, (?<parameter_class_2>#{REGEX_MATCH_CLASS_NAME}) (?< parameter_name_2>#{REGEX_MATCH_VARIABLE_NAME})(, (?<parameter_class_3>#{REGEX_MATCH_CLASS_NAME}) (?< parameter_name_3>#{REGEX_MATCH_VARIABLE_NAME})(, (?<parameter_class_4>#{REGEX_MATCH_CLASS_NAME}) (?< parameter_name_4>#{REGEX_MATCH_VARIABLE_NAME}))?)?)?)?)?\)\z/
   REGEX_END = /\Aend\z/
 
   PARSING_RULES = {
-      CONTEXT_ROOT => [
+      Ritournelle::IntermediateRepresentation::World => [
           {
-              regex: REGEX_VARIABLE,
-              code: :parse_variable
+              regex: REGEX_VARIABLE_DECLARATION,
+              method: :parse_variable_declaration
           },
           {
               regex: REGEX_INTEGER_ASSIGNMENT,
-              code: :parse_integer_assignment
+              method: :parse_integer_assignment
           },
           {
               regex: REGEX_FLOAT_ASSIGNMENT,
-              code: :parse_float_assignment
+              method: :parse_float_assignment
           },
           {
               regex: REGEX_METHOD_CALL,
-              code: :parse_method_call
+              method: :parse_method_call
           },
           {
               regex: REGEX_METHOD_CALL_ASSIGNMENT,
-              code: :parse_method_call_assignment
+              method: :parse_method_call_assignment
           },
           {
               regex: REGEX_CLASS_DECLARATION,
-              code: :parse_class_declaration
+              method: :parse_class_declaration
           },
-      ], CONTEXT_IN_CLASS => [
+          {
+              regex: REGEX_METHOD_DECLARATION,
+              method: :parse_method_declaration
+          }
+      ],
+      Ritournelle::IntermediateRepresentation::Class => [
           {
               regex: REGEX_CLASS_MEMBER,
-              code: :parse_class_member
+              method: :parse_class_member
           },
           {
               regex: REGEX_END,
-              code: :parse_class_end
+              method: :parse_end
           },
+          {
+              regex: REGEX_METHOD_DECLARATION,
+              method: :parse_method_declaration
+          }
+      ],
+      Ritournelle::IntermediateRepresentation::Method => [
+          {
+              regex: REGEX_VARIABLE_DECLARATION,
+              method: :parse_variable_declaration
+          },
+          {
+              regex: REGEX_INTEGER_ASSIGNMENT,
+              method: :parse_integer_assignment
+          },
+          {
+              regex: REGEX_INTEGER_RETURN,
+              method: :parse_integer_return
+          },
+          {
+              regex: REGEX_FLOAT_ASSIGNMENT,
+              method: :parse_float_assignment
+          },
+          {
+              regex: REGEX_FLOAT_ASSIGNMENT,
+              method: :parse_float_return
+          },
+          {
+              regex: REGEX_METHOD_CALL,
+              method: :parse_method_call
+          },
+          {
+              regex: REGEX_METHOD_CALL_ASSIGNMENT,
+              method: :parse_method_call_assignment
+          },
+          {
+              regex: REGEX_VARIABLE_RETURN,
+              method: :parse_variable_return
+          },
+          {
+              regex: REGEX_METHOD_CALL_RETURN,
+              method: :parse_method_call_return
+          },
+          {
+              regex: REGEX_END,
+              method: :parse_end
+          }
       ]
   }
 
   def parse_next_line
-    STDOUT << "Parsing [#{@line}] in context #{@context}\n"
+    puts "Parsing [#{@line}] in context #{@stack.last.class}"
     if @line.empty?
     else
-      parsed = PARSING_RULES[@context].any? do |rule|
+      parsed = PARSING_RULES[@stack.last.class].any? do |rule|
         if (m = rule[:regex].match(@line))
-          STDOUT << "Matched for #{rule[:code]}\n"
-          send(rule[:code], m)
+          puts "Matched for #{rule[:method]}"
+          send(rule[:method], m)
           true
         end
       end
       unless parsed
-        raise "Can't parse [#{@line}] in context #{@context}"
+        raise "Can't parse [#{@line}] in context #{@stack.last.class}"
       end
     end
   end
 
   # @param [MatchData] match
-  def parse_variable(match)
+  def parse_variable_declaration(match)
     add_statement(Ritournelle::IntermediateRepresentation::Variable.new(
-        match['type'],
-        match['name']))
+        type: match['type'],
+        name: match['name']))
   end
 
   # @param [MatchData] match
@@ -108,27 +165,45 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
+  def parse_integer_return(match)
+    parse_primitive_return(Integer(match['value']))
+  end
+
+  # @param [MatchData] match
   def parse_float_assignment(match)
     parse_primitive_assignment(match['name'], Float(match['value']))
+  end
+
+  # @param [MatchData] match
+  def parse_float_return(match)
+    parse_primitive_return(Float(match['value']))
   end
 
   # @param [String] name
   # @param [Integer|Float] value
   def parse_primitive_assignment(name, value)
     constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
-        [value])
+        parameters: [value])
     add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
-        name,
-        constructor_call))
+        name: name,
+        value: constructor_call))
+  end
+
+  # @param [Integer|Float] value
+  def parse_primitive_return(value)
+    constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
+        parameters: [value])
+    add_statement(Ritournelle::IntermediateRepresentation::Return.new(
+        value: constructor_call))
   end
 
   # @param [MatchData] match
   def parse_method_call(match)
     call_parameters = process_method_call_parameters(match['parameters'])
     add_statement(Ritournelle::IntermediateRepresentation::MethodCall.new(
-        match['variable'],
-        match['method'],
-        call_parameters
+        variable_name: match['variable'],
+        method_name: match['method'],
+        parameters: call_parameters
     ))
   end
 
@@ -136,11 +211,10 @@ class Ritournelle::Parser
   def parse_class_declaration(match)
     class_name = match['class']
     clazz = Ritournelle::IntermediateRepresentation::Class.new(
-        class_name
+        name: class_name
     )
-    @world.classes[class_name] = clazz
     add_statement(clazz)
-    @context = CONTEXT_IN_CLASS
+    @world.clazzez[class_name] = clazz
     @stack << clazz
   end
 
@@ -148,13 +222,12 @@ class Ritournelle::Parser
   def parse_class_member(match)
     name = match['name']
     @stack.last.members[name] = Ritournelle::IntermediateRepresentation::Member.new(
-        match['type'],
-        name)
+        type: match['type'],
+        name: name)
   end
 
   # @param [MatchData] _
-  def parse_class_end(_)
-    @context = CONTEXT_ROOT
+  def parse_end(_)
     @stack.pop
   end
 
@@ -162,14 +235,50 @@ class Ritournelle::Parser
   def parse_method_call_assignment(match)
     call_parameters = process_method_call_parameters(match['parameters'])
     method_call = Ritournelle::IntermediateRepresentation::MethodCall.new(
-        match['variable'],
-        match['method'],
-        call_parameters
+        variable_name: match['variable'],
+        method_name: match['method'],
+        parameters: call_parameters
     )
     add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
-        match['name'],
-        method_call))
+        name: match['name'],
+        value: method_call))
   end
+
+  # @param [MatchData] match
+  def parse_method_call_return(match)
+    call_parameters = process_method_call_parameters(match['parameters'])
+    method_call = Ritournelle::IntermediateRepresentation::MethodCall.new(
+        variable_name: match['variable'],
+        method_name: match['method'],
+        parameters: call_parameters
+    )
+    add_statement(Ritournelle::IntermediateRepresentation::Return.new(
+        value: method_call))
+  end
+
+  # @param [MatchData] match
+  def parse_method_declaration(match)
+    return_class = match['return_class']
+    name = match['name']
+    number_of_parameters = ((match.captures.compact.length - 2) / 2)
+    parameters_classes = []
+    parameters_names = []
+    0.upto(number_of_parameters - 1) do |parameter_index|
+      parameters_classes << match["parameter_class_#{parameter_index}"]
+      parameters_names << match["parameter_name_#{parameter_index}"]
+    end
+    method = Ritournelle::IntermediateRepresentation::Method.new(
+        parent: @stack.last,
+        declared_name: name,
+        parameters_classes: parameters_classes,
+        parameters_names: parameters_names,
+        return_class: return_class
+    )
+    add_statement(method)
+    @stack.last.methodz << method
+    @stack << method
+  end
+
 
   def fetch_current_line
     @line = @splitted_code[@line_index]
@@ -189,10 +298,18 @@ class Ritournelle::Parser
       c = call_parameter.strip
       if REGEX_PARAMETER_INT.match(c)
         c.to_i
+      elsif REGEX_PARAMETER_FLOAT.match(c)
+        c.to_f
       else
         c
       end
     end
+  end
+
+  # @param [Class] clazz
+  # @return [String]
+  def self.class_name(clazz)
+    clazz.name.split('::').last
   end
 
 end

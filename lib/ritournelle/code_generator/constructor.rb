@@ -3,9 +3,9 @@ class Ritournelle::CodeGenerator::Constructor
   # @return [Array<String>]
   attr_reader :result
 
-  # @param [Ritournelle::IntermediateRepresentation::Constructor] constructor
+  # @param [Ritournelle::IntermediateRepresentation::Constructor] ir
   # @param [Ritournelle::CodeGenerator::Context] context
-  def initialize(constructor, context)
+  def initialize(ir:, context:)
     @result = []
     raise
   end

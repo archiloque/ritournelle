@@ -1,15 +1,22 @@
-class Ritournelle::CodeGenerator::Class
+class Ritournelle::CodeGenerator::Class < Ritournelle::CodeGenerator::Base
 
   # @return [Array<String>]
   attr_reader :result
 
-  # @param [Ritournelle::IntermediateRepresentation::Class] clazz
+  # @param [Ritournelle::IntermediateRepresentation::Class] ir
   # @param [Ritournelle::CodeGenerator::Context] context
-  def initialize(clazz, context)
+  def initialize(ir:, context:)
+    class_context = Ritournelle::CodeGenerator::Context.new(parent: context, statement: ir)
+    super(class_context)
     @result = [
-        "class #{clazz.name}",
-        "end"
+        "",
+        "class #{ir.name}"
     ]
+    @result.concat(generate(ir.statements).map { |l| "  #{l}" })
+    @result.concat(
+        [
+            "end",
+            ""
+        ])
   end
-
 end

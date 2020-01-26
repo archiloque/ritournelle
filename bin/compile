@@ -11,8 +11,8 @@ require 'ritournelle'
 require 'ritournelle/parser'
 require 'ritournelle/code_generator'
 
-parser = Ritournelle::Parser.new(IO.read(ritounelle_file))
+parser = Ritournelle::Parser.new(code: IO.read(ritounelle_file))
 world = parser.world
-generator = Ritournelle::CodeGenerator.new(world)
+generator = Ritournelle::CodeGenerator.new(world: world)
 result = generator.result.join("\n")
 IO.write("#{ritounelle_file}.rb", result)

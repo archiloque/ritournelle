@@ -1,42 +1,58 @@
 class Ritournelle::IntermediateRepresentation::World
 
-  # @return [Array]
-  attr_reader :statements
+  include Ritournelle::IntermediateRepresentation::WithStatements
 
   # @return [Hash{}String,Ritournelle::IntermediateRepresentation::Class}]
-  attr_reader :classes
+  attr_reader :clazzez
+
+  # @return [Array<Ritournelle::IntermediateRepresentation::Method>]
+  attr_reader :methodz
 
   def initialize
-    @statements = []
-    @classes = {}
+    @clazzez = {}
+    @methodz = []
     load_stdlib
   end
 
   def load_stdlib
-    primitive_int_class = Ritournelle::IntermediateRepresentation::Class.new('int')
-    classes['int'] = primitive_int_class
+    primitive_int_class = Ritournelle::IntermediateRepresentation::Class.new(name: 'int')
+    clazzez['int'] = primitive_int_class
 
-    int_class = Ritournelle::IntermediateRepresentation::Class.new('Int')
-    int_constructor = Ritournelle::IntermediateRepresentation::Constructor.new(['int'], ['value'])
+    int_class = Ritournelle::IntermediateRepresentation::Class.new(name: 'Int')
+    int_constructor = Ritournelle::IntermediateRepresentation::Constructor.new(
+        parameters_classes: ['int'], parameters_names: ['value'])
     int_class.constructors << int_constructor
 
-    int_class.methods << Ritournelle::IntermediateRepresentation::Method.new('plus', 'plus_Int', ['Int'], 'Int')
-    int_class.methods << Ritournelle::IntermediateRepresentation::Method.new('plus', 'plus_int', ['int'], 'Int')
-    int_class.methods << Ritournelle::IntermediateRepresentation::Method.new('to_float', 'to_float', [], 'Float')
+    int_class.methodz << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        declared_name: 'plus',
+        implementation_name: 'plus_Int',
+        parameters_classes: ['Int'],
+        return_class: 'Int')
+    int_class.methodz << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        declared_name: 'plus', implementation_name: 'plus_int', parameters_classes: ['int'], return_class: 'Int')
+    int_class.methodz << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        declared_name: 'to_float', implementation_name: 'to_float', parameters_classes: [], return_class: 'Float')
 
-    classes['Int'] = int_class
+    clazzez['Int'] = int_class
 
-    primitive_float_class = Ritournelle::IntermediateRepresentation::Class.new('float')
-    classes['float'] = primitive_float_class
+    primitive_float_class = Ritournelle::IntermediateRepresentation::Class.new(name: 'float')
+    clazzez['float'] = primitive_float_class
 
-    float_class = Ritournelle::IntermediateRepresentation::Class.new('Float')
-    float_constructor = Ritournelle::IntermediateRepresentation::Constructor.new(['float'], ['value'])
+    float_class = Ritournelle::IntermediateRepresentation::Class.new(name: 'Float')
+    float_constructor = Ritournelle::IntermediateRepresentation::Constructor.new(
+        parameters_classes: ['float'], parameters_names: ['value'])
     float_class.constructors << float_constructor
 
-    float_class.methods << Ritournelle::IntermediateRepresentation::Method.new('plus', 'plus_Float', ['Float'], 'Float')
-    float_class.methods << Ritournelle::IntermediateRepresentation::Method.new('plus', 'plus_float', ['float'], 'Float')
+    float_class.methods << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        declared_name: 'plus', implementation_name: 'plus_Float', parameters_classes: ['Float'], return_class: 'Float')
+    float_class.methods << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        declared_name: 'plus', implementation_name: 'plus_float', parameters_classes: ['float'], return_class: 'Float')
 
-    classes['Float'] = float_class
+    clazzez['Float'] = float_class
+  end
+
+  def name
+    'World'
   end
 
 end

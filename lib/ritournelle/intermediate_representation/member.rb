@@ -16,7 +16,7 @@ class Ritournelle::IntermediateRepresentation::Member
 
   # @param [String] type
   # @param [String] name
-  def initialize(type, name)
+  def initialize(type:, name:)
     @type = type
     if FORBIDDEN_NAMES.include?(name)
       raise "Forbidden member name [#{name}]"

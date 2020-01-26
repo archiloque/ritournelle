@@ -8,7 +8,7 @@ class Ritournelle::IntermediateRepresentation::Constructor
 
   # @param [Array<String>] parameters_classes
   # @param [Array<String>] parameters_names
-  def initialize(parameters_classes, parameters_names)
+  def initialize(parameters_classes:, parameters_names:)
     @parameters_classes = parameters_classes
     @parameters_names = parameters_names
   end
