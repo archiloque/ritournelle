@@ -85,12 +85,13 @@ class Ritournelle::CodeGenerator::Context
     caller_class_name = find_variable(variable_name)
     caller_class = find_class(caller_class_name)
     parameters_classes = method_call.parameters.collect do |parameter|
-      if parameter.is_a?(Integer)
-        SMALL_INT_CLASS_NAME
-      elsif parameter.is_a?(Float)
-        SMALL_FLOAT_CLASS_NAME
-      else
+      case parameter
+      when String
         find_variable(parameter)
+      when Ritournelle::IntermediateRepresentation::ConstructorCall
+        parameter.parent.name
+      else
+        raise parameter.to_s
       end
     end
     method = caller_class.methodz.find do |possible_method|

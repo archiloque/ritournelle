@@ -167,7 +167,7 @@ class Ritournelle::Parser
         name: match['name'],
         value: Integer(match['value']),
         clazz: world.clazzez[INT_CLASS_NAME]
-        )
+    )
   end
 
   # @param [MatchData] match
@@ -175,7 +175,7 @@ class Ritournelle::Parser
     parse_primitive_return(
         value: Integer(match['value']),
         clazz: world.clazzez[INT_CLASS_NAME]
-        )
+    )
   end
 
   # @param [MatchData] match
@@ -184,7 +184,7 @@ class Ritournelle::Parser
         name: match['name'],
         value: Float(match['value']),
         clazz: world.clazzez[FLOAT_CLASS_NAME]
-        )
+    )
   end
 
   # @param [MatchData] match
@@ -312,13 +312,19 @@ class Ritournelle::Parser
 
   private
 
+  # @param [String] call_parameters
+  # @return [Array<String|Ritournelle::IntermediateRepresentation::ConstructorCall>]
   def process_method_call_parameters(call_parameters)
     call_parameters.strip.split(',').collect do |call_parameter|
       c = call_parameter.strip
       if REGEX_PARAMETER_INT.match(c)
-        Integer(c)
+        Ritournelle::IntermediateRepresentation::ConstructorCall.new(
+            parameters: [Integer(c)],
+            parent: world.clazzez[INT_CLASS_NAME])
       elsif REGEX_PARAMETER_FLOAT.match(c)
-        Float(c)
+        Ritournelle::IntermediateRepresentation::ConstructorCall.new(
+            parameters: [Float(c)],
+            parent: world.clazzez[FLOAT_CLASS_NAME])
       else
         c
       end

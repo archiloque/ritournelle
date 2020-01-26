@@ -1,4 +1,4 @@
-class Ritournelle::CodeGenerator::ConstructorCall
+class Ritournelle::CodeGenerator::ConstructorCall < Ritournelle::CodeGenerator::Base
 
   # @return [Array<String>]
   attr_reader :result
@@ -6,15 +6,16 @@ class Ritournelle::CodeGenerator::ConstructorCall
   # @param [Ritournelle::IntermediateRepresentation::ConstructorCall] ir
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
-
+    super(context)
     parameter = ir.parameters[0]
 
-    if parameter.is_a?(Integer)
+    case parameter
+    when Integer
       clazz = Ritournelle::Runtime::StdLib::Int.name
-    elsif parameter.is_a?(Float)
+    when Float
       clazz = Ritournelle::Runtime::StdLib::Float.name
     else
-      raise
+      raise parameter.to_s
     end
     @result = [
         "#{clazz}.new(#{parameter})"

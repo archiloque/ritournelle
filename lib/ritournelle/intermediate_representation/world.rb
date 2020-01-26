@@ -36,11 +36,6 @@ class Ritournelle::IntermediateRepresentation::World
         parameters_classes: [INT_CLASS_NAME],
         return_class: INT_CLASS_NAME)
     int_class.methodz << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
-        declared_name: 'plus',
-        implementation_name: 'plus_int',
-        parameters_classes: [SMALL_INT_CLASS_NAME],
-        return_class: INT_CLASS_NAME)
-    int_class.methodz << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
         declared_name: 'to_float',
         implementation_name: 'to_float',
         parameters_classes: [],
@@ -63,11 +58,6 @@ class Ritournelle::IntermediateRepresentation::World
         declared_name: 'plus',
         implementation_name: 'plus_Float',
         parameters_classes: [FLOAT_CLASS_NAME],
-        return_class: FLOAT_CLASS_NAME)
-    float_class.methods << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
-        declared_name: 'plus',
-        implementation_name: 'plus_float',
-        parameters_classes: [SMALL_FLOAT_CLASS_NAME],
         return_class: FLOAT_CLASS_NAME)
 
     clazzez[FLOAT_CLASS_NAME] = float_class

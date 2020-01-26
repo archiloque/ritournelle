@@ -12,10 +12,4 @@ class Ritournelle::Runtime::StdLib::Float
     Ritournelle::Runtime::StdLib::Float.new(@value + other_float.value)
   end
 
-  # @param [Float] other_float
-  # @return [Ritournelle::Runtime::StdLib::Float]
-  def plus_float(other_float)
-    Ritournelle::Runtime::StdLib::Float.new(@value + other_float)
-  end
-
 end

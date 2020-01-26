@@ -1,4 +1,4 @@
-class Ritournelle::CodeGenerator::Variable
+class Ritournelle::CodeGenerator::Variable < Ritournelle::CodeGenerator::Base
 
   # @return [Array<String>]
   attr_reader :result

@@ -16,6 +16,9 @@ class Ritournelle::CodeGenerator::Return < Ritournelle::CodeGenerator::Base
       end
     when Ritournelle::IntermediateRepresentation::MethodCall
       found_class = context.find_method(ir.value).return_class
+      unless found_class == expected_class
+        raise "The method should return a #{expected_class} but return a #{found_class}"
+      end
     else
       raise ir.value.to_s
     end

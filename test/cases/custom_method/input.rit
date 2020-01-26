@@ -1,8 +1,10 @@
 def Int add_two(Int number)
-    return number.plus(2)
+  return number.plus(2)
 end
 
 Int i
 i = 10
 Int j
 j = self.add_two(i)
+Int k
+k = self.add_two(10)
