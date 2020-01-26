@@ -21,6 +21,12 @@ def Int add_two(Int number)
     return number.plus(2)
 end
 
+Int l
+l = self.add_two(10)
+
+Int n
+n = self.add_two(l)
+
 class Circle
   Float @x
   Float @y

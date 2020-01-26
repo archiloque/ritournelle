@@ -23,6 +23,10 @@ def add_two(number)
   return number.plus_Int(Ritournelle::Runtime::StdLib::Int.new(2))
 end
 
+l =
+  self.add_two(Ritournelle::Runtime::StdLib::Int.new(10))
+n =
+  self.add_two(l)
 
 class Circle
   
