@@ -14,6 +14,9 @@ def Int two()
     return 2
 end
 
+Int m
+m = self.two()
+
 def Int add_two(Int number)
     return number.plus(2)
 end

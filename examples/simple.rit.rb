@@ -9,11 +9,16 @@ f =
 g =
   j.to_float()
 
+# @return [Ritournelle::Runtime::StdLib::Int]
 def two()
   return Ritournelle::Runtime::StdLib::Int.new(2)
 end
 
+m =
+  self.two()
 
+# @param [Ritournelle::Runtime::StdLib::Int] number
+# @return [Ritournelle::Runtime::StdLib::Int]
 def add_two(number)
   return number.plus_int(2)
 end
@@ -21,6 +26,7 @@ end
 
 class Circle
   
+  # @return [void]
   def draw()
   end
   

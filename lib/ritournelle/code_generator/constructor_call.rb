@@ -10,9 +10,9 @@ class Ritournelle::CodeGenerator::ConstructorCall
     parameter = ir.parameters[0]
 
     if parameter.is_a?(Integer)
-      clazz = "Ritournelle::Runtime::StdLib::Int"
+      clazz = Ritournelle::Runtime::StdLib::Int.name
     elsif parameter.is_a?(Float)
-      clazz = "Ritournelle::Runtime::StdLib::Float"
+      clazz = Ritournelle::Runtime::StdLib::Float.name
     else
       raise
     end

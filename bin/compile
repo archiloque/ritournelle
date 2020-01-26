@@ -9,6 +9,7 @@ p "Processing [#{ritounelle_file}]"
 require 'bundler/setup'
 require 'ritournelle'
 require 'ritournelle/parser'
+require 'ritournelle/runtime'
 require 'ritournelle/code_generator'
 
 parser = Ritournelle::Parser.new(code: IO.read(ritounelle_file))

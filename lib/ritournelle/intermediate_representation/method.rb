@@ -5,6 +5,9 @@ class Ritournelle::IntermediateRepresentation::Method
   # @return [String]
   attr_reader :declared_name
 
+  # @return [String]
+  attr_reader :implementation_name
+
   # @return [Array<String>]
   attr_reader :parameters_classes
 
@@ -25,6 +28,7 @@ class Ritournelle::IntermediateRepresentation::Method
   def initialize(parent:, declared_name:, parameters_classes:, parameters_names:, return_class:)
     @parent = parent
     @declared_name = declared_name
+    @implementation_name = declared_name
     @parameters_classes = parameters_classes
     @parameters_names = parameters_names
     @number_of_parameters = parameters_classes.length

@@ -1,8 +1,10 @@
+require_relative 'base_classes'
 require_relative 'intermediate_representation'
 
 class Ritournelle::Parser
 
   include Ritournelle::Keywords
+  include Ritournelle::BaseClasses
 
   CONTEXT_ROOT = :root
   CONTEXT_IN_CLASS = :in_class
@@ -161,40 +163,56 @@ class Ritournelle::Parser
 
   # @param [MatchData] match
   def parse_integer_assignment(match)
-    parse_primitive_assignment(match['name'], Integer(match['value']))
+    parse_primitive_assignment(
+        name: match['name'],
+        value: Integer(match['value']),
+        clazz: world.clazzez[INT_CLASS_NAME]
+        )
   end
 
   # @param [MatchData] match
   def parse_integer_return(match)
-    parse_primitive_return(Integer(match['value']))
+    parse_primitive_return(
+        value: Integer(match['value']),
+        clazz: world.clazzez[INT_CLASS_NAME]
+        )
   end
 
   # @param [MatchData] match
   def parse_float_assignment(match)
-    parse_primitive_assignment(match['name'], Float(match['value']))
+    parse_primitive_assignment(
+        name: match['name'],
+        value: Float(match['value']),
+        clazz: world.clazzez[FLOAT_CLASS_NAME]
+        )
   end
 
   # @param [MatchData] match
   def parse_float_return(match)
-    parse_primitive_return(Float(match['value']))
+    parse_primitive_return(
+        value: Float(match['value']),
+        clazz: world.clazzez[FLOAT_CLASS_NAME])
   end
 
   # @param [String] name
   # @param [Integer|Float] value
-  def parse_primitive_assignment(name, value)
+  # @param [Ritournelle::IntermediateRepresentation::Class] clazz
+  def parse_primitive_assignment(name:, value:, clazz:)
     constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
-        parameters: [value])
+        parameters: [value],
+        parent: clazz)
     add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
         name: name,
         value: constructor_call))
   end
 
   # @param [Integer|Float] value
-  def parse_primitive_return(value)
+  def parse_primitive_return(value:, clazz:)
     constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
-        parameters: [value])
+        parameters: [value], parent: clazz)
     add_statement(Ritournelle::IntermediateRepresentation::Return.new(
-        value: constructor_call))
+        value: constructor_call,
+        parent: @stack.last))
   end
 
   # @param [MatchData] match
@@ -253,7 +271,8 @@ class Ritournelle::Parser
         parameters: call_parameters
     )
     add_statement(Ritournelle::IntermediateRepresentation::Return.new(
-        value: method_call))
+        value: method_call,
+        parent: @stack.last))
   end
 
   # @param [MatchData] match
@@ -297,9 +316,9 @@ class Ritournelle::Parser
     call_parameters.strip.split(',').collect do |call_parameter|
       c = call_parameter.strip
       if REGEX_PARAMETER_INT.match(c)
-        c.to_i
+        Integer(c)
       elsif REGEX_PARAMETER_FLOAT.match(c)
-        c.to_f
+        Float(c)
       else
         c
       end

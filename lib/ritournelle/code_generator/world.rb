@@ -7,7 +7,7 @@ class Ritournelle::CodeGenerator::World < Ritournelle::CodeGenerator::Base
   def initialize(ir:)
     context = Ritournelle::CodeGenerator::Context.new(parent: nil, statement: ir)
     ir.clazzez.each_pair do |class_name, clazz|
-      context.add_clazz(class_name, clazz)
+      context.add_class(class_name, clazz)
     end
     super(context)
     @result = generate(ir.statements)
