@@ -6,7 +6,7 @@ class Ritournelle::CodeGenerator::Assignment < Ritournelle::CodeGenerator::Base
   # @param [Ritournelle::IntermediateRepresentation::Assignment] ir
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
-    super(context)
+    super(ir: ir, context: context)
     value = ir.value
     if value.is_a?(String)
       @result = [

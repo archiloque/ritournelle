@@ -17,7 +17,7 @@ class RitournelleTest < Minitest::Test
 
       test_case_content = IO.read(test_case_file_name)
       if File.exist?(output_file_name)
-        parser = Ritournelle::Parser.new(code: test_case_content)
+        parser = Ritournelle::Parser.new(code: test_case_content, file_path: test_case_file_name)
         world = parser.world
         generator = Ritournelle::CodeGenerator.new(world: world)
         generated_output = generator.result.join("\n")
@@ -33,7 +33,7 @@ class RitournelleTest < Minitest::Test
         end
       elsif File.exist?(error_file_name)
         assert_raises(RuntimeError, IO.read(error_file_name)) do
-          parser = Ritournelle::Parser.new(code: test_case_content)
+          parser = Ritournelle::Parser.new(code: test_case_content, file_path: test_case_file_name)
           world = parser.world
           Ritournelle::CodeGenerator.new(world: world)
         end

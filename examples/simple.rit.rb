@@ -10,28 +10,39 @@ g =
   j.to_float()
 
 # @return [Ritournelle::Runtime::StdLib::Int]
-def two()
+def two—0()
   return Ritournelle::Runtime::StdLib::Int.new(2)
 end
 
-m =
-  self.two()
+l =
+  self.two—0()
 
 # @param [Ritournelle::Runtime::StdLib::Int] number
 # @return [Ritournelle::Runtime::StdLib::Int]
-def add_two(number)
+def add_two—1(number)
   return number.plus_Int(Ritournelle::Runtime::StdLib::Int.new(2))
 end
 
-l =
-  self.add_two(Ritournelle::Runtime::StdLib::Int.new(10))
+
+# @param [Ritournelle::Runtime::StdLib::Float] number
+# @return [Ritournelle::Runtime::StdLib::Float]
+def add_two—2(number)
+  return number.plus_Float(Ritournelle::Runtime::StdLib::Float.new(2.0))
+end
+
+m =
+  add_two—1(Ritournelle::Runtime::StdLib::Int.new(10))
 n =
-  self.add_two(l)
+  add_two—1(m)
+o =
+  add_two—2(Ritournelle::Runtime::StdLib::Float.new(10.0))
+p =
+  add_two—2(o)
 
 class Circle
   
   # @return [void]
-  def draw()
+  def draw—0()
   end
   
 end

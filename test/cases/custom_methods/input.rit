@@ -1,0 +1,21 @@
+def Int add_two(Int number)
+  return number.plus(2)
+end
+
+def Float add_two(Float number)
+  return number.plus(2.0)
+end
+
+Int i
+i = 10
+Int j
+j = self.add_two(i)
+Int k
+k = self.add_two(10)
+
+Float l
+l = 10.0
+Float m
+m = self.add_two(l)
+Float n
+n = self.add_two(10.0)

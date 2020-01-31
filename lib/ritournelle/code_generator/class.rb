@@ -7,7 +7,7 @@ class Ritournelle::CodeGenerator::Class < Ritournelle::CodeGenerator::Base
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
     class_context = Ritournelle::CodeGenerator::Context.new(parent: context, statement: ir)
-    super(class_context)
+    super(ir: ir, context: class_context)
     @result = [
         "",
         "class #{ir.name}"

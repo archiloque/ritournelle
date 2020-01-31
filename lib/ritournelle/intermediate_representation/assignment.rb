@@ -1,4 +1,4 @@
-class Ritournelle::IntermediateRepresentation::Assignment
+class Ritournelle::IntermediateRepresentation::Assignment < Ritournelle::IntermediateRepresentation::Base
 
   # @return [String]
   attr_reader :name
@@ -7,7 +7,8 @@ class Ritournelle::IntermediateRepresentation::Assignment
 
   # @param [String] name
   # @param value
-  def initialize(name:, value:)
+  def initialize(file_path:, line_index:, name:, value:)
+    super(file_path: file_path, line_index: line_index)
     @name = name
     @value = value
   end

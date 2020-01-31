@@ -20,23 +20,25 @@ class Ritournelle::CodeGenerator::Context
   end
 
   # @param [Object] statement
+  # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [Ritournelle::CodeGenerator::Base]
-  def generator(statement:)
+  def generator(statement:, generator:)
     generator_class = Ritournelle::CodeGenerator::GENERATORS[statement.class]
     unless generator_class
-      raise "Can't find a generator for [#{statement.class}]"
+      generator.raise_error("Can't find a generator for [#{statement.class}]")
     end
     generator_class.new(ir: statement, context: self)
   end
 
   # @param [String] name
+  # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [String] the variable class
-  def find_variable(name)
+  def find_variable(name:, generator:)
     if name == Ritournelle::Keywords::KEYWORD_SELF
       return @statement.name
     end
     unless @variables.key?(name)
-      raise "Can't find variable [#{name}] in #{self}"
+      generator.raise_error("Can't find variable [#{name}] in #{self}")
     end
     @variables[name]
   end
@@ -44,54 +46,58 @@ class Ritournelle::CodeGenerator::Context
 
   # @param [String] name
   # @param [String] clazz
+  # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [void]
-  def add_variable(name, clazz)
+  def add_variable(name:, clazz:, generator:)
     if @variables.key?(name)
-      raise "Variable already exists [#{name}] in #{self}"
+      generator.raise_error("Variable already exists [#{name}] in #{self}")
     end
     @variables[name] = clazz
   end
 
   # @param [String] name
+  # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [Ritournelle::IntermediateRepresentation::Class]
-  def find_class(name)
+  def find_class(name:, generator:)
     if @clazzez.key?(name)
       @clazzez[name]
     elsif @parent
       begin
-        @parent.find_class(name)
+        @parent.find_class(name: name, generator: generator)
       rescue
-        raise "Can't find class [#{name}] in #{self}"
+        generator.raise_error("Can't find class [#{name}] in #{self}")
       end
     else
-      raise "Can't find class [#{name}] in #{self}"
+      generator.raise_error("Can't find class [#{name}] in #{self}")
     end
   end
 
   # @param [String] name
   # @param [Ritournelle::IntermediateRepresentation::Class] clazz
+  # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [void]
-  def add_class(name, clazz)
+  def add_class(name:, clazz:, generator:)
     if @clazzez.key(name)
-      raise "Class already exists [#{name}] in #{self}"
+      generator.raise_error("Class already exists [#{name}] in #{self}")
     end
     @clazzez[name] = clazz
   end
 
   # @param [Ritournelle::IntermediateRepresentation::MethodCall] method_call
+  # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [Ritournelle::IntermediateRepresentation::Method]
-  def find_method(method_call)
+  def find_method(method_call:, generator:)
     variable_name = method_call.variable_name
-    caller_class_name = find_variable(variable_name)
-    caller_class = find_class(caller_class_name)
+    caller_class_name = find_variable(name: variable_name, generator: generator)
+    caller_class = find_class(name: caller_class_name, generator: generator)
     parameters_classes = method_call.parameters.collect do |parameter|
       case parameter
       when String
-        find_variable(parameter)
+        find_variable(name: parameter, generator: generator)
       when Ritournelle::IntermediateRepresentation::ConstructorCall
         parameter.parent.name
       else
-        raise parameter.to_s
+        generator.raise_error(parameter.to_s)
       end
     end
     method = caller_class.methodz.find do |possible_method|
@@ -99,7 +105,7 @@ class Ritournelle::CodeGenerator::Context
           (possible_method.parameters_classes == parameters_classes)
     end
     if method.nil?
-      raise "Can't find method [#{caller_class.name}##{method_call.method_name}(#{parameters_classes.join(', ')})]"
+      generator.raise_error("Can't find method [#{caller_class.name}##{method_call.method_name}(#{parameters_classes.join(', ')})]")
     end
     method
   end

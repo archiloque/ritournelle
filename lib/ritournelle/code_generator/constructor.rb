@@ -8,7 +8,7 @@ class Ritournelle::CodeGenerator::Constructor < Ritournelle::CodeGenerator::Base
   def initialize(ir:, context:)
     super(context)
     @result = []
-    raise
+    raise_error('Unexpected')
   end
 
 end

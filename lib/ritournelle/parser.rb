@@ -14,7 +14,9 @@ class Ritournelle::Parser
   attr_reader :world
 
   # @param [String] code
-  def initialize(code:)
+  # @param [String] file_path
+  def initialize(code:, file_path:)
+    @file_path = file_path
     @world = Ritournelle::IntermediateRepresentation::World.new
     @stack = [@world]
     @splitted_code = code.split("\n")
@@ -157,8 +159,11 @@ class Ritournelle::Parser
   # @param [MatchData] match
   def parse_variable_declaration(match)
     add_statement(Ritournelle::IntermediateRepresentation::Variable.new(
+        file_path: @file_path,
+        line_index: @line_index,
         type: match['type'],
-        name: match['name']))
+        name: match['name'])
+    )
   end
 
   # @param [MatchData] match
@@ -199,26 +204,41 @@ class Ritournelle::Parser
   # @param [Ritournelle::IntermediateRepresentation::Class] clazz
   def parse_primitive_assignment(name:, value:, clazz:)
     constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
+        file_path: @file_path,
+        line_index: @line_index,
         parameters: [value],
-        parent: clazz)
+        parent: clazz
+    )
     add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
+        file_path: @file_path,
+        line_index: @line_index,
         name: name,
-        value: constructor_call))
+        value: constructor_call)
+    )
   end
 
   # @param [Integer|Float] value
   def parse_primitive_return(value:, clazz:)
     constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
-        parameters: [value], parent: clazz)
+        file_path: @file_path,
+        line_index: @line_index,
+        parameters: [value],
+        parent: clazz
+    )
     add_statement(Ritournelle::IntermediateRepresentation::Return.new(
+        file_path: @file_path,
+        line_index: @line_index,
         value: constructor_call,
-        parent: @stack.last))
+        parent: @stack.last)
+    )
   end
 
   # @param [MatchData] match
   def parse_method_call(match)
     call_parameters = process_method_call_parameters(match['parameters'])
     add_statement(Ritournelle::IntermediateRepresentation::MethodCall.new(
+        file_path: @file_path,
+        line_index: @line_index,
         variable_name: match['variable'],
         method_name: match['method'],
         parameters: call_parameters
@@ -229,6 +249,8 @@ class Ritournelle::Parser
   def parse_class_declaration(match)
     class_name = match['class']
     clazz = Ritournelle::IntermediateRepresentation::Class.new(
+        file_path: @file_path,
+        line_index: @line_index,
         name: class_name
     )
     add_statement(clazz)
@@ -240,8 +262,11 @@ class Ritournelle::Parser
   def parse_class_member(match)
     name = match['name']
     @stack.last.members[name] = Ritournelle::IntermediateRepresentation::Member.new(
+        file_path: @file_path,
+        line_index: @line_index,
         type: match['type'],
-        name: name)
+        name: name
+    )
   end
 
   # @param [MatchData] _
@@ -253,26 +278,36 @@ class Ritournelle::Parser
   def parse_method_call_assignment(match)
     call_parameters = process_method_call_parameters(match['parameters'])
     method_call = Ritournelle::IntermediateRepresentation::MethodCall.new(
+        file_path: @file_path,
+        line_index: @line_index,
         variable_name: match['variable'],
         method_name: match['method'],
         parameters: call_parameters
     )
     add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
+        file_path: @file_path,
+        line_index: @line_index,
         name: match['name'],
-        value: method_call))
+        value: method_call)
+    )
   end
 
   # @param [MatchData] match
   def parse_method_call_return(match)
     call_parameters = process_method_call_parameters(match['parameters'])
     method_call = Ritournelle::IntermediateRepresentation::MethodCall.new(
+        file_path: @file_path,
+        line_index: @line_index,
         variable_name: match['variable'],
         method_name: match['method'],
         parameters: call_parameters
     )
     add_statement(Ritournelle::IntermediateRepresentation::Return.new(
+        file_path: @file_path,
+        line_index: @line_index,
         value: method_call,
-        parent: @stack.last))
+        parent: @stack.last
+    ))
   end
 
   # @param [MatchData] match
@@ -287,6 +322,8 @@ class Ritournelle::Parser
       parameters_names << match["parameter_name_#{parameter_index}"]
     end
     method = Ritournelle::IntermediateRepresentation::Method.new(
+        file_path: @file_path,
+        line_index: @line_index,
         parent: @stack.last,
         declared_name: name,
         parameters_classes: parameters_classes,
@@ -319,12 +356,18 @@ class Ritournelle::Parser
       c = call_parameter.strip
       if REGEX_PARAMETER_INT.match(c)
         Ritournelle::IntermediateRepresentation::ConstructorCall.new(
+            file_path: @file_path,
+            line_index: @line_index,
             parameters: [Integer(c)],
-            parent: world.clazzez[INT_CLASS_NAME])
+            parent: world.clazzez[INT_CLASS_NAME]
+        )
       elsif REGEX_PARAMETER_FLOAT.match(c)
         Ritournelle::IntermediateRepresentation::ConstructorCall.new(
+            file_path: @file_path,
+            line_index: @line_index,
             parameters: [Float(c)],
-            parent: world.clazzez[FLOAT_CLASS_NAME])
+            parent: world.clazzez[FLOAT_CLASS_NAME]
+        )
       else
         c
       end

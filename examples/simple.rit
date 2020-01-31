@@ -14,18 +14,26 @@ def Int two()
     return 2
 end
 
-Int m
-m = self.two()
+Int l
+l = self.two()
 
 def Int add_two(Int number)
     return number.plus(2)
 end
 
-Int l
-l = self.add_two(10)
+def Float add_two(Float number)
+    return number.plus(2.0)
+end
 
+Int m
+m = self.add_two(10)
 Int n
-n = self.add_two(l)
+n = self.add_two(m)
+
+Float o
+o = self.add_two(10.0)
+Float p
+p = self.add_two(o)
 
 class Circle
   Float @x

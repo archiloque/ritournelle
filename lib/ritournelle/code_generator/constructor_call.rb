@@ -6,7 +6,7 @@ class Ritournelle::CodeGenerator::ConstructorCall < Ritournelle::CodeGenerator::
   # @param [Ritournelle::IntermediateRepresentation::ConstructorCall] ir
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
-    super(context)
+    super(ir: ir, context: context)
     parameter = ir.parameters[0]
 
     case parameter
@@ -15,7 +15,7 @@ class Ritournelle::CodeGenerator::ConstructorCall < Ritournelle::CodeGenerator::
     when Float
       clazz = Ritournelle::Runtime::StdLib::Float.name
     else
-      raise parameter.to_s
+      raise_error(parameter.to_s)
     end
     @result = [
         "#{clazz}.new(#{parameter})"

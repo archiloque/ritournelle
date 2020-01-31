@@ -6,9 +6,9 @@ class Ritournelle::CodeGenerator::MethodCall < Ritournelle::CodeGenerator::Base
   # @param [Ritournelle::IntermediateRepresentation::MethodCall] ir
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
-    super(context)
+    super(ir: ir, context: context)
     variable_name = ir.variable_name
-    method = context.find_method(ir)
+    method = context.find_method(method_call: ir, generator: self)
     output_parameters = ir.parameters.map do |parameter|
       case parameter
       when String

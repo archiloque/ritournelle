@@ -9,4 +9,4 @@ puts "Processing [#{ritounelle_file}]"
 require 'bundler/setup'
 require 'ritournelle/runtime'
 
-puts eval(IO.read(ritounelle_file), nil, ritounelle_file, 0)
+puts eval(IO.read(ritounelle_file), nil, ritounelle_file, 1)

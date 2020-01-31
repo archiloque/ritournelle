@@ -1,4 +1,4 @@
-class Ritournelle::IntermediateRepresentation::Method
+class Ritournelle::IntermediateRepresentation::Method < Ritournelle::IntermediateRepresentation::Base
 
   include Ritournelle::IntermediateRepresentation::WithStatements
 
@@ -20,15 +20,18 @@ class Ritournelle::IntermediateRepresentation::Method
   # @return [String]
   attr_reader :return_class
 
+  # @param [String] file_path
+  # @param [Integer] line_index
   # @param [Object] parent
   # @param [String] declared_name
   # @param [Array<String>] parameters_classes
   # @param [Array<String>] parameters_names
   # @param [String] return_class
-  def initialize(parent:, declared_name:, parameters_classes:, parameters_names:, return_class:)
+  def initialize(file_path:, line_index:, parent:, declared_name:, parameters_classes:, parameters_names:, return_class:)
+    super(file_path: file_path, line_index: line_index)
     @parent = parent
     @declared_name = declared_name
-    @implementation_name = declared_name
+    @implementation_name = "#{declared_name}—#{@parent.methodz.length}"
     @parameters_classes = parameters_classes
     @parameters_names = parameters_names
     @number_of_parameters = parameters_classes.length
