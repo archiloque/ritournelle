@@ -2,6 +2,8 @@
 
 A WIP toy language, see link:https://archiloque.net/blog/prog-lang-idea/[here] for some info.
 
+The language is statically typed and it generates Ruby code.
+
 == Syntax example
 
 [source]
@@ -22,7 +24,6 @@ class Circle
   Float @radius
 end
 ----
-
 
 == Commands
 
@@ -46,6 +47,12 @@ bin/run examples/simple.rit.rb
 ----
 rake test
 ----
+
+== How it works?
+
+- `Ritournelle::Parser` parse the code and generates elements of `Ritournelle::IntermediateRepresentation`
+- One by one the `Ritournelle::IntermediateRepresentation` elements are transformed into Ruby code by their corresponding `Ritournelle::CodeGenerator`
+- Each Class and Method is managed by a `Ritournelle::CodeGenerator::Context` to manage it local state
 
 == Contributing
 

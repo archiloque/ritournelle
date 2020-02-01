@@ -14,6 +14,7 @@ class Ritournelle::CodeGenerator::Assignment < Ritournelle::CodeGenerator::Base
       result << "# @type [#{context.find_class(name: variable.ir.type, generator: self).rdoc_name}]"
       variable.declared = true
     end
+    variable.initialized = true
     variable_value = ir.value
     if variable_value.is_a?(String)
       @result << "#{variable_name} = #{variable_value}"

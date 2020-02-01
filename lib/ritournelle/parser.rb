@@ -167,6 +167,16 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
+  def parse_variable_return(match)
+    add_statement(Ritournelle::IntermediateRepresentation::Return.new(
+        file_path: @file_path,
+        line_index: @line_index,
+        value: match['name'],
+        parent: @stack.last
+    ))
+  end
+
+  # @param [MatchData] match
   def parse_integer_assignment(match)
     parse_primitive_assignment(
         name: match['name'],
@@ -342,7 +352,7 @@ class Ritournelle::Parser
     @line.strip!
   end
 
-  # @param [Object] statement
+  # @param [Ritournelle::IntermediateRepresentation::Base] statement
   def add_statement(statement)
     @stack.last.statements << statement
   end
@@ -350,7 +360,7 @@ class Ritournelle::Parser
   private
 
   # @param [String] call_parameters
-  # @return [Array<String|Ritournelle::IntermediateRepresentation::ConstructorCall>]
+  # @return [Array<String,Ritournelle::IntermediateRepresentation::ConstructorCall>]
   def process_method_call_parameters(call_parameters)
     call_parameters.strip.split(',').collect do |call_parameter|
       c = call_parameter.strip

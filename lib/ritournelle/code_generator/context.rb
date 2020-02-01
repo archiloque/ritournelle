@@ -5,12 +5,13 @@ class Ritournelle::CodeGenerator::Context
 
   include Ritournelle::BaseClasses
 
-  # @param [Ritournelle::CodeGenerator::Context\nil] parent
-  # @param [Object] statement
+  # @param [Ritournelle::CodeGenerator::Context, nil] parent
+  # @param [Ritournelle::IntermediateRepresentation::Base] statement
   def initialize(parent:, statement:)
     super()
     @parent = parent
     @statement = statement
+    # @type [Hash{String=>Ritournelle::CodeGenerator::Context::Parameter}]
     @parameters = {}
     # @type [Hash{String=>Ritournelle::CodeGenerator::Context::Variable}]
     @variables = {}
@@ -21,7 +22,7 @@ class Ritournelle::CodeGenerator::Context
     "Context of #{@statement.to_s}"
   end
 
-  # @param [Object] statement
+  # @param [Ritournelle::IntermediateRepresentation::Base] statement
   # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [Ritournelle::CodeGenerator::Base]
   # @raise [RuntimeError]
@@ -47,16 +48,16 @@ class Ritournelle::CodeGenerator::Context
 
   # @param [String] name
   # @param [Ritournelle::CodeGenerator::Base] generator
-  # @return [String] the variable class
+  # @return [Ritournelle::CodeGenerator::Context::Parameter, Ritournelle::CodeGenerator::Context::Variable, Ritournelle::CodeGenerator::Context::Self] the variable class
   # @raise [RuntimeError]
-  def find_parameter_or_variable_class(name:, generator:)
+  def find_element(name:, generator:)
     if name == Ritournelle::Keywords::KEYWORD_SELF
-      return @statement.name
+      return Ritournelle::CodeGenerator::Context::Self.new(@statement)
     end
     if @parameters.key?(name)
       @parameters[name]
     elsif @variables.key?(name)
-      @variables[name].ir.type
+      @variables[name]
     else
       generator.raise_error("Can't find variable or parameter [#{name}] in #{self}")
     end
@@ -85,7 +86,7 @@ class Ritournelle::CodeGenerator::Context
     elsif @parameters.key?(name)
       generator.raise_error("Parameter [#{name}] already exists in #{self}")
     else
-      @parameters[name] = clazz
+      @parameters[name] = Ritournelle::CodeGenerator::Context::Parameter.new(clazz)
     end
   end
 
@@ -125,12 +126,12 @@ class Ritournelle::CodeGenerator::Context
   # @raise [RuntimeError]
   def find_method(method_call:, generator:)
     variable_name = method_call.variable_name
-    caller_class_name = find_parameter_or_variable_class(name: variable_name, generator: generator)
-    caller_class = find_class(name: caller_class_name, generator: generator)
+    caller_type = find_element(name: variable_name, generator: generator).type
+    caller_class = find_class(name: caller_type, generator: generator)
     parameters_classes = method_call.parameters.collect do |parameter|
       case parameter
       when String
-        find_parameter_or_variable_class(name: parameter, generator: generator)
+        find_element(name: parameter, generator: generator).type
       when Ritournelle::IntermediateRepresentation::ConstructorCall
         parameter.parent.name
       else
@@ -152,6 +153,9 @@ class Ritournelle::CodeGenerator::Context
     # @return [Boolean]
     attr_accessor :declared
 
+    # @return [Boolean]
+    attr_accessor :initialized
+
     # @return [Ritournelle::IntermediateRepresentation::Variable]
     attr_reader :ir
 
@@ -159,8 +163,58 @@ class Ritournelle::CodeGenerator::Context
     def initialize(ir)
       @ir = ir
       @declared = false
+      @initialized = false
     end
 
+    def type
+      @ir.type
+    end
+
+  end
+
+  class Parameter
+
+    # @return [String]
+    attr_reader :type
+
+    # @param [String] type
+    def initialize(type)
+      @type = type
+    end
+
+    # @return [Boolean]
+    def initialized
+      true
+    end
+
+    # @return [Boolean]
+    def declared
+      true
+    end
+
+  end
+
+  class Self
+
+    # @param [Ritournelle::IntermediateRepresentation::Base] statement
+    def initialize(statement)
+      @statement = statement
+    end
+
+    # @return [String]
+    def type
+      @statement.name
+    end
+
+    # @return [Boolean]
+    def initialized
+      true
+    end
+
+    # @return [Boolean]
+    def declared
+      true
+    end
   end
 
 end

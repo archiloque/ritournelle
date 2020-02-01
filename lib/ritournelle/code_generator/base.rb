@@ -7,7 +7,7 @@ class Ritournelle::CodeGenerator::Base
     @ir = ir
   end
 
-  # @param [Array] statements
+  # @param [Array<Ritournelle::IntermediateRepresentation::Base>] statements
   # @return [Array<String>]
   def generate(statements)
     result = []

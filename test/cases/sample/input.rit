@@ -9,3 +9,30 @@ Float f
 f = 10.5
 Float g
 g = j.to_float()
+
+def Int two()
+    Int t
+    t = 2
+    return 2
+end
+
+Int l
+l = self.two()
+
+def Int add_two(Int number)
+    return number.plus(2)
+end
+
+def Float add_two(Float number)
+    return number.plus(2.0)
+end
+
+Int m
+m = self.add_two(10)
+Int n
+n = self.add_two(m)
+
+Float o
+o = self.add_two(10.0)
+Float p
+p = self.add_two(o)
