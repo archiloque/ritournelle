@@ -12,12 +12,13 @@ class Ritournelle::CodeGenerator::Return < Ritournelle::CodeGenerator::Base
     when Ritournelle::IntermediateRepresentation::ConstructorCall
       found_class = ir.value.parent.name
       unless found_class == expected_class
-        raise_error("The method should return a #{expected_class} but return a #{found_class}")
+        raise_error("#{ir.parent} should return a #{expected_class} but returns a #{found_class}")
       end
     when Ritournelle::IntermediateRepresentation::MethodCall
-      found_class = context.find_method(method_call: ir.value, generator: self).return_class
+      called_method = context.find_method(method_call: ir.value, generator: self)
+      found_class = called_method.return_class
       unless found_class == expected_class
-        raise_error("The method should return a #{expected_class} but return a #{found_class}")
+        raise_error("#{ir.parent} should return a #{expected_class} but returns a #{found_class}")
       end
     else
       raise_error(ir.value.to_s)

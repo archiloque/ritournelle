@@ -113,7 +113,7 @@ class Ritournelle::Parser
               method: :parse_float_assignment
           },
           {
-              regex: REGEX_FLOAT_ASSIGNMENT,
+              regex: REGEX_FLOAT_RETURN,
               method: :parse_float_return
           },
           {

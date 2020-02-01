@@ -11,6 +11,8 @@ class Ritournelle::CodeGenerator::Context
     super()
     @parent = parent
     @statement = statement
+    @parameters = {}
+    # @type [Hash{String=>Ritournelle::IntermediateRepresentation::Variable}]
     @variables = {}
     @clazzez = {}
   end
@@ -22,6 +24,7 @@ class Ritournelle::CodeGenerator::Context
   # @param [Object] statement
   # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [Ritournelle::CodeGenerator::Base]
+  # @raise [RuntimeError]
   def generator(statement:, generator:)
     generator_class = Ritournelle::CodeGenerator::GENERATORS[statement.class]
     unless generator_class
@@ -33,30 +36,63 @@ class Ritournelle::CodeGenerator::Context
   # @param [String] name
   # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [String] the variable class
+  # @raise [RuntimeError]
   def find_variable_class(name:, generator:)
+    if @variables.key?(name)
+      @variables[name].type
+    else
+      generator.raise_error("Can't find variable [#{name}] in #{self}")
+    end
+  end
+
+  # @param [String] name
+  # @param [Ritournelle::CodeGenerator::Base] generator
+  # @return [String] the variable class
+  # @raise [RuntimeError]
+  def find_parameter_or_variable_class(name:, generator:)
     if name == Ritournelle::Keywords::KEYWORD_SELF
       return @statement.name
     end
-    unless @variables.key?(name)
-      generator.raise_error("Can't find variable [#{name}] in #{self}")
+    if @parameters.key?(name)
+      @parameters[name]
+    elsif @variables.key?(name)
+      @variables[name].type
+    else
+      generator.raise_error("Can't find variable or parameter [#{name}] in #{self}")
     end
-    @variables[name]
+  end
+
+  # @param [Ritournelle::IntermediateRepresentation::Variable] ir
+  # @param [Ritournelle::CodeGenerator::Base] generator
+  # @return [void]
+  # @raise [RuntimeError]
+  def declare_variable(ir:, generator:)
+    if @variables.key?(ir.name)
+      generator.raise_error("Variable [#{ir.name}] already exists in #{self}")
+    else
+      @variables[ir.name] = ir
+    end
   end
 
   # @param [String] name
   # @param [String] clazz
   # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [void]
-  def declare_variable(name:, clazz:, generator:)
+  # @raise [RuntimeError]
+  def declare_parameter(name:, clazz:, generator:)
     if @variables.key?(name)
-      generator.raise_error("Variable already exists [#{name}] in #{self}")
+      generator.raise_error("Variable [#{name}] already exists in #{self}")
+    elsif @parameters.key?(name)
+      generator.raise_error("Parameter [#{name}] already exists in #{self}")
+    else
+      @parameters[name] = clazz
     end
-    @variables[name] = clazz
   end
 
   # @param [String] name
   # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [Ritournelle::IntermediateRepresentation::Class]
+  # @raise [RuntimeError]
   def find_class(name:, generator:)
     if @clazzez.key?(name)
       @clazzez[name]
@@ -78,21 +114,23 @@ class Ritournelle::CodeGenerator::Context
   def declare_class(name:, clazz:, generator:)
     if @clazzez.key(name)
       generator.raise_error("Class already exists [#{name}] in #{self}")
+    else
+      @clazzez[name] = clazz
     end
-    @clazzez[name] = clazz
   end
 
   # @param [Ritournelle::IntermediateRepresentation::MethodCall] method_call
   # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [Ritournelle::IntermediateRepresentation::Method]
+  # @raise [RuntimeError]
   def find_method(method_call:, generator:)
     variable_name = method_call.variable_name
-    caller_class_name = find_variable_class(name: variable_name, generator: generator)
+    caller_class_name = find_parameter_or_variable_class(name: variable_name, generator: generator)
     caller_class = find_class(name: caller_class_name, generator: generator)
     parameters_classes = method_call.parameters.collect do |parameter|
       case parameter
       when String
-        find_variable_class(name: parameter, generator: generator)
+        find_parameter_or_variable_class(name: parameter, generator: generator)
       when Ritournelle::IntermediateRepresentation::ConstructorCall
         parameter.parent.name
       else
@@ -107,6 +145,15 @@ class Ritournelle::CodeGenerator::Context
       generator.raise_error("Can't find method [#{caller_class.name}##{method_call.method_name}(#{parameters_classes.join(', ')})]")
     end
     method
+  end
+
+  class Variable
+
+    # @param [Ritournelle::IntermediateRepresentation::Variable] ir
+    def initialize(ir)
+      @ir = ir
+    end
+
   end
 
 end

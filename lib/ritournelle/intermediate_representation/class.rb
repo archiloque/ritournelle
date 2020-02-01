@@ -14,7 +14,7 @@ class Ritournelle::IntermediateRepresentation::Class < Ritournelle::Intermediate
   # @return [Array<Ritournelle::IntermediateRepresentation::Method>]
   attr_reader :methodz
 
-  # @return [Hash{String, Ritournelle::IntermediateRepresentation::Method}]
+  # @return [Hash{String=>Ritournelle::IntermediateRepresentation::Method}]
   attr_reader :members
 
   # @param [String] file_path

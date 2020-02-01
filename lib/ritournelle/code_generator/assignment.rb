@@ -7,15 +7,17 @@ class Ritournelle::CodeGenerator::Assignment < Ritournelle::CodeGenerator::Base
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
     super(ir: ir, context: context)
-    value = ir.value
-    if value.is_a?(String)
+    variable_name = ir.name
+    context.find_variable_class(name: variable_name, generator: self)
+    variable_value = ir.value
+    if variable_value.is_a?(String)
       @result = [
-          "#{ir.name} = #{value}"
+          "#{variable_name} = #{variable_value}"
       ]
     else
       @result = [
-          "#{ir.name} ="
-      ] + generate([value]).collect { |l| "  #{l}" }
+          "#{variable_name} ="
+      ] + generate([variable_value]).collect { |l| "  #{l}" }
     end
   end
 end

@@ -6,7 +6,7 @@ class Ritournelle::IntermediateRepresentation::World
 
   include Ritournelle::IntermediateRepresentation::WithStatements
 
-  # @return [Hash{String,Ritournelle::IntermediateRepresentation::Class}]
+  # @return [Hash{String=>Ritournelle::IntermediateRepresentation::Class}]
   attr_reader :clazzez
 
   # @return [Array<Ritournelle::IntermediateRepresentation::Method>]
@@ -104,6 +104,10 @@ class Ritournelle::IntermediateRepresentation::World
 
   def name
     'World'
+  end
+
+  def to_s
+    "World"
   end
 
 end

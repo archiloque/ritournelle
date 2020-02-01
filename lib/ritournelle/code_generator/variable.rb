@@ -8,8 +8,7 @@ class Ritournelle::CodeGenerator::Variable < Ritournelle::CodeGenerator::Base
   def initialize(ir:, context:)
     super(ir: ir, context: context)
     context.declare_variable(
-        name: ir.name,
-        clazz: ir.type,
+        ir: ir,
         generator: self)
     @result = []
   end

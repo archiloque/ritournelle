@@ -26,4 +26,8 @@ class Ritournelle::IntermediateRepresentation::IntrinsicMethod < Ritournelle::In
     @return_class = return_class
   end
 
+  def to_s
+    "Method #{return_class} #{declared_name}(#{parameters_classes.join(', ')})"
+  end
+
 end

@@ -35,11 +35,16 @@ class RitournelleTest < Minitest::Test
           end
         end
       elsif File.exist?(error_file_name)
-        assert_raises(RuntimeError, IO.read(error_file_name)) do
+        error = assert_raises(RuntimeError) do
           parser = Ritournelle::Parser.new(code: test_case_content, file_path: test_case_file_name)
           world = parser.world
           Ritournelle::CodeGenerator.new(world: world)
         end
+        assert_equal(
+            IO.read(error_file_name),
+            error.message,
+            "Difference detected in [#{error_file_name}]")
+        IO.read(error_file_name)
       else
         raise "Don't known what to test for [#{test_case_dir}]"
       end

@@ -9,7 +9,7 @@ class Ritournelle::CodeGenerator::Method < Ritournelle::CodeGenerator::Base
     method_context = Ritournelle::CodeGenerator::Context.new(parent: context, statement: ir)
     super(ir: ir, context: method_context)
     0.upto(ir.number_of_parameters - 1).each do |parameter_index|
-      method_context.declare_variable(
+      method_context.declare_parameter(
           name: ir.parameters_names[parameter_index],
           clazz: ir.parameters_classes[parameter_index],
           generator: self)
