@@ -21,7 +21,10 @@ class RitournelleTest < Minitest::Test
         world = parser.world
         generator = Ritournelle::CodeGenerator.new(world: world)
         generated_output = generator.result.join("\n")
-        assert_equal(IO.read(output_file_name), generated_output)
+        assert_equal(
+            IO.read(output_file_name),
+            generated_output,
+            "Difference detected in [#{output_file_name}]")
         if File.exist?(result_file_name)
           result = eval(generated_output, nil, output_file_name, 0)
           expected_result = JSON.parse(IO.read(result_file_name))

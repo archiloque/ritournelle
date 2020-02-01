@@ -7,7 +7,7 @@ class Ritournelle::CodeGenerator::Variable < Ritournelle::CodeGenerator::Base
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
     super(ir: ir, context: context)
-    context.add_variable(
+    context.declare_variable(
         name: ir.name,
         clazz: ir.type,
         generator: self)

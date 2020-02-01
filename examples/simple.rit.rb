@@ -31,13 +31,13 @@ def add_two—2(number)
 end
 
 m =
-  add_two—1(Ritournelle::Runtime::StdLib::Int.new(10))
+  self.add_two—1(Ritournelle::Runtime::StdLib::Int.new(10))
 n =
-  add_two—1(m)
+  self.add_two—1(m)
 o =
-  add_two—2(Ritournelle::Runtime::StdLib::Float.new(10.0))
+  self.add_two—2(Ritournelle::Runtime::StdLib::Float.new(10.0))
 p =
-  add_two—2(o)
+  self.add_two—2(o)
 
 class Circle
   

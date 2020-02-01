@@ -33,7 +33,7 @@ class Ritournelle::CodeGenerator::Context
   # @param [String] name
   # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [String] the variable class
-  def find_variable(name:, generator:)
+  def find_variable_class(name:, generator:)
     if name == Ritournelle::Keywords::KEYWORD_SELF
       return @statement.name
     end
@@ -43,12 +43,11 @@ class Ritournelle::CodeGenerator::Context
     @variables[name]
   end
 
-
   # @param [String] name
   # @param [String] clazz
   # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [void]
-  def add_variable(name:, clazz:, generator:)
+  def declare_variable(name:, clazz:, generator:)
     if @variables.key?(name)
       generator.raise_error("Variable already exists [#{name}] in #{self}")
     end
@@ -76,7 +75,7 @@ class Ritournelle::CodeGenerator::Context
   # @param [Ritournelle::IntermediateRepresentation::Class] clazz
   # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [void]
-  def add_class(name:, clazz:, generator:)
+  def declare_class(name:, clazz:, generator:)
     if @clazzez.key(name)
       generator.raise_error("Class already exists [#{name}] in #{self}")
     end
@@ -88,12 +87,12 @@ class Ritournelle::CodeGenerator::Context
   # @return [Ritournelle::IntermediateRepresentation::Method]
   def find_method(method_call:, generator:)
     variable_name = method_call.variable_name
-    caller_class_name = find_variable(name: variable_name, generator: generator)
+    caller_class_name = find_variable_class(name: variable_name, generator: generator)
     caller_class = find_class(name: caller_class_name, generator: generator)
     parameters_classes = method_call.parameters.collect do |parameter|
       case parameter
       when String
-        find_variable(name: parameter, generator: generator)
+        find_variable_class(name: parameter, generator: generator)
       when Ritournelle::IntermediateRepresentation::ConstructorCall
         parameter.parent.name
       else
