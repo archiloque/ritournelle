@@ -28,4 +28,8 @@ class Ritournelle::IntermediateRepresentation::Variable < Ritournelle::Intermedi
     @name = name
   end
 
+  def to_s
+    "Variable #{type} #{name}"
+  end
+
 end

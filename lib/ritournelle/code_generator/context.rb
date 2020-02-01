@@ -12,7 +12,7 @@ class Ritournelle::CodeGenerator::Context
     @parent = parent
     @statement = statement
     @parameters = {}
-    # @type [Hash{String=>Ritournelle::IntermediateRepresentation::Variable}]
+    # @type [Hash{String=>Ritournelle::CodeGenerator::Context::Variable}]
     @variables = {}
     @clazzez = {}
   end
@@ -35,11 +35,11 @@ class Ritournelle::CodeGenerator::Context
 
   # @param [String] name
   # @param [Ritournelle::CodeGenerator::Base] generator
-  # @return [String] the variable class
+  # @return [Ritournelle::CodeGenerator::Context::Variable]
   # @raise [RuntimeError]
-  def find_variable_class(name:, generator:)
+  def find_variable(name:, generator:)
     if @variables.key?(name)
-      @variables[name].type
+      @variables[name]
     else
       generator.raise_error("Can't find variable [#{name}] in #{self}")
     end
@@ -56,7 +56,7 @@ class Ritournelle::CodeGenerator::Context
     if @parameters.key?(name)
       @parameters[name]
     elsif @variables.key?(name)
-      @variables[name].type
+      @variables[name].ir.type
     else
       generator.raise_error("Can't find variable or parameter [#{name}] in #{self}")
     end
@@ -70,7 +70,7 @@ class Ritournelle::CodeGenerator::Context
     if @variables.key?(ir.name)
       generator.raise_error("Variable [#{ir.name}] already exists in #{self}")
     else
-      @variables[ir.name] = ir
+      @variables[ir.name] = Ritournelle::CodeGenerator::Context::Variable.new(ir)
     end
   end
 
@@ -149,9 +149,16 @@ class Ritournelle::CodeGenerator::Context
 
   class Variable
 
+    # @return [Boolean]
+    attr_accessor :declared
+
+    # @return [Ritournelle::IntermediateRepresentation::Variable]
+    attr_reader :ir
+
     # @param [Ritournelle::IntermediateRepresentation::Variable] ir
     def initialize(ir)
       @ir = ir
+      @declared = false
     end
 
   end

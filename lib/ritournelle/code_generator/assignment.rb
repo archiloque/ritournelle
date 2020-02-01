@@ -8,16 +8,18 @@ class Ritournelle::CodeGenerator::Assignment < Ritournelle::CodeGenerator::Base
   def initialize(ir:, context:)
     super(ir: ir, context: context)
     variable_name = ir.name
-    context.find_variable_class(name: variable_name, generator: self)
+    variable = context.find_variable(name: variable_name, generator: self)
+    @result = []
+    unless variable.declared
+      result << "# @type [#{context.find_class(name: variable.ir.type, generator: self).rdoc_name}]"
+      variable.declared = true
+    end
     variable_value = ir.value
     if variable_value.is_a?(String)
-      @result = [
-          "#{variable_name} = #{variable_value}"
-      ]
+      @result << "#{variable_name} = #{variable_value}"
     else
-      @result = [
-          "#{variable_name} ="
-      ] + generate([variable_value]).collect { |l| "  #{l}" }
+      @result << "#{variable_name} ="
+      @result.concat(generate([variable_value]).collect { |l| "  #{l}" })
     end
   end
 end
