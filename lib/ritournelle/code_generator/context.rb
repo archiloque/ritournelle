@@ -128,24 +128,26 @@ class Ritournelle::CodeGenerator::Context
     variable_name = method_call.variable_name
     caller_type = find_element(name: variable_name, generator: generator).type
     caller_class = find_class(name: caller_type, generator: generator)
-    parameters_classes = method_call.parameters.collect do |parameter|
-      case parameter
-      when String
-        find_element(name: parameter, generator: generator).type
-      when Ritournelle::IntermediateRepresentation::ConstructorCall
-        parameter.parent.name
-      else
-        generator.raise_error(parameter.to_s)
-      end
-    end
-    method = caller_class.methodz.find do |possible_method|
-      (possible_method.declared_name == method_call.method_name) &&
-          (possible_method.parameters_classes == parameters_classes)
-    end
-    if method.nil?
-      generator.raise_error("Can't find method [#{caller_class.name}##{method_call.method_name}(#{parameters_classes.join(', ')})]")
-    end
-    method
+    find_callable(
+        name: method_call.method_name,
+        parameters: method_call.parameters,
+        callables: caller_class.methodz,
+        start_of_signature: "#{caller_class.name}##{method_call.method_name}",
+        generator: generator)
+  end
+
+  # @param [Ritournelle::IntermediateRepresentation::ConstructorCall] constructor_call
+  # @param [Ritournelle::CodeGenerator::Base] generator
+  # @return [Ritournelle::IntermediateRepresentation::Constructor]
+  # @raise [RuntimeError]
+  def find_constructor(constructor_call:, generator:)
+    clazz = find_class(name: constructor_call.type, generator: self)
+    find_callable(
+        name: 'constructor',
+        parameters: constructor_call.parameters,
+        callables: clazz.constructors,
+        start_of_signature: "#{clazz.name}#constructor",
+        generator: generator)
   end
 
   class Variable
@@ -215,6 +217,40 @@ class Ritournelle::CodeGenerator::Context
     def declared
       true
     end
+  end
+
+  private
+
+  # @param [String] name
+  # @param [Array] parameters
+  # @param [Array<Ritournelle::IntermediateRepresentation::Callable>] callables
+  # @param [Ritournelle::CodeGenerator::Base] generator
+  # @param [String] start_of_signature
+  # @return [Ritournelle::IntermediateRepresentation::Callable]
+  # @raise [RuntimeError]
+  def find_callable(name:, parameters:, callables:, start_of_signature:, generator:)
+    parameters_classes = parameters.collect do |parameter|
+      case parameter
+      when Integer
+        Ritournelle::BaseClasses::SMALL_INT_CLASS_NAME
+      when Float
+        Ritournelle::BaseClasses::SMALL_FLOAT_CLASS_NAME
+      when String
+        find_element(name: parameter, generator: generator).type
+      when Ritournelle::IntermediateRepresentation::ConstructorCall
+        parameter.type
+      else
+        generator.raise_error(parameter.to_s)
+      end
+    end
+    callable = callables.find do |possible_method|
+      (possible_method.declared_name == name) &&
+          (possible_method.parameters_classes == parameters_classes)
+    end
+    if callable.nil?
+      generator.raise_error("Can't find callable [#{start_of_signature}(#{parameters_classes.join(', ')})]")
+    end
+    callable
   end
 
 end

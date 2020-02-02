@@ -12,6 +12,15 @@ class Ritournelle::CodeGenerator::Class < Ritournelle::CodeGenerator::Base
         "",
         "class #{ir.name}"
     ]
+    unless ir.constructors.empty?
+      @result.concat(
+          [
+              "  # @param [Integer] constructor_index",
+              "  def initialize(constructor_index, *parameters)",
+              "    send(\"initialize—\#{constructor_index}\", *parameters)",
+              "  end"
+          ])
+    end
     @result.concat(generate(ir.statements).map { |l| "  #{l}" })
     @result.concat(
         [

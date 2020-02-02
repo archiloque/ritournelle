@@ -13,16 +13,18 @@ class Ritournelle::CodeGenerator::MethodCall < Ritournelle::CodeGenerator::Base
       raise_error("Variable [#{variable_name}] is not initialized")
     end
     method = context.find_method(method_call: ir, generator: self)
-    output_parameters = ir.parameters.map do |parameter|
+    parameters = ir.parameters.map do |parameter|
       case parameter
       when String
         parameter
       when Ritournelle::IntermediateRepresentation::ConstructorCall
         generate([parameter]).first
+      else
+        raise_error(parameter)
       end
     end
     @result = [
-        "#{variable_name}.#{method.implementation_name}(#{output_parameters.join(', ')})"
+        "#{variable_name}.#{method.implementation_name}(#{parameters.join(', ')})"
     ]
   end
 

@@ -10,7 +10,7 @@ class Ritournelle::CodeGenerator::Return < Ritournelle::CodeGenerator::Base
     expected_class = ir.parent.return_class
     case ir.value
     when Ritournelle::IntermediateRepresentation::ConstructorCall
-      found_class = ir.value.parent.name
+      found_class = ir.value.type
       unless found_class == expected_class
         raise_error("#{ir.parent} should return a #{expected_class} but returns a #{found_class}")
       end

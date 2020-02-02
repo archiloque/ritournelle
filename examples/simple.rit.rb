@@ -52,9 +52,24 @@ p =
   self.add_two—2(o)
 
 class Circle
+  # @param [Integer] constructor_index
+  def initialize(constructor_index, *parameters)
+    send("initialize—#{constructor_index}", *parameters)
+  end
+  
+  # @param [Ritournelle::Runtime::StdLib::Float] x
+  # @param [Ritournelle::Runtime::StdLib::Float] y
+  # @param [Ritournelle::Runtime::StdLib::Float] radius
+  def initialize—0(x, y, radius)
+  end
+  
   
   # @return [void]
   def draw—0()
   end
   
 end
+
+# @type [Circle]
+c =
+  Circle.new(0, Ritournelle::Runtime::StdLib::Float.new(1.0), Ritournelle::Runtime::StdLib::Float.new(1.0), Ritournelle::Runtime::StdLib::Float.new(1.0))

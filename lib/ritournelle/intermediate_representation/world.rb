@@ -35,6 +35,7 @@ class Ritournelle::IntermediateRepresentation::World
     int_constructor = Ritournelle::IntermediateRepresentation::Constructor.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
+        parent: int_class,
         parameters_classes: [SMALL_INT_CLASS_NAME],
         parameters_names: ['value']
     )
@@ -75,6 +76,7 @@ class Ritournelle::IntermediateRepresentation::World
     float_constructor = Ritournelle::IntermediateRepresentation::Constructor.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
+        parent: float_class,
         parameters_classes: [SMALL_FLOAT_CLASS_NAME],
         parameters_names: ['value']
     )

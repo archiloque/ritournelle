@@ -41,6 +41,13 @@ class Circle
   Float @x
   Float @y
   Float @radius
+
+  def constructor(Float x, Float y, Float radius)
+  end
+
   def Void draw()
   end
 end
+
+Circle c
+c = Circle.new(1.0, 1.0, 1.0)
