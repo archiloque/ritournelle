@@ -6,7 +6,10 @@ class Ritournelle::CodeGenerator::Class < Ritournelle::CodeGenerator::Base
   # @param [Ritournelle::IntermediateRepresentation::Class] ir
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
-    class_context = Ritournelle::CodeGenerator::Context.new(parent: context, statement: ir)
+    class_context = Ritournelle::CodeGenerator::Context.new(
+        parent: context,
+        statement: ir,
+        context_type: Ritournelle::CodeGenerator::Context::CONTEXT_TYPE_CLASS)
     super(ir: ir, context: class_context)
     @result = [
         "",

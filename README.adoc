@@ -6,6 +6,8 @@ The language is statically typed and it generates Ruby code.
 
 == Syntax example
 
+What you can do with current code:
+
 [source]
 ----
 Int i
@@ -20,9 +22,59 @@ f = 10.5
 Float g
 g = j.to_float()
 
-class Circle
-  Float @radius
+Float h
+h = g
+
+def Int two()
+    Int t
+    t = 2
+    return 2
 end
+
+def Int three()
+    Int t
+    t = 3
+    return t
+end
+
+Int l
+l = self.two()
+
+def Int add_two(Int number)
+    return number.plus(2)
+end
+
+def Float add_two(Float number)
+    return number.plus(2.0)
+end
+
+Int m
+m = self.add_two(10)
+Int n
+n = self.add_two(m)
+
+Float o
+o = self.add_two(10.0)
+Float p
+p = self.add_two(o)
+
+class Circle
+  Float @x
+  Float @y
+  Float @radius
+
+  def constructor(Float x, Float y, Float radius)
+    @x = x
+    @y = y
+    @radius = radius
+  end
+
+  def Void draw()
+  end
+end
+
+Circle c
+c = Circle.new(1.0, 2.0, 3.0)
 ----
 
 == Commands

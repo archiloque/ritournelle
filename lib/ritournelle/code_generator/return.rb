@@ -20,13 +20,27 @@ class Ritournelle::CodeGenerator::Return < Ritournelle::CodeGenerator::Base
       unless found_class == expected_class
         raise_error("#{ir.parent} should return a #{expected_class} but returns a #{found_class}")
       end
+    when String
+      target = context.find_element(
+          name: ir.value,
+          types_to_look_for: Ritournelle::CodeGenerator::Context::ELEMENT_ANY,
+          generator: self)
+      found_class = target.type
+      unless found_class == expected_class
+        raise_error("#{ir.parent} should return a #{expected_class} but returns a #{found_class}")
+      end
     else
       raise_error(ir.value.to_s)
     end
-    inner_code = generate([ir.value])
-    if inner_code.length != 1
-      raise_error("Inner code is not the right length #{inner_code}")
+    case ir.value
+    when String
+      @result = ["return #{ir.value}"]
+    else
+      inner_code = generate([ir.value])
+      if inner_code.length != 1
+        raise_error("Inner code is not the right length #{inner_code}")
+      end
+      @result = ["return #{inner_code.first}"]
     end
-    @result = ["return #{inner_code.first}"]
   end
 end

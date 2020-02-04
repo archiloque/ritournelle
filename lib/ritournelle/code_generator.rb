@@ -18,6 +18,7 @@ require_relative 'code_generator/assignment'
 require_relative 'code_generator/class'
 require_relative 'code_generator/constructor'
 require_relative 'code_generator/constructor_call'
+require_relative 'code_generator/member'
 require_relative 'code_generator/method'
 require_relative 'code_generator/method_call'
 require_relative 'code_generator/return'
@@ -31,6 +32,7 @@ class Ritournelle::CodeGenerator
       Ritournelle::IntermediateRepresentation::Assignment => Ritournelle::CodeGenerator::Assignment,
       Ritournelle::IntermediateRepresentation::ConstructorCall => Ritournelle::CodeGenerator::ConstructorCall,
       Ritournelle::IntermediateRepresentation::Constructor => Ritournelle::CodeGenerator::Constructor,
+      Ritournelle::IntermediateRepresentation::Member => Ritournelle::CodeGenerator::Member,
       Ritournelle::IntermediateRepresentation::Method => Ritournelle::CodeGenerator::Method,
       Ritournelle::IntermediateRepresentation::MethodCall => Ritournelle::CodeGenerator::MethodCall,
       Ritournelle::IntermediateRepresentation::Return => Ritournelle::CodeGenerator::Return,

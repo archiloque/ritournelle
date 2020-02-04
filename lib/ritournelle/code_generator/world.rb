@@ -5,7 +5,10 @@ class Ritournelle::CodeGenerator::World < Ritournelle::CodeGenerator::Base
 
   # @param [Ritournelle::IntermediateRepresentation::World] ir
   def initialize(ir:)
-    context = Ritournelle::CodeGenerator::Context.new(parent: nil, statement: ir)
+    context = Ritournelle::CodeGenerator::Context.new(
+        parent: nil,
+        statement: ir,
+        context_type: Ritournelle::CodeGenerator::Context::CONTEXT_TYPE_WORLD)
     ir.clazzez.each_pair do |class_name, clazz|
       context.declare_class(name: class_name, clazz: clazz, generator: self)
     end

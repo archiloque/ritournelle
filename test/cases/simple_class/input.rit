@@ -1,3 +1,17 @@
-class Circle
-  Float @radius
+class MyClass
+  Float @member1
+  Int @member2
+
+  def constructor(Float member1, Int member2)
+    @member1 = member1
+    @member2 = member2
+  end
+
+  def Int member2()
+    return @member2
+  end
 end
+
+MyClass m
+m = MyClass.new(1.0, 2)
+m.member2()

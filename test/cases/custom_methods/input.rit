@@ -6,6 +6,12 @@ def Float add_two(Float number)
   return number.plus(2.0)
 end
 
+def Int four()
+  Int f
+  f = 4
+  return f
+end
+
 Int i
 i = 10
 Int j

@@ -8,7 +8,10 @@ class Ritournelle::CodeGenerator::Method < Ritournelle::CodeGenerator::Base
   # @param [Ritournelle::IntermediateRepresentation::Method] ir
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
-    method_context = Ritournelle::CodeGenerator::Context.new(parent: context, statement: ir)
+    method_context = Ritournelle::CodeGenerator::Context.new(
+        parent: context,
+        statement: ir,
+        context_type: Ritournelle::CodeGenerator::Context::CONTEXT_TYPE_METHOD)
     super(ir: ir, context: method_context)
     declare_parameters(ir: ir, context: method_context)
     @result = [""]

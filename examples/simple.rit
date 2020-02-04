@@ -10,10 +10,19 @@ f = 10.5
 Float g
 g = j.to_float()
 
+Float h
+h = g
+
 def Int two()
     Int t
     t = 2
     return 2
+end
+
+def Int three()
+    Int t
+    t = 3
+    return t
 end
 
 Int l
@@ -43,6 +52,9 @@ class Circle
   Float @radius
 
   def constructor(Float x, Float y, Float radius)
+    @x = x
+    @y = y
+    @radius = radius
   end
 
   def Void draw()
@@ -50,4 +62,4 @@ class Circle
 end
 
 Circle c
-c = Circle.new(1.0, 1.0, 1.0)
+c = Circle.new(1.0, 2.0, 3.0)

@@ -3,18 +3,37 @@ require_relative '../intermediate_representation/world'
 
 class Ritournelle::CodeGenerator::Context
 
+  # @return [Hash{String=>Ritournelle::CodeGenerator::Context::Member}]
+  attr_reader :members
+
+  CONTEXT_TYPE_CLASS = 'Class'
+  CONTEXT_TYPE_METHOD = 'Method'
+  CONTEXT_TYPE_CONSTRUCTOR = 'Constructor'
+  CONTEXT_TYPE_WORLD = 'World'
+
+  ELEMENT_SELF = 1 << 0
+  ELEMENT_PARAMETER = 1 << 1
+  ELEMENT_VARIABLE = 1 << 2
+  ELEMENT_MEMBER = 1 << 3
+  ELEMENT_ANY = (ELEMENT_SELF | ELEMENT_PARAMETER | ELEMENT_VARIABLE | ELEMENT_MEMBER)
+
   include Ritournelle::BaseClasses
 
   # @param [Ritournelle::CodeGenerator::Context, nil] parent
   # @param [Ritournelle::IntermediateRepresentation::Base] statement
-  def initialize(parent:, statement:)
+  # @param [String] context_type
+  def initialize(parent:, statement:, context_type:)
     super()
     @parent = parent
     @statement = statement
+    @context_type = context_type
     # @type [Hash{String=>Ritournelle::CodeGenerator::Context::Parameter}]
     @parameters = {}
     # @type [Hash{String=>Ritournelle::CodeGenerator::Context::Variable}]
     @variables = {}
+    # @type [Hash{String=>Ritournelle::CodeGenerator::Context::Member}]
+    @members = {}
+    # @type [Hash{String=>Ritournelle::IntermediateRepresentation::Class}]
     @clazzez = {}
   end
 
@@ -34,32 +53,24 @@ class Ritournelle::CodeGenerator::Context
     generator_class.new(ir: statement, context: self)
   end
 
+  # Find a parameter or a variable or self
   # @param [String] name
   # @param [Ritournelle::CodeGenerator::Base] generator
-  # @return [Ritournelle::CodeGenerator::Context::Variable]
+  # @param [Integer] types_to_look_for
+  # @return [Ritournelle::CodeGenerator::Context::Parameter, Ritournelle::CodeGenerator::Context::Variable, Ritournelle::CodeGenerator::Context::Member, Ritournelle::CodeGenerator::Context::Self] the variable class
   # @raise [RuntimeError]
-  def find_variable(name:, generator:)
-    if @variables.key?(name)
-      @variables[name]
-    else
-      generator.raise_error("Can't find variable [#{name}] in #{self}")
-    end
-  end
-
-  # @param [String] name
-  # @param [Ritournelle::CodeGenerator::Base] generator
-  # @return [Ritournelle::CodeGenerator::Context::Parameter, Ritournelle::CodeGenerator::Context::Variable, Ritournelle::CodeGenerator::Context::Self] the variable class
-  # @raise [RuntimeError]
-  def find_element(name:, generator:)
-    if name == Ritournelle::Keywords::KEYWORD_SELF
+  def find_element(name:, types_to_look_for:, generator:)
+    if (types_to_look_for & ELEMENT_SELF) && (name == Ritournelle::Keywords::KEYWORD_SELF)
       return Ritournelle::CodeGenerator::Context::Self.new(@statement)
     end
-    if @parameters.key?(name)
-      @parameters[name]
-    elsif @variables.key?(name)
-      @variables[name]
+    if (types_to_look_for & ELEMENT_PARAMETER) && @parameters.key?(name)
+      return @parameters[name]
+    elsif (types_to_look_for & ELEMENT_VARIABLE) && @variables.key?(name)
+      return @variables[name]
+    elsif (types_to_look_for & ELEMENT_MEMBER) && @parent && @parent.members.key?(name)
+      return @parent.members[name]
     else
-      generator.raise_error("Can't find variable or parameter [#{name}] in #{self}")
+      generator.raise_error("Can't find element [#{name}] in #{self}")
     end
   end
 
@@ -73,6 +84,19 @@ class Ritournelle::CodeGenerator::Context
     else
       @variables[ir.name] = Ritournelle::CodeGenerator::Context::Variable.new(ir)
     end
+  end
+
+  # @param [Ritournelle::IntermediateRepresentation::Member] ir
+  # @param [Ritournelle::CodeGenerator::Base] generator
+  # @return [void]
+  # @raise [RuntimeError]
+  def declare_member(ir:, generator:)
+    if @members.key?(ir.name)
+      generator.raise_error("Member [#{ir.name}] already exists in #{self}")
+    else
+      @members[ir.name] = Ritournelle::CodeGenerator::Context::Member.new(ir)
+    end
+
   end
 
   # @param [String] name
@@ -126,7 +150,11 @@ class Ritournelle::CodeGenerator::Context
   # @raise [RuntimeError]
   def find_method(method_call:, generator:)
     variable_name = method_call.variable_name
-    caller_type = find_element(name: variable_name, generator: generator).type
+    caller_type = find_element(
+        name: variable_name,
+        types_to_look_for: (ELEMENT_MEMBER | ELEMENT_VARIABLE | ELEMENT_SELF | ELEMENT_PARAMETER),
+        generator: generator
+    ).type
     caller_class = find_class(name: caller_type, generator: generator)
     find_callable(
         name: method_call.method_name,
@@ -219,6 +247,32 @@ class Ritournelle::CodeGenerator::Context
     end
   end
 
+  class Member
+
+    # @return [Ritournelle::IntermediateRepresentation::Member]
+    attr_reader :ir
+
+    # @param [Ritournelle::IntermediateRepresentation::Member] ir
+    def initialize(ir)
+      @ir = ir
+    end
+
+    def type
+      @ir.type
+    end
+
+    # @return [Boolean]
+    def initialized
+      true
+    end
+
+    # @return [Boolean]
+    def declared
+      true
+    end
+
+  end
+
   private
 
   # @param [String] name
@@ -236,7 +290,7 @@ class Ritournelle::CodeGenerator::Context
       when Float
         Ritournelle::BaseClasses::SMALL_FLOAT_CLASS_NAME
       when String
-        find_element(name: parameter, generator: generator).type
+        find_element(name: parameter, types_to_look_for: ELEMENT_ANY, generator: generator).type
       when Ritournelle::IntermediateRepresentation::ConstructorCall
         parameter.type
       else

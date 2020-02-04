@@ -1,1 +1,1 @@
-Can't find variable or parameter [i] in Context of Method Int World#add_two(Int number)
+Can't find element [i] in Context of Method Int World#add_two(Int number)

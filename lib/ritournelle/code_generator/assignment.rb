@@ -7,19 +7,24 @@ class Ritournelle::CodeGenerator::Assignment < Ritournelle::CodeGenerator::Base
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
     super(ir: ir, context: context)
-    variable_name = ir.name
-    variable = context.find_variable(name: variable_name, generator: self)
+    target_name = ir.name
+    target = context.find_element(
+        name: target_name,
+        types_to_look_for: (Ritournelle::CodeGenerator::Context::ELEMENT_VARIABLE | Ritournelle::CodeGenerator::Context::ELEMENT_MEMBER),
+        generator: self)
     @result = []
-    unless variable.declared
-      result << "# @type [#{context.find_class(name: variable.ir.type, generator: self).rdoc_name}]"
-      variable.declared = true
+    unless target.declared
+      result << "# @type [#{context.find_class(name: target.ir.type, generator: self).rdoc_name}]"
+      target.declared = true
     end
-    variable.initialized = true
+    unless target.initialized
+      target.initialized = true
+    end
     variable_value = ir.value
     if variable_value.is_a?(String)
-      @result << "#{variable_name} = #{variable_value}"
+      @result << "#{target_name} = #{variable_value}"
     else
-      @result << "#{variable_name} ="
+      @result << "#{target_name} ="
       @result.concat(generate([variable_value]).collect { |l| "  #{l}" })
     end
   end

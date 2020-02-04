@@ -1,0 +1,6 @@
+{
+  "class": "Ritournelle::Runtime::StdLib::Int",
+  "attributes": {
+    "value": 2
+  }
+}

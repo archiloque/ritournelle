@@ -12,6 +12,8 @@ f =
 # @type [Ritournelle::Runtime::StdLib::Float]
 g =
   j.to_float()
+# @type [Ritournelle::Runtime::StdLib::Float]
+h = g
 
 # @return [Ritournelle::Runtime::StdLib::Int]
 def two—0()
@@ -21,35 +23,44 @@ def two—0()
   return Ritournelle::Runtime::StdLib::Int.new(2)
 end
 
+
+# @return [Ritournelle::Runtime::StdLib::Int]
+def three—1()
+  # @type [Ritournelle::Runtime::StdLib::Int]
+  t =
+    Ritournelle::Runtime::StdLib::Int.new(3)
+  return t
+end
+
 # @type [Ritournelle::Runtime::StdLib::Int]
 l =
   self.two—0()
 
 # @param [Ritournelle::Runtime::StdLib::Int] number
 # @return [Ritournelle::Runtime::StdLib::Int]
-def add_two—1(number)
+def add_two—2(number)
   return number.plus_Int(Ritournelle::Runtime::StdLib::Int.new(2))
 end
 
 
 # @param [Ritournelle::Runtime::StdLib::Float] number
 # @return [Ritournelle::Runtime::StdLib::Float]
-def add_two—2(number)
+def add_two—3(number)
   return number.plus_Float(Ritournelle::Runtime::StdLib::Float.new(2.0))
 end
 
 # @type [Ritournelle::Runtime::StdLib::Int]
 m =
-  self.add_two—1(Ritournelle::Runtime::StdLib::Int.new(10))
+  self.add_two—2(Ritournelle::Runtime::StdLib::Int.new(10))
 # @type [Ritournelle::Runtime::StdLib::Int]
 n =
-  self.add_two—1(m)
+  self.add_two—2(m)
 # @type [Ritournelle::Runtime::StdLib::Float]
 o =
-  self.add_two—2(Ritournelle::Runtime::StdLib::Float.new(10.0))
+  self.add_two—3(Ritournelle::Runtime::StdLib::Float.new(10.0))
 # @type [Ritournelle::Runtime::StdLib::Float]
 p =
-  self.add_two—2(o)
+  self.add_two—3(o)
 
 class Circle
   # @param [Integer] constructor_index
@@ -61,6 +72,9 @@ class Circle
   # @param [Ritournelle::Runtime::StdLib::Float] y
   # @param [Ritournelle::Runtime::StdLib::Float] radius
   def initialize—0(x, y, radius)
+    @x = x
+    @y = y
+    @radius = radius
   end
   
   
@@ -72,4 +86,4 @@ end
 
 # @type [Circle]
 c =
-  Circle.new(0, Ritournelle::Runtime::StdLib::Float.new(1.0), Ritournelle::Runtime::StdLib::Float.new(1.0), Ritournelle::Runtime::StdLib::Float.new(1.0))
+  Circle.new(0, Ritournelle::Runtime::StdLib::Float.new(1.0), Ritournelle::Runtime::StdLib::Float.new(2.0), Ritournelle::Runtime::StdLib::Float.new(3.0))

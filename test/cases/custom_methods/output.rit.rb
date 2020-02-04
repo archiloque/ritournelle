@@ -12,6 +12,15 @@ def add_two—1(number)
   return number.plus_Float(Ritournelle::Runtime::StdLib::Float.new(2.0))
 end
 
+
+# @return [Ritournelle::Runtime::StdLib::Int]
+def four—2()
+  # @type [Ritournelle::Runtime::StdLib::Int]
+  f =
+    Ritournelle::Runtime::StdLib::Int.new(4)
+  return f
+end
+
 # @type [Ritournelle::Runtime::StdLib::Int]
 i =
   Ritournelle::Runtime::StdLib::Int.new(10)
