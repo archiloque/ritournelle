@@ -40,8 +40,7 @@ class Ritournelle::Parser
   RETURN = "\\Areturn "
 
   ASSIGN = "(?<name>@?#{VARIABLE_NAME}) = "
-  METHOD_CALL = "(?<element>@?#{VARIABLE_NAME})\\.(?<method>#{METHOD_NAME})\\((?<parameters>.*)\\)\\z"
-  METHOD_CALL_NO_PARAM = "(?<element>@?#{VARIABLE_NAME})\\.(?<method>#{METHOD_NAME})\\z"
+  METHOD_CALL = "(?<element>@?#{VARIABLE_NAME})\\.(?<method>#{METHOD_NAME})(?:\\((?<parameters>.*)\\))?\\z"
 
   RX_DECLARE_VARIABLE = /\A(?<type>#{CLASS_NAME}) (?<name>#{VARIABLE_NAME})\z/
 
@@ -64,17 +63,11 @@ class Ritournelle::Parser
   RX_DECLARE_ASSIGN_VARIABLE = /\A(?<type>#{CLASS_NAME}) #{ASSIGN}(?<value>@?#{VARIABLE_NAME})\z/
 
   RX_METHOD_CALL = /\A#{METHOD_CALL}/
-  RX_METHOD_CALL_NO_PARAM = /\A#{METHOD_CALL_NO_PARAM}/
 
   RX_RETURN_METHOD_CALL = /#{RETURN}#{METHOD_CALL}/
-  RX_RETURN_METHOD_CALL_NO_PARAM = /#{RETURN}#{METHOD_CALL_NO_PARAM}/
 
   RX_ASSIGN_METHOD_CALL = /\A#{ASSIGN}#{METHOD_CALL}/
   RX_DECLARE_VARIABLE_ASSIGN_METHOD_CALL = /\A(?<type>#{CLASS_NAME}) #{ASSIGN}#{METHOD_CALL}/
-
-
-  RX_ASSIGN_METHOD_CALL_NO_PARAM = /\A#{ASSIGN}#{METHOD_CALL_NO_PARAM}/
-  RX_DECLARE_VARIABLE_ASSIGN_METHOD_CALL_NO_PARAM = /\A(?<type>#{CLASS_NAME}) #{ASSIGN}#{METHOD_CALL_NO_PARAM}/
 
   RX_ASSIGN_CONSTRUCTOR_CALL = /\A#{ASSIGN}(?<class>#{CLASS_NAME})\.new\((?<parameters>.*)\)\z/
   RX_DECLARE_ASSIGN_CONSTRUCTOR_CALL = /\A(?<type>#{CLASS_NAME}) #{ASSIGN}(?<class>#{CLASS_NAME})\.new\((?<parameters>.*)\)\z/
@@ -86,17 +79,20 @@ class Ritournelle::Parser
   RULES_IN_CODE = [
       {regex: RX_DECLARE_VARIABLE, method: :parse_declare_variable},
       {regex: RX_DECLARE_ASSIGN_VARIABLE, method: :parse_declare_assign_variable},
+
       {regex: RX_ASSIGN_INTEGER, method: :parse_assign_integer},
       {regex: RX_DECLARE_ASSIGN_INTEGER, method: :parse_declare_assign_integer},
+
       {regex: RX_ASSIGN_FLOAT, method: :parse_assign_float},
       {regex: RX_DECLARE_ASSIGN_FLOAT, method: :parse_declare_assign_float},
+
       {regex: RX_ASSIGN_VARIABLE_OR_MEMBER, method: :parse_assign_variable_or_member},
+
       {regex: RX_METHOD_CALL, method: :parse_method_call},
-      {regex: RX_METHOD_CALL_NO_PARAM, method: :parse_method_call},
+
       {regex: RX_ASSIGN_METHOD_CALL, method: :parse_assign_method_call},
       {regex: RX_DECLARE_VARIABLE_ASSIGN_METHOD_CALL, method: :parse_declare_variable_assign_method_call},
-      {regex: RX_ASSIGN_METHOD_CALL_NO_PARAM, method: :parse_assign_method_call},
-      {regex: RX_DECLARE_VARIABLE_ASSIGN_METHOD_CALL_NO_PARAM, method: :parse_declare_variable_assign_method_call},
+
       {regex: RX_ASSIGN_CONSTRUCTOR_CALL, method: :parse_assign_constructor_call},
       {regex: RX_DECLARE_ASSIGN_CONSTRUCTOR_CALL, method: :parse_declare_assign_constructor_call},
   ]
@@ -124,7 +120,6 @@ class Ritournelle::Parser
               {regex: RX_RETURN_FLOAT, method: :parse_return_float},
               {regex: RX_RETURN_VARIABLE_OR_MEMBER, method: :parse_return_variable_or_member},
               {regex: RX_RETURN_METHOD_CALL, method: :parse_return_method_call},
-              {regex: RX_RETURN_METHOD_CALL_NO_PARAM, method: :parse_return_method_call},
           ]),
       Ritournelle::IntermediateRepresentation::Constructor => RULES_FOR_IN_CLASS_CODE
   }
@@ -478,7 +473,7 @@ class Ritournelle::Parser
   # @param [MatchData] match
   # @return [Array<String,Ritournelle::IntermediateRepresentation::ConstructorCall>]
   def process_method_call_parameters(match)
-    unless match.named_captures.key?('parameters')
+    if match['parameters'].nil?
       return []
     end
 
