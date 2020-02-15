@@ -28,8 +28,10 @@ class Ritournelle::IntermediateRepresentation::Variable < Ritournelle::Intermedi
     @name = name
   end
 
+  # :nocov:
   def to_s
     "Variable #{type} #{name}"
   end
+  # :nocov:
 
 end

@@ -28,16 +28,18 @@ class Ritournelle::IntermediateRepresentation::Constructor < Ritournelle::Interm
     @parent = parent
   end
 
+  # @return [String]
+  def declared_name
+    'constructor'
+  end
+
+  # :nocov:
   def to_s
     "Constructor ##{@parent.name}(" +
         0.upto(number_of_parameters - 1).map do |index|
           "#{parameters_classes[index]} #{parameters_names[index]}"
         end.join(', ') + ')'
   end
-
-  # @return [String]
-  def declared_name
-    'constructor'
-  end
+  # :nocov:
 
 end

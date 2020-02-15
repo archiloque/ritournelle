@@ -1,17 +1,19 @@
 class MyClass
   Float @member1
-  Int @member2
+  Int @member2 getter
+  Int @member3 setter
 
-  def constructor(Float member1, Int member2)
+  def constructor(Float member1, Int member2, Int member3)
     @member1 = member1
     @member2 = member2
+    @member3 = member3
   end
 
-  def Int member2()
-    return @member2
+  def Int member2_plus2()
+    return @member2.plus(2)
   end
 end
 
 MyClass m
-m = MyClass.new(1.0, 2)
+m = MyClass.new(1.0, 2, 2)
 m.member2()

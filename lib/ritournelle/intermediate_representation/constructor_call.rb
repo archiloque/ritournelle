@@ -16,8 +16,10 @@ class Ritournelle::IntermediateRepresentation::ConstructorCall < Ritournelle::In
     @parameters = parameters
   end
 
+  # :nocov:
   def to_s
     "Constructor call #{type}(#{parameters.join(', ')})"
   end
+  # :nocov:
 
 end

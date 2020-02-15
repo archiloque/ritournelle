@@ -26,8 +26,10 @@ class Ritournelle::IntermediateRepresentation::IntrinsicMethod < Ritournelle::In
     @return_class = return_class
   end
 
+  # :nocov:
   def to_s
     "Method #{return_class} #{declared_name}(#{parameters_classes.join(', ')})"
   end
+  # :nocov:
 
 end

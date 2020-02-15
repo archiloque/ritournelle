@@ -16,23 +16,26 @@ class Ritournelle::IntermediateRepresentation::Method < Ritournelle::Intermediat
   # @param [Array<String>] parameters_names
   # @param [String] return_class
   def initialize(file_path:, line_index:, parent:, declared_name:, parameters_classes:, parameters_names:, return_class:)
+    implementation_name = "#{declared_name.gsub(/[^a-z_\d]/, '')}—#{parent.methodz.length}"
     super(
         file_path: file_path,
         line_index: line_index,
         parameters_classes: parameters_classes,
         parameters_names: parameters_names,
-        implementation_name: "#{declared_name}—#{parent.methodz.length}"
+        implementation_name: implementation_name
     )
     @parent = parent
     @declared_name = declared_name
     @return_class = return_class
   end
 
+  # :nocov:
   def to_s
     "Method #{return_class} #{@parent.name}##{declared_name}(" +
         0.upto(number_of_parameters - 1).map do |index|
           "#{parameters_classes[index]} #{parameters_names[index]}"
         end.join(', ') + ')'
   end
+  # :nocov:
 
 end

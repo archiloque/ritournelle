@@ -68,6 +68,31 @@ class Circle
     send("initialize—#{constructor_index}", *parameters)
   end
   
+  # @return [Ritournelle::Runtime::StdLib::Float]
+  def x—0()
+    return @x
+  end
+  
+  
+  # @return [Ritournelle::Runtime::StdLib::Float]
+  def y—1()
+    return @y
+  end
+  
+  
+  # @return [Ritournelle::Runtime::StdLib::Float]
+  def radius—2()
+    return @radius
+  end
+  
+  
+  # @param [Ritournelle::Runtime::StdLib::Float] radius
+  # @return [void]
+  def radius—3(radius)
+    @radius = radius
+  end
+  
+  
   # @param [Ritournelle::Runtime::StdLib::Float] x
   # @param [Ritournelle::Runtime::StdLib::Float] y
   # @param [Ritournelle::Runtime::StdLib::Float] radius
@@ -79,7 +104,13 @@ class Circle
   
   
   # @return [void]
-  def draw—0()
+  def draw—4()
+  end
+  
+  
+  # @return [Ritournelle::Runtime::StdLib::Float]
+  def x_plus2—5()
+    return @x.plus_Float(Ritournelle::Runtime::StdLib::Float.new(2.0))
   end
   
 end
@@ -87,3 +118,5 @@ end
 # @type [Circle]
 c =
   Circle.new(0, Ritournelle::Runtime::StdLib::Float.new(1.0), Ritournelle::Runtime::StdLib::Float.new(2.0), Ritournelle::Runtime::StdLib::Float.new(3.0))
+c.draw—4()
+c.x—0()

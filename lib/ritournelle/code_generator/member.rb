@@ -3,7 +3,7 @@ class Ritournelle::CodeGenerator::Member < Ritournelle::CodeGenerator::Base
   # @return [Array<String>]
   attr_reader :result
 
-  # @param [Ritournelle::IntermediateRepresentation::Variable] ir
+  # @param [Ritournelle::IntermediateRepresentation::Member] ir
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
     super(ir: ir, context: context)

@@ -108,8 +108,10 @@ class Ritournelle::IntermediateRepresentation::World
     'World'
   end
 
+  # :nocov:
   def to_s
     "World"
   end
+  # :nocov:
 
 end

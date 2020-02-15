@@ -7,13 +7,13 @@ class Ritournelle::CodeGenerator::MethodCall < Ritournelle::CodeGenerator::Base
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
     super(ir: ir, context: context)
-    variable_name = ir.variable_name
+    element_name = ir.element_name
     element = context.find_element(
-        name: variable_name,
+        name: element_name,
         types_to_look_for: Ritournelle::CodeGenerator::Context::ELEMENT_ANY,
         generator: self)
     unless element.initialized
-      raise_error("Variable [#{variable_name}] is not initialized")
+      raise_error("Element [#{element_name}] is not initialized")
     end
     method = context.find_method(method_call: ir, generator: self)
     parameters = ir.parameters.map do |parameter|
@@ -27,7 +27,7 @@ class Ritournelle::CodeGenerator::MethodCall < Ritournelle::CodeGenerator::Base
       end
     end
     @result = [
-        "#{variable_name}.#{method.implementation_name}(#{parameters.join(', ')})"
+        "#{element_name}.#{method.implementation_name}(#{parameters.join(', ')})"
     ]
   end
 

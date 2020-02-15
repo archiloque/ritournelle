@@ -30,87 +30,85 @@ class Ritournelle::Parser
 
   private
 
-  REGEX_MATCH_VARIABLE_NAME = '[a-z_][a-z_\d]*'
-  REGEX_MATCH_CLASS_NAME = '[A-Z][a-zA-Z\d]*'
-  REGEX_MATCH_METHOD_NAME = '[a-z_][a-z_\d]*'
-  REGEX_MATCH_PRIMITIVE_INT = '\d+'
-  REGEX_MATCH_PRIMITIVE_FLOAT = '\d+\.\d*'
+  VARIABLE_NAME = '[a-z_][a-z_\d]*'
+  RX_CLASS_NAME = '[A-Z][a-zA-Z\d]*'
+  METHOD_NAME = '[a-z_][a-z_\d]*'
+  PRIMITIVE_INT = '\d+'
+  PRIMITIVE_FLOAT = '\d+\.\d*'
+  GETTER = 'getter'
+  SETTER = 'setter'
+  RETURN = "\\Areturn "
 
-  REGEX_VARIABLE_DECLARATION = /\A(?<type>#{REGEX_MATCH_CLASS_NAME}) (?<name>#{REGEX_MATCH_VARIABLE_NAME})\z/
+  ASSIGN = "\\A(?<name>@?#{VARIABLE_NAME}) = "
+  METHOD_CALL = "(?<element>@?#{VARIABLE_NAME})\\.(?<method>#{METHOD_NAME})\\((?<parameters>.*)\\)\\z"
+  METHOD_CALL_NO_PARAM = "(?<element>@?#{VARIABLE_NAME})\\.(?<method>#{METHOD_NAME})\\z"
 
-  REGEX_METHOD_DECLARATION = /\Adef (?<return_class>#{REGEX_MATCH_CLASS_NAME}) (?<name>#{REGEX_MATCH_METHOD_NAME})\(((?<parameter_class_0>#{REGEX_MATCH_CLASS_NAME}) (?<parameter_name_0>#{REGEX_MATCH_VARIABLE_NAME})(, (?<parameter_class_1>#{REGEX_MATCH_CLASS_NAME}) (?<parameter_name_1>#{REGEX_MATCH_VARIABLE_NAME})(, (?<parameter_class_2>#{REGEX_MATCH_CLASS_NAME}) (?<parameter_name_2>#{REGEX_MATCH_VARIABLE_NAME})(, (?<parameter_class_3>#{REGEX_MATCH_CLASS_NAME}) (?<parameter_name_3>#{REGEX_MATCH_VARIABLE_NAME})(, (?<parameter_class_4>#{REGEX_MATCH_CLASS_NAME}) (?<parameter_name_4>#{REGEX_MATCH_VARIABLE_NAME}))?)?)?)?)?\)\z/
-  REGEX_CONSTRUCTOR_DECLARATION = /\Adef constructor\(((?<parameter_class_0>#{REGEX_MATCH_CLASS_NAME}) (?<parameter_name_0>#{REGEX_MATCH_VARIABLE_NAME})(, (?<parameter_class_1>#{REGEX_MATCH_CLASS_NAME}) (?<parameter_name_1>#{REGEX_MATCH_VARIABLE_NAME})(, (?<parameter_class_2>#{REGEX_MATCH_CLASS_NAME}) (?<parameter_name_2>#{REGEX_MATCH_VARIABLE_NAME})(, (?<parameter_class_3>#{REGEX_MATCH_CLASS_NAME}) (?<parameter_name_3>#{REGEX_MATCH_VARIABLE_NAME})(, (?<parameter_class_4>#{REGEX_MATCH_CLASS_NAME}) (?<parameter_name_4>#{REGEX_MATCH_VARIABLE_NAME}))?)?)?)?)?\)\z/
-  REGEX_CLASS_DECLARATION = /\Aclass (?<class>#{REGEX_MATCH_CLASS_NAME})\z/
-  REGEX_CLASS_MEMBER_DECLARATION = /\A(?<type>#{REGEX_MATCH_CLASS_NAME}) @(?<name>#{REGEX_MATCH_VARIABLE_NAME})\z/
+  RX_DECLARE_VARIABLE = /\A(?<type>#{RX_CLASS_NAME}) (?<name>#{VARIABLE_NAME})\z/
 
-  REGEX_VARIABLE_RETURN = /\Areturn (?<name>#{REGEX_MATCH_VARIABLE_NAME})\z/
-  REGEX_MEMBER_RETURN = /\Areturn @(?<name>#{REGEX_MATCH_VARIABLE_NAME})\z/
+  RX_DECLARE_METHOD = /\Adef (?<return_class>#{RX_CLASS_NAME}) (?<name>#{METHOD_NAME})\(((?<param_class_0>#{RX_CLASS_NAME}) (?<param_name_0>#{VARIABLE_NAME})(, (?<param_class_1>#{RX_CLASS_NAME}) (?<param_name_1>#{VARIABLE_NAME})(, (?<param_class_2>#{RX_CLASS_NAME}) (?<param_name_2>#{VARIABLE_NAME})(, (?<param_class_3>#{RX_CLASS_NAME}) (?<param_name_3>#{VARIABLE_NAME})(, (?<param_class_4>#{RX_CLASS_NAME}) (?<param_name_4>#{VARIABLE_NAME}))?)?)?)?)?\)\z/
+  RX_DECLARE_CONSTRUCTOR = /\Adef constructor\(((?<param_class_0>#{RX_CLASS_NAME}) (?<param_name_0>#{VARIABLE_NAME})(, (?<param_class_1>#{RX_CLASS_NAME}) (?<param_name_1>#{VARIABLE_NAME})(, (?<param_class_2>#{RX_CLASS_NAME}) (?<param_name_2>#{VARIABLE_NAME})(, (?<param_class_3>#{RX_CLASS_NAME}) (?<param_name_3>#{VARIABLE_NAME})(, (?<param_class_4>#{RX_CLASS_NAME}) (?<param_name_4>#{VARIABLE_NAME}))?)?)?)?)?\)\z/
+  RX_DECLARE_CLASS = /\Aclass (?<class>#{RX_CLASS_NAME})\z/
+  RX_DECLARE_CLASS_MEMBER = /\A(?<type>#{RX_CLASS_NAME}) @(?<name>#{VARIABLE_NAME})(?<accessors>( #{GETTER}| #{SETTER}| #{GETTER} #{SETTER}| #{SETTER} #{GETTER})?)\z/
 
-  REGEX_INTEGER_TO_VARIABLE_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE_NAME}) = (?<value>#{REGEX_MATCH_PRIMITIVE_INT})\z/
-  REGEX_INTEGER_TO_MEMBER_ASSIGNMENT = /\A@(?<name>#{REGEX_MATCH_VARIABLE_NAME}) = (?<value>#{REGEX_MATCH_PRIMITIVE_INT})\z/
-  REGEX_INTEGER_RETURN = /\Areturn (?<value>#{REGEX_MATCH_PRIMITIVE_INT})\z/
+  RX_RETURN_VARIABLE_OR_MEMBER = /#{RETURN}(?<name>@?#{VARIABLE_NAME})\z/
 
-  REGEX_FLOAT_TO_VARIABLE_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE_NAME}) = (?<value>#{REGEX_MATCH_PRIMITIVE_FLOAT})\z/
-  REGEX_FLOAT_TO_MEMBER_ASSIGNMENT = /\A@(?<name>#{REGEX_MATCH_VARIABLE_NAME}) = (?<value>#{REGEX_MATCH_PRIMITIVE_FLOAT})\z/
-  REGEX_FLOAT_RETURN = /\Areturn (?<value>#{REGEX_MATCH_PRIMITIVE_FLOAT})\z/
+  RX_ASSIGN_INTEGER = /#{ASSIGN}(?<value>#{PRIMITIVE_INT})\z/
+  RX_RETURN_INTEGER = /#{RETURN}(?<value>#{PRIMITIVE_INT})\z/
 
-  REGEX_VARIABLE_TO_VARIABLE_ASSIGNMENT = /\A(?<name1>#{REGEX_MATCH_VARIABLE_NAME}) = (?<name2>#{REGEX_MATCH_VARIABLE_NAME})\z/
-  REGEX_VARIABLE_TO_MEMBER_ASSIGNMENT = /\A@(?<name1>#{REGEX_MATCH_VARIABLE_NAME}) = (?<name2>#{REGEX_MATCH_VARIABLE_NAME})\z/
-  REGEX_MEMBER_TO_VARIABLE_ASSIGNMENT = /\A(?<name1>#{REGEX_MATCH_VARIABLE_NAME}) = @(?<name2>#{REGEX_MATCH_VARIABLE_NAME})\z/
-  REGEX_MEMBER_TO_MEMBER_ASSIGNMENT = /\A@(?<name1>#{REGEX_MATCH_VARIABLE_NAME}) = @(?<name2>#{REGEX_MATCH_VARIABLE_NAME})\z/
+  RX_ASSIGN_FLOAT = /#{ASSIGN}(?<value>#{PRIMITIVE_FLOAT})\z/
+  RX_RETURN_FLOAT = /#{RETURN}(?<value>#{PRIMITIVE_FLOAT})\z/
 
-  REGEX_METHOD_CALL = /\A(?<variable>#{REGEX_MATCH_VARIABLE_NAME})\.(?<method>#{REGEX_MATCH_METHOD_NAME})\((?<parameters>.*)\)\z/
-  REGEX_METHOD_CALL_RETURN = /\Areturn (?<variable>#{REGEX_MATCH_VARIABLE_NAME})\.(?<method>#{REGEX_MATCH_METHOD_NAME})\((?<parameters>.*)\)\z/
-  REGEX_METHOD_CALL_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE_NAME}) = (?<variable>#{REGEX_MATCH_VARIABLE_NAME})\.(?<method>#{REGEX_MATCH_METHOD_NAME})\((?<parameters>.*)\)\z/
+  RX_ASSIGN_VARIABLE_OR_MEMBER = /#{ASSIGN}(?<value>@?#{VARIABLE_NAME})\z/
 
-  REGEX_CONSTRUCTOR_CALL_TO_VARIABLE_ASSIGNMENT = /\A(?<name>#{REGEX_MATCH_VARIABLE_NAME}) = (?<class>#{REGEX_MATCH_CLASS_NAME})\.new\((?<parameters>.*)\)\z/
-  REGEX_CONSTRUCTOR_CALL_TO_MEMBER_ASSIGNMENT = /\A@(?<name>#{REGEX_MATCH_VARIABLE_NAME}) = (?<class>#{REGEX_MATCH_CLASS_NAME})\.new\((?<parameters>.*)\)\z/
+  RX_METHOD_CALL = /\A#{METHOD_CALL}/
+  RX_METHOD_CALL_NO_PARAM = /\A#{METHOD_CALL_NO_PARAM}/
+  RX_RETURN_METHOD_CALL = /#{RETURN}#{METHOD_CALL}/
+  RX_RETURN_METHOD_CALL_NO_PARAM = /#{RETURN}#{METHOD_CALL_NO_PARAM}/
+  RX_ASSIGN_METHOD_CALL = /#{ASSIGN}#{METHOD_CALL}/
+  RX_ASSIGN_METHOD_CALL_NO_PARAM = /#{ASSIGN}#{METHOD_CALL_NO_PARAM}/
 
-  REGEX_PARAMETER_INT = /\A(?<value>#{REGEX_MATCH_PRIMITIVE_INT})\z/
-  REGEX_PARAMETER_FLOAT = /\A(?<value>#{REGEX_MATCH_PRIMITIVE_FLOAT})\z/
-  REGEX_END = /\Aend\z/
+  RX_ASSIGN_CONSTRUCTOR_CALL = /#{ASSIGN}(?<class>#{RX_CLASS_NAME})\.new\((?<parameters>.*)\)\z/
+
+  RX_PARAMETER_INT = /\A(?<value>#{PRIMITIVE_INT})\z/
+  RX_PARAMETER_FLOAT = /\A(?<value>#{PRIMITIVE_FLOAT})\z/
+  RX_END = /\Aend\z/
 
   RULES_IN_CODE = [
-      {regex: REGEX_VARIABLE_DECLARATION, method: :parse_variable_declaration},
-      {regex: REGEX_INTEGER_TO_VARIABLE_ASSIGNMENT, method: :parse_integer_to_variable_assignment},
-      {regex: REGEX_FLOAT_TO_VARIABLE_ASSIGNMENT, method: :parse_float_to_variable_assignment},
-      {regex: REGEX_VARIABLE_TO_VARIABLE_ASSIGNMENT, method: :parse_variable_to_variable_assignment},
-      {regex: REGEX_METHOD_CALL, method: :parse_method_call},
-      {regex: REGEX_METHOD_CALL_ASSIGNMENT, method: :parse_method_call_assignment},
-      {regex: REGEX_CONSTRUCTOR_CALL_TO_VARIABLE_ASSIGNMENT, method: :parse_constructor_call_to_variable_assignment},
+      {regex: RX_DECLARE_VARIABLE, method: :parse_declare_variable},
+      {regex: RX_ASSIGN_INTEGER, method: :parse_assign_integer},
+      {regex: RX_ASSIGN_FLOAT, method: :parse_assign_float},
+      {regex: RX_ASSIGN_VARIABLE_OR_MEMBER, method: :parse_assign_variable_or_member},
+      {regex: RX_METHOD_CALL, method: :parse_method_call},
+      {regex: RX_METHOD_CALL_NO_PARAM, method: :parse_method_call},
+      {regex: RX_ASSIGN_METHOD_CALL, method: :parse_assign_method_call},
+      {regex: RX_ASSIGN_METHOD_CALL_NO_PARAM, method: :parse_assign_method_call},
+      {regex: RX_ASSIGN_CONSTRUCTOR_CALL, method: :parse_assign_constructor_call},
   ]
 
   RULES_FOR_IN_CLASS_CODE = RULES_IN_CODE.concat(
       [
-          {regex: REGEX_INTEGER_TO_MEMBER_ASSIGNMENT, method: :parse_integer_to_member_assignment},
-          {regex: REGEX_FLOAT_TO_MEMBER_ASSIGNMENT, method: :parse_float_to_member_assignment},
-          {regex: REGEX_CONSTRUCTOR_CALL_TO_MEMBER_ASSIGNMENT, method: :parse_constructor_call_to_member_assignment},
-          {regex: REGEX_VARIABLE_TO_MEMBER_ASSIGNMENT, method: :parse_variable_to_member_assignment},
-          {regex: REGEX_MEMBER_TO_VARIABLE_ASSIGNMENT, method: :parse_member_to_variable_assignment},
-          {regex: REGEX_MEMBER_TO_MEMBER_ASSIGNMENT, method: :parse_member_to_member_assignment},
-          {regex: REGEX_END, method: :parse_end},
+          {regex: RX_END, method: :parse_end},
       ])
 
   PARSING_RULES = {
       Ritournelle::IntermediateRepresentation::World => RULES_IN_CODE.concat(
           [
-              {regex: REGEX_CLASS_DECLARATION, method: :parse_class_declaration},
-              {regex: REGEX_METHOD_DECLARATION, method: :parse_method_declaration},
+              {regex: RX_DECLARE_CLASS, method: :parse_declare_class},
+              {regex: RX_DECLARE_METHOD, method: :parse_declare_method},
           ]),
       Ritournelle::IntermediateRepresentation::Class => [
-          {regex: REGEX_CLASS_MEMBER_DECLARATION, method: :parse_class_member_declaration},
-          {regex: REGEX_METHOD_DECLARATION, method: :parse_method_declaration},
-          {regex: REGEX_CONSTRUCTOR_DECLARATION, method: :parse_constructor_declaration},
-          {regex: REGEX_END, method: :parse_end},
+          {regex: RX_DECLARE_CLASS_MEMBER, method: :parse_declare_class_member},
+          {regex: RX_DECLARE_METHOD, method: :parse_declare_method},
+          {regex: RX_DECLARE_CONSTRUCTOR, method: :parse_declare_constructor},
+          {regex: RX_END, method: :parse_end},
       ],
       Ritournelle::IntermediateRepresentation::Method => RULES_FOR_IN_CLASS_CODE.concat(
           [
-              {regex: REGEX_FLOAT_RETURN, method: :parse_float_return},
-              {regex: REGEX_VARIABLE_RETURN, method: :parse_variable_return},
-              {regex: REGEX_MEMBER_RETURN, method: :parse_member_return},
-              {regex: REGEX_METHOD_CALL_RETURN, method: :parse_method_call_return},
-              {regex: REGEX_INTEGER_RETURN, method: :parse_integer_return},
-              {regex: REGEX_FLOAT_RETURN, method: :parse_float_return},
+              {regex: RX_RETURN_INTEGER, method: :parse_return_integer},
+              {regex: RX_RETURN_FLOAT, method: :parse_return_float},
+              {regex: RX_RETURN_VARIABLE_OR_MEMBER, method: :parse_return_variable_or_member},
+              {regex: RX_RETURN_METHOD_CALL, method: :parse_return_method_call},
+              {regex: RX_RETURN_METHOD_CALL_NO_PARAM, method: :parse_return_method_call},
           ]),
       Ritournelle::IntermediateRepresentation::Constructor => RULES_FOR_IN_CLASS_CODE
   }
@@ -133,7 +131,7 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
-  def parse_variable_declaration(match)
+  def parse_declare_variable(match)
     add_statement(Ritournelle::IntermediateRepresentation::Variable.new(
         file_path: @file_path,
         line_index: @line_index,
@@ -143,7 +141,7 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
-  def parse_variable_return(match)
+  def parse_return_variable_or_member(match)
     add_statement(Ritournelle::IntermediateRepresentation::Return.new(
         file_path: @file_path,
         line_index: @line_index,
@@ -153,18 +151,8 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
-  def parse_member_return(match)
-    add_statement(Ritournelle::IntermediateRepresentation::Return.new(
-        file_path: @file_path,
-        line_index: @line_index,
-        value: "@#{match['name']}",
-        parent: @stack.last
-    ))
-  end
-
-  # @param [MatchData] match
-  def parse_integer_to_variable_assignment(match)
-    parse_primitive_assignment(
+  def parse_assign_integer(match)
+    parse_assign_primitive_value(
         name: match['name'],
         value: Integer(match['value']),
         clazz: world.clazzez[INT_CLASS_NAME]
@@ -172,36 +160,26 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
-  def parse_variable_to_variable_assignment(match)
+  def parse_assign_variable_or_member(match)
     add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
         file_path: @file_path,
         line_index: @line_index,
-        name: match['name1'],
-        value: match['name2'])
+        name: match['name'],
+        value: match['value'])
     )
   end
 
   # @param [MatchData] match
-  def parse_variable_to_member_assignment(match)
-    add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
-        file_path: @file_path,
-        line_index: @line_index,
-        name: "@#{match['name1']}",
-        value: match['name2'])
-    )
-  end
-
-  # @param [MatchData] match
-  def parse_integer_return(match)
-    parse_primitive_return(
+  def parse_return_integer(match)
+    parse_return_primitive_value(
         value: Integer(match['value']),
         clazz: world.clazzez[INT_CLASS_NAME]
     )
   end
 
   # @param [MatchData] match
-  def parse_float_to_variable_assignment(match)
-    parse_primitive_assignment(
+  def parse_assign_float(match)
+    parse_assign_primitive_value(
         name: match['name'],
         value: Float(match['value']),
         clazz: world.clazzez[FLOAT_CLASS_NAME]
@@ -209,8 +187,8 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
-  def parse_float_return(match)
-    parse_primitive_return(
+  def parse_return_float(match)
+    parse_return_primitive_value(
         value: Float(match['value']),
         clazz: world.clazzez[FLOAT_CLASS_NAME])
   end
@@ -218,7 +196,7 @@ class Ritournelle::Parser
   # @param [String] name
   # @param [Integer|Float] value
   # @param [Ritournelle::IntermediateRepresentation::Class] clazz
-  def parse_primitive_assignment(name:, value:, clazz:)
+  def parse_assign_primitive_value(name:, value:, clazz:)
     constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
         file_path: @file_path,
         line_index: @line_index,
@@ -234,7 +212,7 @@ class Ritournelle::Parser
   end
 
   # @param [Integer|Float] value
-  def parse_primitive_return(value:, clazz:)
+  def parse_return_primitive_value(value:, clazz:)
     constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
         file_path: @file_path,
         line_index: @line_index,
@@ -251,18 +229,18 @@ class Ritournelle::Parser
 
   # @param [MatchData] match
   def parse_method_call(match)
-    call_parameters = process_method_call_parameters(match['parameters'])
+    call_parameters = process_method_call_parameters(match)
     add_statement(Ritournelle::IntermediateRepresentation::MethodCall.new(
         file_path: @file_path,
         line_index: @line_index,
-        variable_name: match['variable'],
+        element_name: match['element'],
         method_name: match['method'],
         parameters: call_parameters
     ))
   end
 
   # @param [MatchData] match
-  def parse_class_declaration(match)
+  def parse_declare_class(match)
     class_name = match['class']
     clazz = Ritournelle::IntermediateRepresentation::Class.new(
         file_path: @file_path,
@@ -275,15 +253,62 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
-  def parse_class_member_declaration(match)
-    name = "@#{match['name']}"
+  def parse_declare_class_member(match)
+    short_name= match['name']
+    name = "@#{short_name}"
+    type = match['type']
+    accessors = match['accessors'].split(' ').map(&:strip)
+    getter = accessors.include?(GETTER)
+    setter = accessors.include?(SETTER)
     member = Ritournelle::IntermediateRepresentation::Member.new(
         file_path: @file_path,
         line_index: @line_index,
-        type: match['type'],
-        name: name
+        type: type,
+        name: name,
     )
     add_statement(member)
+    if getter
+      method = Ritournelle::IntermediateRepresentation::Method.new(
+          file_path: @file_path,
+          line_index: @line_index,
+          parent: @stack.last,
+          declared_name: short_name,
+          parameters_classes: [],
+          parameters_names: [],
+          return_class: type
+      )
+      add_statement(method)
+      @stack.last.methodz << method
+      @stack << method
+      add_statement(Ritournelle::IntermediateRepresentation::Return.new(
+          file_path: @file_path,
+          line_index: @line_index,
+          value: name,
+          parent: method
+      ))
+      @stack.pop
+    end
+    if setter
+      method = Ritournelle::IntermediateRepresentation::Method.new(
+          file_path: @file_path,
+          line_index: @line_index,
+          parent: @stack.last,
+          declared_name: "#{short_name}=",
+          parameters_classes: [type],
+          parameters_names: [short_name],
+          return_class: 'Void'
+      )
+      add_statement(method)
+      @stack.last.methodz << method
+      @stack << method
+      add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
+          file_path: @file_path,
+          line_index: @line_index,
+          name: name,
+          value: short_name)
+      )
+      @stack.pop
+    end
     @stack.last.members[name] = member
   end
 
@@ -293,12 +318,12 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
-  def parse_method_call_assignment(match)
-    call_parameters = process_method_call_parameters(match['parameters'])
+  def parse_assign_method_call(match)
+    call_parameters = process_method_call_parameters(match)
     method_call = Ritournelle::IntermediateRepresentation::MethodCall.new(
         file_path: @file_path,
         line_index: @line_index,
-        variable_name: match['variable'],
+        element_name: match['element'],
         method_name: match['method'],
         parameters: call_parameters
     )
@@ -311,8 +336,8 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
-  def parse_constructor_call_to_variable_assignment(match)
-    call_parameters = process_method_call_parameters(match['parameters'])
+  def parse_assign_constructor_call(match)
+    call_parameters = process_method_call_parameters(match)
     method_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
         file_path: @file_path,
         line_index: @line_index,
@@ -328,12 +353,12 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
-  def parse_method_call_return(match)
-    call_parameters = process_method_call_parameters(match['parameters'])
+  def parse_return_method_call(match)
+    call_parameters = process_method_call_parameters(match)
     method_call = Ritournelle::IntermediateRepresentation::MethodCall.new(
         file_path: @file_path,
         line_index: @line_index,
-        variable_name: match['variable'],
+        element_name: match['element'],
         method_name: match['method'],
         parameters: call_parameters
     )
@@ -346,15 +371,15 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
-  def parse_method_declaration(match)
+  def parse_declare_method(match)
     return_class = match['return_class']
     name = match['name']
     number_of_parameters = ((match.captures.compact.length - 2) / 2)
     parameters_classes = []
     parameters_names = []
     0.upto(number_of_parameters - 1) do |parameter_index|
-      parameters_classes << match["parameter_class_#{parameter_index}"]
-      parameters_names << match["parameter_name_#{parameter_index}"]
+      parameters_classes << match["param_class_#{parameter_index}"]
+      parameters_names << match["param_name_#{parameter_index}"]
     end
     method = Ritournelle::IntermediateRepresentation::Method.new(
         file_path: @file_path,
@@ -371,13 +396,13 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
-  def parse_constructor_declaration(match)
+  def parse_declare_constructor(match)
     number_of_parameters = (match.captures.compact.length / 2)
     parameters_classes = []
     parameters_names = []
     0.upto(number_of_parameters - 1) do |parameter_index|
-      parameters_classes << match["parameter_class_#{parameter_index}"]
-      parameters_names << match["parameter_name_#{parameter_index}"]
+      parameters_classes << match["param_class_#{parameter_index}"]
+      parameters_names << match["param_name_#{parameter_index}"]
     end
     constructor = Ritournelle::IntermediateRepresentation::Constructor.new(
         file_path: @file_path,
@@ -402,19 +427,23 @@ class Ritournelle::Parser
     @stack.last.statements << statement
   end
 
-  # @param [String] call_parameters
+  # @param [MatchData] match
   # @return [Array<String,Ritournelle::IntermediateRepresentation::ConstructorCall>]
-  def process_method_call_parameters(call_parameters)
-    call_parameters.strip.split(',').collect do |call_parameter|
+  def process_method_call_parameters(match)
+    unless match.named_captures.key?('parameters')
+      return []
+    end
+
+    match['parameters'].strip.split(',').collect do |call_parameter|
       c = call_parameter.strip
-      if REGEX_PARAMETER_INT.match(c)
+      if RX_PARAMETER_INT.match(c)
         Ritournelle::IntermediateRepresentation::ConstructorCall.new(
             file_path: @file_path,
             line_index: @line_index,
             parameters: [Integer(c)],
             type: world.clazzez[INT_CLASS_NAME].name
         )
-      elsif REGEX_PARAMETER_FLOAT.match(c)
+      elsif RX_PARAMETER_FLOAT.match(c)
         Ritournelle::IntermediateRepresentation::ConstructorCall.new(
             file_path: @file_path,
             line_index: @line_index,

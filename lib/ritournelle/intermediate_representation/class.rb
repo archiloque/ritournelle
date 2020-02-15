@@ -29,8 +29,10 @@ class Ritournelle::IntermediateRepresentation::Class < Ritournelle::Intermediate
     @members = {}
   end
 
+  # :nocov:
   def to_s
     "Class #{@name}"
   end
+  # :nocov:
 
 end

@@ -149,9 +149,9 @@ class Ritournelle::CodeGenerator::Context
   # @return [Ritournelle::IntermediateRepresentation::Method]
   # @raise [RuntimeError]
   def find_method(method_call:, generator:)
-    variable_name = method_call.variable_name
+    element_name = method_call.element_name
     caller_type = find_element(
-        name: variable_name,
+        name: element_name,
         types_to_look_for: (ELEMENT_MEMBER | ELEMENT_VARIABLE | ELEMENT_SELF | ELEMENT_PARAMETER),
         generator: generator
     ).type

@@ -47,9 +47,9 @@ Float p
 p = self.add_two(o)
 
 class Circle
-  Float @x
-  Float @y
-  Float @radius
+  Float @x getter
+  Float @y getter
+  Float @radius getter setter
 
   def constructor(Float x, Float y, Float radius)
     @x = x
@@ -59,7 +59,13 @@ class Circle
 
   def Void draw()
   end
+
+  def Float x_plus2()
+    return @x.plus(2.0)
+  end
 end
 
 Circle c
 c = Circle.new(1.0, 2.0, 3.0)
+c.draw
+c.x()
