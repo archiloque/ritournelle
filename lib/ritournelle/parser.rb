@@ -31,7 +31,7 @@ class Ritournelle::Parser
   private
 
   VARIABLE_NAME = '[a-z_][a-z_\d]*'
-  RX_CLASS_NAME = '[A-Z][a-zA-Z\d]*'
+  CLASS_NAME = '[A-Z][a-zA-Z\d]*'
   METHOD_NAME = '[a-z_][a-z_\d]*'
   PRIMITIVE_INT = '\d+'
   PRIMITIVE_FLOAT = '\d+\.\d*'
@@ -39,35 +39,45 @@ class Ritournelle::Parser
   SETTER = 'setter'
   RETURN = "\\Areturn "
 
-  ASSIGN = "\\A(?<name>@?#{VARIABLE_NAME}) = "
+  ASSIGN = "(?<name>@?#{VARIABLE_NAME}) = "
   METHOD_CALL = "(?<element>@?#{VARIABLE_NAME})\\.(?<method>#{METHOD_NAME})\\((?<parameters>.*)\\)\\z"
   METHOD_CALL_NO_PARAM = "(?<element>@?#{VARIABLE_NAME})\\.(?<method>#{METHOD_NAME})\\z"
 
-  RX_DECLARE_VARIABLE = /\A(?<type>#{RX_CLASS_NAME}) (?<name>#{VARIABLE_NAME})\z/
+  RX_DECLARE_VARIABLE = /\A(?<type>#{CLASS_NAME}) (?<name>#{VARIABLE_NAME})\z/
 
-  RX_DECLARE_METHOD = /\Adef (?<return_class>#{RX_CLASS_NAME}) (?<name>#{METHOD_NAME})\(((?<param_class_0>#{RX_CLASS_NAME}) (?<param_name_0>#{VARIABLE_NAME})(, (?<param_class_1>#{RX_CLASS_NAME}) (?<param_name_1>#{VARIABLE_NAME})(, (?<param_class_2>#{RX_CLASS_NAME}) (?<param_name_2>#{VARIABLE_NAME})(, (?<param_class_3>#{RX_CLASS_NAME}) (?<param_name_3>#{VARIABLE_NAME})(, (?<param_class_4>#{RX_CLASS_NAME}) (?<param_name_4>#{VARIABLE_NAME}))?)?)?)?)?\)\z/
-  RX_DECLARE_CONSTRUCTOR = /\Adef constructor\(((?<param_class_0>#{RX_CLASS_NAME}) (?<param_name_0>#{VARIABLE_NAME})(, (?<param_class_1>#{RX_CLASS_NAME}) (?<param_name_1>#{VARIABLE_NAME})(, (?<param_class_2>#{RX_CLASS_NAME}) (?<param_name_2>#{VARIABLE_NAME})(, (?<param_class_3>#{RX_CLASS_NAME}) (?<param_name_3>#{VARIABLE_NAME})(, (?<param_class_4>#{RX_CLASS_NAME}) (?<param_name_4>#{VARIABLE_NAME}))?)?)?)?)?\)\z/
-  RX_DECLARE_CLASS = /\Aclass (?<class>#{RX_CLASS_NAME})\z/
-  RX_DECLARE_CLASS_MEMBER = /\A(?<type>#{RX_CLASS_NAME}) @(?<name>#{VARIABLE_NAME})(?<accessors>( #{GETTER}| #{SETTER}| #{GETTER} #{SETTER}| #{SETTER} #{GETTER})?)\z/
+  RX_DECLARE_METHOD = /\Adef (?<return_class>#{CLASS_NAME}) (?<name>#{METHOD_NAME})\(((?<param_class_0>#{CLASS_NAME}) (?<param_name_0>#{VARIABLE_NAME})(, (?<param_class_1>#{CLASS_NAME}) (?<param_name_1>#{VARIABLE_NAME})(, (?<param_class_2>#{CLASS_NAME}) (?<param_name_2>#{VARIABLE_NAME})(, (?<param_class_3>#{CLASS_NAME}) (?<param_name_3>#{VARIABLE_NAME})(, (?<param_class_4>#{CLASS_NAME}) (?<param_name_4>#{VARIABLE_NAME}))?)?)?)?)?\)\z/
+  RX_DECLARE_CONSTRUCTOR = /\Adef constructor\(((?<param_class_0>#{CLASS_NAME}) (?<param_name_0>#{VARIABLE_NAME})(, (?<param_class_1>#{CLASS_NAME}) (?<param_name_1>#{VARIABLE_NAME})(, (?<param_class_2>#{CLASS_NAME}) (?<param_name_2>#{VARIABLE_NAME})(, (?<param_class_3>#{CLASS_NAME}) (?<param_name_3>#{VARIABLE_NAME})(, (?<param_class_4>#{CLASS_NAME}) (?<param_name_4>#{VARIABLE_NAME}))?)?)?)?)?\)\z/
+  RX_DECLARE_CLASS = /\Aclass (?<class>#{CLASS_NAME})\z/
+  RX_DECLARE_CLASS_MEMBER = /\A(?<type>#{CLASS_NAME}) @(?<name>#{VARIABLE_NAME})(?<accessors>( #{GETTER}| #{SETTER}| #{GETTER} #{SETTER}| #{SETTER} #{GETTER})?)\z/
 
   RX_RETURN_VARIABLE_OR_MEMBER = /#{RETURN}(?<name>@?#{VARIABLE_NAME})\z/
 
-  RX_ASSIGN_INTEGER = /#{ASSIGN}(?<value>#{PRIMITIVE_INT})\z/
+  RX_ASSIGN_INTEGER = /\A#{ASSIGN}(?<value>#{PRIMITIVE_INT})\z/
   RX_RETURN_INTEGER = /#{RETURN}(?<value>#{PRIMITIVE_INT})\z/
+  RX_DECLARE_ASSIGN_INTEGER = /\A(?<type>#{CLASS_NAME}) #{ASSIGN}(?<value>#{PRIMITIVE_INT})\z/
 
-  RX_ASSIGN_FLOAT = /#{ASSIGN}(?<value>#{PRIMITIVE_FLOAT})\z/
+  RX_ASSIGN_FLOAT = /\A#{ASSIGN}(?<value>#{PRIMITIVE_FLOAT})\z/
   RX_RETURN_FLOAT = /#{RETURN}(?<value>#{PRIMITIVE_FLOAT})\z/
+  RX_DECLARE_ASSIGN_FLOAT = /\A(?<type>#{CLASS_NAME}) #{ASSIGN}(?<value>#{PRIMITIVE_FLOAT})\z/
 
-  RX_ASSIGN_VARIABLE_OR_MEMBER = /#{ASSIGN}(?<value>@?#{VARIABLE_NAME})\z/
+  RX_ASSIGN_VARIABLE_OR_MEMBER = /\A#{ASSIGN}(?<value>@?#{VARIABLE_NAME})\z/
+  RX_DECLARE_ASSIGN_VARIABLE = /\A(?<type>#{CLASS_NAME}) #{ASSIGN}(?<value>@?#{VARIABLE_NAME})\z/
 
   RX_METHOD_CALL = /\A#{METHOD_CALL}/
   RX_METHOD_CALL_NO_PARAM = /\A#{METHOD_CALL_NO_PARAM}/
+
   RX_RETURN_METHOD_CALL = /#{RETURN}#{METHOD_CALL}/
   RX_RETURN_METHOD_CALL_NO_PARAM = /#{RETURN}#{METHOD_CALL_NO_PARAM}/
-  RX_ASSIGN_METHOD_CALL = /#{ASSIGN}#{METHOD_CALL}/
-  RX_ASSIGN_METHOD_CALL_NO_PARAM = /#{ASSIGN}#{METHOD_CALL_NO_PARAM}/
 
-  RX_ASSIGN_CONSTRUCTOR_CALL = /#{ASSIGN}(?<class>#{RX_CLASS_NAME})\.new\((?<parameters>.*)\)\z/
+  RX_ASSIGN_METHOD_CALL = /\A#{ASSIGN}#{METHOD_CALL}/
+  RX_DECLARE_VARIABLE_ASSIGN_METHOD_CALL = /\A(?<type>#{CLASS_NAME}) #{ASSIGN}#{METHOD_CALL}/
+
+
+  RX_ASSIGN_METHOD_CALL_NO_PARAM = /\A#{ASSIGN}#{METHOD_CALL_NO_PARAM}/
+  RX_DECLARE_VARIABLE_ASSIGN_METHOD_CALL_NO_PARAM = /\A(?<type>#{CLASS_NAME}) #{ASSIGN}#{METHOD_CALL_NO_PARAM}/
+
+  RX_ASSIGN_CONSTRUCTOR_CALL = /\A#{ASSIGN}(?<class>#{CLASS_NAME})\.new\((?<parameters>.*)\)\z/
+  RX_DECLARE_ASSIGN_CONSTRUCTOR_CALL = /\A(?<type>#{CLASS_NAME}) #{ASSIGN}(?<class>#{CLASS_NAME})\.new\((?<parameters>.*)\)\z/
 
   RX_PARAMETER_INT = /\A(?<value>#{PRIMITIVE_INT})\z/
   RX_PARAMETER_FLOAT = /\A(?<value>#{PRIMITIVE_FLOAT})\z/
@@ -75,14 +85,20 @@ class Ritournelle::Parser
 
   RULES_IN_CODE = [
       {regex: RX_DECLARE_VARIABLE, method: :parse_declare_variable},
+      {regex: RX_DECLARE_ASSIGN_VARIABLE, method: :parse_declare_assign_variable},
       {regex: RX_ASSIGN_INTEGER, method: :parse_assign_integer},
+      {regex: RX_DECLARE_ASSIGN_INTEGER, method: :parse_declare_assign_integer},
       {regex: RX_ASSIGN_FLOAT, method: :parse_assign_float},
+      {regex: RX_DECLARE_ASSIGN_FLOAT, method: :parse_declare_assign_float},
       {regex: RX_ASSIGN_VARIABLE_OR_MEMBER, method: :parse_assign_variable_or_member},
       {regex: RX_METHOD_CALL, method: :parse_method_call},
       {regex: RX_METHOD_CALL_NO_PARAM, method: :parse_method_call},
       {regex: RX_ASSIGN_METHOD_CALL, method: :parse_assign_method_call},
+      {regex: RX_DECLARE_VARIABLE_ASSIGN_METHOD_CALL, method: :parse_declare_variable_assign_method_call},
       {regex: RX_ASSIGN_METHOD_CALL_NO_PARAM, method: :parse_assign_method_call},
+      {regex: RX_DECLARE_VARIABLE_ASSIGN_METHOD_CALL_NO_PARAM, method: :parse_declare_variable_assign_method_call},
       {regex: RX_ASSIGN_CONSTRUCTOR_CALL, method: :parse_assign_constructor_call},
+      {regex: RX_DECLARE_ASSIGN_CONSTRUCTOR_CALL, method: :parse_declare_assign_constructor_call},
   ]
 
   RULES_FOR_IN_CLASS_CODE = RULES_IN_CODE.concat(
@@ -160,6 +176,12 @@ class Ritournelle::Parser
   end
 
   # @param [MatchData] match
+  def parse_declare_assign_integer(match)
+    parse_declare_variable(match)
+    parse_assign_integer(match)
+  end
+
+  # @param [MatchData] match
   def parse_assign_variable_or_member(match)
     add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
         file_path: @file_path,
@@ -167,6 +189,12 @@ class Ritournelle::Parser
         name: match['name'],
         value: match['value'])
     )
+  end
+
+  # @param [MatchData] match
+  def parse_declare_assign_variable(match)
+    parse_declare_variable(match)
+    parse_assign_variable_or_member(match)
   end
 
   # @param [MatchData] match
@@ -184,6 +212,12 @@ class Ritournelle::Parser
         value: Float(match['value']),
         clazz: world.clazzez[FLOAT_CLASS_NAME]
     )
+  end
+
+  # @param [MatchData] match
+  def parse_declare_assign_float(match)
+    parse_declare_variable(match)
+    parse_assign_float(match)
   end
 
   # @param [MatchData] match
@@ -254,7 +288,7 @@ class Ritournelle::Parser
 
   # @param [MatchData] match
   def parse_declare_class_member(match)
-    short_name= match['name']
+    short_name = match['name']
     name = "@#{short_name}"
     type = match['type']
     accessors = match['accessors'].split(' ').map(&:strip)
@@ -335,6 +369,13 @@ class Ritournelle::Parser
     )
   end
 
+
+  # @param [MatchData] match
+  def parse_declare_variable_assign_method_call(match)
+    parse_declare_variable(match)
+    parse_assign_method_call(match)
+  end
+
   # @param [MatchData] match
   def parse_assign_constructor_call(match)
     call_parameters = process_method_call_parameters(match)
@@ -351,6 +392,13 @@ class Ritournelle::Parser
         value: method_call)
     )
   end
+
+  # @param [MatchData] match
+  def parse_declare_assign_constructor_call(match)
+    parse_declare_variable(match)
+    parse_assign_constructor_call(match)
+  end
+
 
   # @param [MatchData] match
   def parse_return_method_call(match)

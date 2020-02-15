@@ -1,14 +1,10 @@
-Int i
-i = 10
-Int j
+Int i = 10
+Int j = 20
 Int k
-j = 20
 i.plus(10)
 i.plus(j)
-Float f
-f = 10.5
-Float g
-g = j.to_float()
+Float f = 10.5
+Float g = j.to_float()
 
 def Int two()
     Int t
@@ -16,8 +12,7 @@ def Int two()
     return 2
 end
 
-Int l
-l = self.two()
+Int l = self.two()
 
 def Int add_two(Int number)
     return number.plus(2)
@@ -27,12 +22,8 @@ def Float add_two(Float number)
     return number.plus(2.0)
 end
 
-Int m
-m = self.add_two(10)
-Int n
-n = self.add_two(m)
+Int m = self.add_two(10)
+Int n = self.add_two(m)
 
-Float o
-o = self.add_two(10.0)
-Float p
-p = self.add_two(o)
+Float o = self.add_two(10.0)
+Float p = self.add_two(o)

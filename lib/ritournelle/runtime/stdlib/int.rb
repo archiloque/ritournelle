@@ -17,4 +17,10 @@ class Ritournelle::Runtime::StdLib::Int
     Ritournelle::Runtime::StdLib::Float.new(@value.to_f)
   end
 
+  # :nocov:
+  def to_s
+    "Integer #{@value}"
+  end
+  # :nocov:
+
 end

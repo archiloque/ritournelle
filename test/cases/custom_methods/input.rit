@@ -7,21 +7,14 @@ def Float add_two(Float number)
 end
 
 def Int four()
-  Int f
-  f = 4
+  Int f = 4
   return f
 end
 
-Int i
-i = 10
-Int j
-j = self.add_two(i)
-Int k
-k = self.add_two(10)
+Int i = 10
+Int j = self.add_two(i)
+Int k = self.add_two(10)
 
-Float l
-l = 10.0
-Float m
-m = self.add_two(l)
-Float n
-n = self.add_two(10.0)
+Float l = 10.0
+Float m = self.add_two(l)
+Float n = self.add_two(10.0)

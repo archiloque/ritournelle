@@ -12,4 +12,10 @@ class Ritournelle::Runtime::StdLib::Float
     Ritournelle::Runtime::StdLib::Float.new(@value + other_float.value)
   end
 
+  # :nocov:
+  def to_s
+    "Float #{@value}"
+  end
+  # :nocov:
+
 end

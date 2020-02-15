@@ -4,6 +4,8 @@ i =
 # @type [Ritournelle::Runtime::StdLib::Int]
 j =
   Ritournelle::Runtime::StdLib::Int.new(20)
+j =
+  Ritournelle::Runtime::StdLib::Int.new(20)
 i.plus_Int(Ritournelle::Runtime::StdLib::Int.new(10))
 i.plus_Int(j)
 # @type [Ritournelle::Runtime::StdLib::Float]

@@ -10,35 +10,21 @@ What you can do with current code:
 
 [source]
 ----
-Int i
-i = 10
-Int j
+Int i = 10
+Int j = 20
 Int k
-j = 20
 i.plus(10)
 i.plus(j)
-Float f
-f = 10.5
-Float g
-g = j.to_float()
+Float f = 10.5
+Float g = j.to_float()
 
-Float h
-h = g
+Float h = g
 
 def Int two()
-    Int t
-    t = 2
     return 2
 end
 
-def Int three()
-    Int t
-    t = 3
-    return t
-end
-
-Int l
-l = self.two()
+Int l = self.two()
 
 def Int add_two(Int number)
     return number.plus(2)
@@ -48,15 +34,11 @@ def Float add_two(Float number)
     return number.plus(2.0)
 end
 
-Int m
-m = self.add_two(10)
-Int n
-n = self.add_two(m)
+Int m = self.add_two(10)
+Int n = self.add_two(m)
 
-Float o
-o = self.add_two(10.0)
-Float p
-p = self.add_two(o)
+Float o = self.add_two(10.0)
+Float p = self.add_two(o)
 
 class Circle
   Float @x
@@ -73,8 +55,7 @@ class Circle
   end
 end
 
-Circle c
-c = Circle.new(1.0, 2.0, 3.0)
+Circle c = Circle.new(1.0, 2.0, 3.0)
 ----
 
 == Commands
