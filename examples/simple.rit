@@ -38,7 +38,7 @@ Float p = self.add_two(o)
 
 interface Drawable
 
-  def abstract Void draw()
+  def Void draw()
 
 end
 

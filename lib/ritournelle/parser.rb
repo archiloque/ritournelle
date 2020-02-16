@@ -132,6 +132,7 @@ class Ritournelle::Parser
       ],
       Ritournelle::IntermediateRepresentation::InterfaceDeclaration => [
           {regex: RX_DECLARE_ABSTRACT_METHOD, method: :parse_declare_abstract_method},
+          {regex: RX_DECLARE_METHOD, method: :parse_declare_abstract_method},
           {regex: RX_END, method: :parse_end},
       ],
       Ritournelle::IntermediateRepresentation::MethodDeclaration => RULES_FOR_IN_CLASS_CODE.concat(
