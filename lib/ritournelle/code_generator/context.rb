@@ -33,7 +33,7 @@ class Ritournelle::CodeGenerator::Context
     @variables = {}
     # @type [Hash{String=>Ritournelle::CodeGenerator::Context::Member}]
     @members = {}
-    # @type [Hash{String=>Ritournelle::IntermediateRepresentation::Class}]
+    # @type [Hash{String=>Ritournelle::IntermediateRepresentation::ClassDeclaration}]
     @clazzez = {}
   end
 
@@ -86,7 +86,7 @@ class Ritournelle::CodeGenerator::Context
     end
   end
 
-  # @param [Ritournelle::IntermediateRepresentation::Member] ir
+  # @param [Ritournelle::IntermediateRepresentation::MemberDeclaration] ir
   # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [void]
   # @raise [RuntimeError]
@@ -116,7 +116,7 @@ class Ritournelle::CodeGenerator::Context
 
   # @param [String] name
   # @param [Ritournelle::CodeGenerator::Base] generator
-  # @return [Ritournelle::IntermediateRepresentation::Class]
+  # @return [Ritournelle::IntermediateRepresentation::ClassDeclaration]
   # @raise [RuntimeError]
   def find_class(name:, generator:)
     if @clazzez.key?(name)
@@ -133,7 +133,7 @@ class Ritournelle::CodeGenerator::Context
   end
 
   # @param [String] name
-  # @param [Ritournelle::IntermediateRepresentation::Class] clazz
+  # @param [Ritournelle::IntermediateRepresentation::ClassDeclaration] clazz
   # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [void]
   def declare_class(name:, clazz:, generator:)
@@ -146,7 +146,7 @@ class Ritournelle::CodeGenerator::Context
 
   # @param [Ritournelle::IntermediateRepresentation::MethodCall] method_call
   # @param [Ritournelle::CodeGenerator::Base] generator
-  # @return [Ritournelle::IntermediateRepresentation::Method]
+  # @return [Ritournelle::IntermediateRepresentation::MethodDeclaration]
   # @raise [RuntimeError]
   def find_method(method_call:, generator:)
     element_name = method_call.element_name
@@ -166,7 +166,7 @@ class Ritournelle::CodeGenerator::Context
 
   # @param [Ritournelle::IntermediateRepresentation::ConstructorCall] constructor_call
   # @param [Ritournelle::CodeGenerator::Base] generator
-  # @return [Ritournelle::IntermediateRepresentation::Constructor]
+  # @return [Ritournelle::IntermediateRepresentation::ConstructorDeclaration]
   # @raise [RuntimeError]
   def find_constructor(constructor_call:, generator:)
     clazz = find_class(name: constructor_call.type, generator: self)
@@ -249,10 +249,10 @@ class Ritournelle::CodeGenerator::Context
 
   class Member
 
-    # @return [Ritournelle::IntermediateRepresentation::Member]
+    # @return [Ritournelle::IntermediateRepresentation::MemberDeclaration]
     attr_reader :ir
 
-    # @param [Ritournelle::IntermediateRepresentation::Member] ir
+    # @param [Ritournelle::IntermediateRepresentation::MemberDeclaration] ir
     def initialize(ir)
       @ir = ir
     end

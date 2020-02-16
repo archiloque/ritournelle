@@ -1,6 +1,8 @@
 require_relative 'base_classes'
 require_relative 'intermediate_representation'
 
+require 'logger'
+
 class Ritournelle::Parser
 
   include Ritournelle::Keywords
@@ -16,6 +18,8 @@ class Ritournelle::Parser
   # @param [String] code
   # @param [String] file_path
   def initialize(code:, file_path:)
+    @logger = Logger.new(STDOUT)
+    @logger.level = Logger::INFO
     @file_path = file_path
     @world = Ritournelle::IntermediateRepresentation::World.new
     @stack = [@world]
@@ -114,29 +118,29 @@ class Ritournelle::Parser
               {regex: RX_DECLARE_CLASS, method: :parse_declare_class},
               {regex: RX_DECLARE_METHOD, method: :parse_declare_method},
           ]),
-      Ritournelle::IntermediateRepresentation::Class => [
+      Ritournelle::IntermediateRepresentation::ClassDeclaration => [
           {regex: RX_DECLARE_CLASS_MEMBER, method: :parse_declare_class_member},
           {regex: RX_DECLARE_METHOD, method: :parse_declare_method},
           {regex: RX_DECLARE_CONSTRUCTOR, method: :parse_declare_constructor},
           {regex: RX_END, method: :parse_end},
       ],
-      Ritournelle::IntermediateRepresentation::Method => RULES_FOR_IN_CLASS_CODE.concat(
+      Ritournelle::IntermediateRepresentation::MethodDeclaration => RULES_FOR_IN_CLASS_CODE.concat(
           [
               {regex: RX_RETURN_INTEGER, method: :parse_return_integer},
               {regex: RX_RETURN_FLOAT, method: :parse_return_float},
               {regex: RX_RETURN_VARIABLE_OR_MEMBER, method: :parse_return_variable_or_member},
               {regex: RX_RETURN_METHOD_CALL, method: :parse_return_method_call},
           ]),
-      Ritournelle::IntermediateRepresentation::Constructor => RULES_FOR_IN_CLASS_CODE
+      Ritournelle::IntermediateRepresentation::ConstructorDeclaration => RULES_FOR_IN_CLASS_CODE
   }
 
   def parse_next_line
-    puts "Parsing [#{@line}] in context #{@stack.last.class}"
+    @logger.debug("Parsing [#{@line}] in context #{@stack.last.class}")
     if @line.empty?
     else
       parsed = PARSING_RULES[@stack.last.class].any? do |rule|
         if (m = rule[:regex].match(@line))
-          puts "Matched for #{rule[:method]}"
+          @logger.debug("Matched for #{rule[:method]}")
           send(rule[:method], m)
           true
         end
@@ -230,7 +234,7 @@ class Ritournelle::Parser
 
   # @param [String] name
   # @param [Integer|Float] value
-  # @param [Ritournelle::IntermediateRepresentation::Class] clazz
+  # @param [Ritournelle::IntermediateRepresentation::ClassDeclaration] clazz
   def parse_assign_primitive_value(name:, value:, clazz:)
     constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
         file_path: @file_path,
@@ -277,7 +281,7 @@ class Ritournelle::Parser
   # @param [MatchData] match
   def parse_declare_class(match)
     class_name = match['class']
-    clazz = Ritournelle::IntermediateRepresentation::Class.new(
+    clazz = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
         file_path: @file_path,
         line_index: @line_index,
         name: class_name
@@ -295,7 +299,7 @@ class Ritournelle::Parser
     accessors = match['accessors'].split(' ').map(&:strip)
     getter = accessors.include?(GETTER)
     setter = accessors.include?(SETTER)
-    member = Ritournelle::IntermediateRepresentation::Member.new(
+    member = Ritournelle::IntermediateRepresentation::MemberDeclaration.new(
         file_path: @file_path,
         line_index: @line_index,
         type: type,
@@ -303,7 +307,7 @@ class Ritournelle::Parser
     )
     add_statement(member)
     if getter
-      method = Ritournelle::IntermediateRepresentation::Method.new(
+      method = Ritournelle::IntermediateRepresentation::MethodDeclaration.new(
           file_path: @file_path,
           line_index: @line_index,
           parent: @stack.last,
@@ -324,7 +328,7 @@ class Ritournelle::Parser
       @stack.pop
     end
     if setter
-      method = Ritournelle::IntermediateRepresentation::Method.new(
+      method = Ritournelle::IntermediateRepresentation::MethodDeclaration.new(
           file_path: @file_path,
           line_index: @line_index,
           parent: @stack.last,
@@ -430,7 +434,7 @@ class Ritournelle::Parser
       parameters_classes << match["param_class_#{parameter_index}"]
       parameters_names << match["param_name_#{parameter_index}"]
     end
-    method = Ritournelle::IntermediateRepresentation::Method.new(
+    method = Ritournelle::IntermediateRepresentation::MethodDeclaration.new(
         file_path: @file_path,
         line_index: @line_index,
         parent: @stack.last,
@@ -453,7 +457,7 @@ class Ritournelle::Parser
       parameters_classes << match["param_class_#{parameter_index}"]
       parameters_names << match["param_name_#{parameter_index}"]
     end
-    constructor = Ritournelle::IntermediateRepresentation::Constructor.new(
+    constructor = Ritournelle::IntermediateRepresentation::ConstructorDeclaration.new(
         file_path: @file_path,
         line_index: @line_index,
         parent: @stack.last,

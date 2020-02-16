@@ -18,7 +18,7 @@ def two—0()
   # @type [Ritournelle::Runtime::StdLib::Int]
   t =
     Ritournelle::Runtime::StdLib::Int.new(2)
-  return Ritournelle::Runtime::StdLib::Int.new(2)
+  return t
 end
 
 # @type [Ritournelle::Runtime::StdLib::Int]

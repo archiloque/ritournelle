@@ -1,4 +1,4 @@
-class Ritournelle::IntermediateRepresentation::Method < Ritournelle::IntermediateRepresentation::Callable
+class Ritournelle::IntermediateRepresentation::MethodDeclaration < Ritournelle::IntermediateRepresentation::Callable
 
   include Ritournelle::IntermediateRepresentation::WithStatements
 
@@ -10,7 +10,7 @@ class Ritournelle::IntermediateRepresentation::Method < Ritournelle::Intermediat
 
   # @param [String] file_path
   # @param [Integer] line_index
-  # @param [Ritournelle::IntermediateRepresentation::Class, Ritournelle::IntermediateRepresentation::World] parent
+  # @param [Ritournelle::IntermediateRepresentation::ClassDeclaration, Ritournelle::IntermediateRepresentation::World] parent
   # @param [String] declared_name
   # @param [Array<String>] parameters_classes
   # @param [Array<String>] parameters_names
@@ -31,7 +31,7 @@ class Ritournelle::IntermediateRepresentation::Method < Ritournelle::Intermediat
 
   # :nocov:
   def to_s
-    "Method #{return_class} #{@parent.name}##{declared_name}(" +
+    "Method declaration #{return_class} #{@parent.name}##{declared_name}(" +
         0.upto(number_of_parameters - 1).map do |index|
           "#{parameters_classes[index]} #{parameters_names[index]}"
         end.join(', ') + ')'

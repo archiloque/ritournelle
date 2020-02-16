@@ -1,9 +1,9 @@
-class Ritournelle::CodeGenerator::Class < Ritournelle::CodeGenerator::Base
+class Ritournelle::CodeGenerator::ClassDeclaration < Ritournelle::CodeGenerator::Base
 
   # @return [Array<String>]
   attr_reader :result
 
-  # @param [Ritournelle::IntermediateRepresentation::Class] ir
+  # @param [Ritournelle::IntermediateRepresentation::ClassDeclaration] ir
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
     class_context = Ritournelle::CodeGenerator::Context.new(

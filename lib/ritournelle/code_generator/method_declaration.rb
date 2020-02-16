@@ -1,11 +1,11 @@
-class Ritournelle::CodeGenerator::Method < Ritournelle::CodeGenerator::Base
+class Ritournelle::CodeGenerator::MethodDeclaration < Ritournelle::CodeGenerator::Base
 
   include Ritournelle::CodeGenerator::Callable
 
   # @return [Array<String>]
   attr_reader :result
 
-  # @param [Ritournelle::IntermediateRepresentation::Method] ir
+  # @param [Ritournelle::IntermediateRepresentation::MethodDeclaration] ir
   # @param [Ritournelle::CodeGenerator::Context] context
   def initialize(ir:, context:)
     method_context = Ritournelle::CodeGenerator::Context.new(

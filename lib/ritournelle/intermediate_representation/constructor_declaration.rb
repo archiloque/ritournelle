@@ -1,4 +1,4 @@
-class Ritournelle::IntermediateRepresentation::Constructor < Ritournelle::IntermediateRepresentation::Callable
+class Ritournelle::IntermediateRepresentation::ConstructorDeclaration < Ritournelle::IntermediateRepresentation::Callable
 
   include Ritournelle::IntermediateRepresentation::WithStatements
 
@@ -8,12 +8,12 @@ class Ritournelle::IntermediateRepresentation::Constructor < Ritournelle::Interm
   # @return [Integer]
   attr_reader :index
 
-  # @return [Ritournelle::IntermediateRepresentation::Class]
+  # @return [Ritournelle::IntermediateRepresentation::ClassDeclaration]
   attr_reader :parent
 
   # @param [String] file_path
   # @param [Integer] line_index
-  # @param [Ritournelle::IntermediateRepresentation::Class] parent
+  # @param [Ritournelle::IntermediateRepresentation::ClassDeclaration] parent
   # @param [Array<String>] parameters_classes
   # @param [Array<String>] parameters_names
   def initialize(file_path:, line_index:, parent:, parameters_classes:, parameters_names:)
@@ -35,7 +35,7 @@ class Ritournelle::IntermediateRepresentation::Constructor < Ritournelle::Interm
 
   # :nocov:
   def to_s
-    "Constructor ##{@parent.name}(" +
+    "Constructor declaration ##{@parent.name}(" +
         0.upto(number_of_parameters - 1).map do |index|
           "#{parameters_classes[index]} #{parameters_names[index]}"
         end.join(', ') + ')'

@@ -6,10 +6,10 @@ class Ritournelle::IntermediateRepresentation::World
 
   include Ritournelle::IntermediateRepresentation::WithStatements
 
-  # @return [Hash{String=>Ritournelle::IntermediateRepresentation::Class}]
+  # @return [Hash{String=>Ritournelle::IntermediateRepresentation::ClassDeclaration}]
   attr_reader :clazzez
 
-  # @return [Array<Ritournelle::IntermediateRepresentation::Method>]
+  # @return [Array<Ritournelle::IntermediateRepresentation::MethodDeclaration>]
   attr_reader :methodz
 
   def initialize
@@ -19,20 +19,20 @@ class Ritournelle::IntermediateRepresentation::World
   end
 
   def load_stdlib
-    primitive_int_class = Ritournelle::IntermediateRepresentation::Class.new(
+    primitive_int_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         name: SMALL_INT_CLASS_NAME
     )
     clazzez[SMALL_INT_CLASS_NAME] = primitive_int_class
 
-    int_class = Ritournelle::IntermediateRepresentation::Class.new(
+    int_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         name: INT_CLASS_NAME,
         rdoc_name: Ritournelle::Runtime::StdLib::Int.name
     )
-    int_constructor = Ritournelle::IntermediateRepresentation::Constructor.new(
+    int_constructor = Ritournelle::IntermediateRepresentation::ConstructorDeclaration.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         parent: int_class,
@@ -60,20 +60,20 @@ class Ritournelle::IntermediateRepresentation::World
 
     clazzez[INT_CLASS_NAME] = int_class
 
-    primitive_float_class = Ritournelle::IntermediateRepresentation::Class.new(
+    primitive_float_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         name: SMALL_FLOAT_CLASS_NAME
     )
     clazzez[SMALL_FLOAT_CLASS_NAME] = primitive_float_class
 
-    float_class = Ritournelle::IntermediateRepresentation::Class.new(
+    float_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         name: FLOAT_CLASS_NAME,
         rdoc_name: Ritournelle::Runtime::StdLib::Float.name
     )
-    float_constructor = Ritournelle::IntermediateRepresentation::Constructor.new(
+    float_constructor = Ritournelle::IntermediateRepresentation::ConstructorDeclaration.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         parent: float_class,
@@ -93,7 +93,7 @@ class Ritournelle::IntermediateRepresentation::World
 
     clazzez[FLOAT_CLASS_NAME] = float_class
 
-    void_class = Ritournelle::IntermediateRepresentation::Class.new(
+    void_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         name: VOID_CLASS_NAME,

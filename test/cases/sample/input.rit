@@ -7,9 +7,8 @@ Float f = 10.5
 Float g = j.to_float()
 
 def Int two()
-    Int t
-    t = 2
-    return 2
+    Int t = 2
+    return t
 end
 
 Int l = self.two()

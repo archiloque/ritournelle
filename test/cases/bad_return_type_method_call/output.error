@@ -1,1 +1,1 @@
-Method Float World#add_two(Int number) should return a Float but returns a Int
+Method declaration Float World#add_two(Int number) should return a Float but returns a Int

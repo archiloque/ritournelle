@@ -15,11 +15,11 @@ require_relative 'code_generator/base'
 require_relative 'code_generator/callable'
 
 require_relative 'code_generator/assignment'
-require_relative 'code_generator/class'
-require_relative 'code_generator/constructor'
+require_relative 'code_generator/class_declaration'
+require_relative 'code_generator/constructor_declaration'
 require_relative 'code_generator/constructor_call'
-require_relative 'code_generator/member'
-require_relative 'code_generator/method'
+require_relative 'code_generator/member_declaration'
+require_relative 'code_generator/method_declaration'
 require_relative 'code_generator/method_call'
 require_relative 'code_generator/return'
 require_relative 'code_generator/variable'
@@ -30,13 +30,13 @@ require_relative 'code_generator/context'
 class Ritournelle::CodeGenerator
   GENERATORS = {
       Ritournelle::IntermediateRepresentation::Assignment => Ritournelle::CodeGenerator::Assignment,
+      Ritournelle::IntermediateRepresentation::ClassDeclaration => Ritournelle::CodeGenerator::ClassDeclaration,
       Ritournelle::IntermediateRepresentation::ConstructorCall => Ritournelle::CodeGenerator::ConstructorCall,
-      Ritournelle::IntermediateRepresentation::Constructor => Ritournelle::CodeGenerator::Constructor,
-      Ritournelle::IntermediateRepresentation::Member => Ritournelle::CodeGenerator::Member,
-      Ritournelle::IntermediateRepresentation::Method => Ritournelle::CodeGenerator::Method,
+      Ritournelle::IntermediateRepresentation::ConstructorDeclaration => Ritournelle::CodeGenerator::ConstructorDeclaration,
+      Ritournelle::IntermediateRepresentation::MemberDeclaration => Ritournelle::CodeGenerator::MemberDeclaration,
+      Ritournelle::IntermediateRepresentation::MethodDeclaration => Ritournelle::CodeGenerator::MethodDeclaration,
       Ritournelle::IntermediateRepresentation::MethodCall => Ritournelle::CodeGenerator::MethodCall,
       Ritournelle::IntermediateRepresentation::Return => Ritournelle::CodeGenerator::Return,
       Ritournelle::IntermediateRepresentation::Variable => Ritournelle::CodeGenerator::Variable,
-      Ritournelle::IntermediateRepresentation::Class => Ritournelle::CodeGenerator::Class,
   }
 end

@@ -1,6 +1,6 @@
 require_relative '../keywords'
 
-class Ritournelle::IntermediateRepresentation::Member < Ritournelle::IntermediateRepresentation::Base
+class Ritournelle::IntermediateRepresentation::MemberDeclaration < Ritournelle::IntermediateRepresentation::Base
 
   include Ritournelle::Keywords
 

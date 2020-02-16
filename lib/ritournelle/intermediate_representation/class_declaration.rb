@@ -1,4 +1,4 @@
-class Ritournelle::IntermediateRepresentation::Class < Ritournelle::IntermediateRepresentation::Base
+class Ritournelle::IntermediateRepresentation::ClassDeclaration < Ritournelle::IntermediateRepresentation::Base
 
   include Ritournelle::IntermediateRepresentation::WithStatements
 
@@ -8,13 +8,13 @@ class Ritournelle::IntermediateRepresentation::Class < Ritournelle::Intermediate
   # @return [String]
   attr_reader :rdoc_name
 
-  # @return [Array<Ritournelle::IntermediateRepresentation::Constructor>]
+  # @return [Array<Ritournelle::IntermediateRepresentation::ConstructorDeclaration>]
   attr_reader :constructors
 
-  # @return [Array<Ritournelle::IntermediateRepresentation::Method>]
+  # @return [Array<Ritournelle::IntermediateRepresentation::MethodDeclaration>]
   attr_reader :methodz
 
-  # @return [Hash{String=>Ritournelle::IntermediateRepresentation::Method}]
+  # @return [Hash{String=>Ritournelle::IntermediateRepresentation::MethodDeclaration}]
   attr_reader :members
 
   # @param [String] file_path
@@ -31,7 +31,7 @@ class Ritournelle::IntermediateRepresentation::Class < Ritournelle::Intermediate
 
   # :nocov:
   def to_s
-    "Class #{@name}"
+    "Class declaration #{@name}"
   end
   # :nocov:
 
