@@ -54,10 +54,14 @@ class Ritournelle::Parser
 
   RX_DECLARE_VARIABLE = /\A(?<type>#{CLASS_NAME}) (?<name>#{VARIABLE_NAME})\z/
 
+  RX_DECLARE_ABSTRACT_METHOD = /\Adef abstract (?<return_class>#{CLASS_NAME}) (?<name>#{METHOD_NAME})#{DECLARATION_PARAMETERS}/
   RX_DECLARE_METHOD = /\Adef (?<return_class>#{CLASS_NAME}) (?<name>#{METHOD_NAME})#{DECLARATION_PARAMETERS}/
   RX_DECLARE_CONSTRUCTOR = /\Adef constructor#{DECLARATION_PARAMETERS}/
-  RX_DECLARE_CLASS = /\Aclass (?<class>#{CLASS_NAME})\z/
-  RX_DECLARE_CLASS_MEMBER = /\A(?<type>#{CLASS_NAME}) @(?<name>#{VARIABLE_NAME})(?<accessors>( #{GETTER}| #{SETTER}| #{GETTER} #{SETTER}| #{SETTER} #{GETTER})?)\z/
+  RX_DECLARE_CLASS = /\Aclass (?<name>#{CLASS_NAME})\z/
+  RX_DECLARE_INTERFACE = /\Ainterface (?<name>#{CLASS_NAME})\z/
+
+  RX_DECLARE_IMPLEMENTED_INTERFACE = /\Aimplements (?<type>#{CLASS_NAME})\z/
+  RX_DECLARE_MEMBER = /\A(?<type>#{CLASS_NAME}) @(?<name>#{VARIABLE_NAME})(?<accessors>( #{GETTER}| #{SETTER}| #{GETTER} #{SETTER}| #{SETTER} #{GETTER})?)\z/
 
   RX_RETURN_VARIABLE_OR_MEMBER = /#{RETURN}(?<name>@?#{VARIABLE_NAME})\z/
 
@@ -116,12 +120,18 @@ class Ritournelle::Parser
       Ritournelle::IntermediateRepresentation::World => RULES_IN_CODE.concat(
           [
               {regex: RX_DECLARE_CLASS, method: :parse_declare_class},
+              {regex: RX_DECLARE_INTERFACE, method: :parse_declare_interface},
               {regex: RX_DECLARE_METHOD, method: :parse_declare_method},
           ]),
       Ritournelle::IntermediateRepresentation::ClassDeclaration => [
-          {regex: RX_DECLARE_CLASS_MEMBER, method: :parse_declare_class_member},
+          {regex: RX_DECLARE_MEMBER, method: :parse_declare_member},
+          {regex: RX_DECLARE_IMPLEMENTED_INTERFACE, method: :parse_declare_implemented_interfaces},
           {regex: RX_DECLARE_METHOD, method: :parse_declare_method},
           {regex: RX_DECLARE_CONSTRUCTOR, method: :parse_declare_constructor},
+          {regex: RX_END, method: :parse_end},
+      ],
+      Ritournelle::IntermediateRepresentation::InterfaceDeclaration => [
+          {regex: RX_DECLARE_ABSTRACT_METHOD, method: :parse_declare_abstract_method},
           {regex: RX_END, method: :parse_end},
       ],
       Ritournelle::IntermediateRepresentation::MethodDeclaration => RULES_FOR_IN_CLASS_CODE.concat(
@@ -176,7 +186,7 @@ class Ritournelle::Parser
     parse_assign_primitive_value(
         name: match['name'],
         value: Integer(match['value']),
-        clazz: world.clazzez[INT_CLASS_NAME]
+        clazz: world.classes_declarations[INT_CLASS_NAME]
     )
   end
 
@@ -206,7 +216,7 @@ class Ritournelle::Parser
   def parse_return_integer(match)
     parse_return_primitive_value(
         value: Integer(match['value']),
-        clazz: world.clazzez[INT_CLASS_NAME]
+        clazz: world.classes_declarations[INT_CLASS_NAME]
     )
   end
 
@@ -215,7 +225,7 @@ class Ritournelle::Parser
     parse_assign_primitive_value(
         name: match['name'],
         value: Float(match['value']),
-        clazz: world.clazzez[FLOAT_CLASS_NAME]
+        clazz: world.classes_declarations[FLOAT_CLASS_NAME]
     )
   end
 
@@ -229,7 +239,7 @@ class Ritournelle::Parser
   def parse_return_float(match)
     parse_return_primitive_value(
         value: Float(match['value']),
-        clazz: world.clazzez[FLOAT_CLASS_NAME])
+        clazz: world.classes_declarations[FLOAT_CLASS_NAME])
   end
 
   # @param [String] name
@@ -280,19 +290,34 @@ class Ritournelle::Parser
 
   # @param [MatchData] match
   def parse_declare_class(match)
-    class_name = match['class']
-    clazz = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
+    class_name = match['name']
+    check_class_or_interface_don_t_exist(class_name)
+    class_declaration = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
         file_path: @file_path,
         line_index: @line_index,
         name: class_name
     )
-    add_statement(clazz)
-    @world.clazzez[class_name] = clazz
-    @stack << clazz
+    add_statement(class_declaration)
+    @world.classes_declarations[class_name] = class_declaration
+    @stack << class_declaration
   end
 
   # @param [MatchData] match
-  def parse_declare_class_member(match)
+  def parse_declare_interface(match)
+    interface_name = match['name']
+    check_class_or_interface_don_t_exist(interface_name)
+    interface_declaration = Ritournelle::IntermediateRepresentation::InterfaceDeclaration.new(
+        file_path: @file_path,
+        line_index: @line_index,
+        name: interface_name
+    )
+    add_statement(interface_declaration)
+    @world.interfaces_declarations[interface_name] = interface_declaration
+    @stack << interface_declaration
+  end
+
+  # @param [MatchData] match
+  def parse_declare_member(match)
     short_name = match['name']
     name = "@#{short_name}"
     type = match['type']
@@ -314,10 +339,11 @@ class Ritournelle::Parser
           declared_name: short_name,
           parameters_classes: [],
           parameters_names: [],
-          return_class: type
+          return_class: type,
+          method_index: @world.method_index(declared_name: short_name, parameters_classes: [])
       )
       add_statement(method)
-      @stack.last.methodz << method
+      @stack.last.methods_declarations << method
       @stack << method
       add_statement(Ritournelle::IntermediateRepresentation::Return.new(
           file_path: @file_path,
@@ -335,10 +361,11 @@ class Ritournelle::Parser
           declared_name: "#{short_name}=",
           parameters_classes: [type],
           parameters_names: [short_name],
-          return_class: 'Void'
+          return_class: 'Void',
+          method_index: @world.method_index(declared_name: "#{short_name}=", parameters_classes: [type])
       )
       add_statement(method)
-      @stack.last.methodz << method
+      @stack.last.methods_declarations << method
       @stack << method
       add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
           file_path: @file_path,
@@ -349,6 +376,12 @@ class Ritournelle::Parser
       @stack.pop
     end
     @stack.last.members[name] = member
+  end
+
+  # @param [MatchData] match
+  def parse_declare_implemented_interfaces(match)
+    type = match['type']
+    @stack.last.implemented_interfaces << type
   end
 
   # @param [MatchData] _
@@ -425,6 +458,22 @@ class Ritournelle::Parser
 
   # @param [MatchData] match
   def parse_declare_method(match)
+    method_declaration = parse_declare_method_common(match, Ritournelle::IntermediateRepresentation::MethodDeclaration)
+    add_statement(method_declaration)
+    @stack.last.methods_declarations << method_declaration
+    @stack << method_declaration
+  end
+
+  # @param [MatchData] match
+  def parse_declare_abstract_method(match)
+    method_declaration = parse_declare_method_common(match, Ritournelle::IntermediateRepresentation::AbstractMethodDeclaration)
+    add_statement(method_declaration)
+    @stack.last.abstract_methods_declarations << method_declaration
+  end
+
+  # @param [MatchData] match
+  # @param [Class] method_class
+  def parse_declare_method_common(match, method_class)
     return_class = match['return_class']
     name = match['name']
     number_of_parameters = ((match.captures.compact.length - 2) / 2)
@@ -434,18 +483,16 @@ class Ritournelle::Parser
       parameters_classes << match["param_class_#{parameter_index}"]
       parameters_names << match["param_name_#{parameter_index}"]
     end
-    method = Ritournelle::IntermediateRepresentation::MethodDeclaration.new(
+    method_class.new(
         file_path: @file_path,
         line_index: @line_index,
         parent: @stack.last,
         declared_name: name,
         parameters_classes: parameters_classes,
         parameters_names: parameters_names,
-        return_class: return_class
+        return_class: return_class,
+        method_index: @world.method_index(declared_name: name, parameters_classes: parameters_classes)
     )
-    add_statement(method)
-    @stack.last.methodz << method
-    @stack << method
   end
 
   # @param [MatchData] match
@@ -494,14 +541,14 @@ class Ritournelle::Parser
             file_path: @file_path,
             line_index: @line_index,
             parameters: [Integer(c)],
-            type: world.clazzez[INT_CLASS_NAME].name
+            type: world.classes_declarations[INT_CLASS_NAME].name
         )
       elsif RX_PARAMETER_FLOAT.match(c)
         Ritournelle::IntermediateRepresentation::ConstructorCall.new(
             file_path: @file_path,
             line_index: @line_index,
             parameters: [Float(c)],
-            type: world.clazzez[FLOAT_CLASS_NAME].name
+            type: world.classes_declarations[FLOAT_CLASS_NAME].name
         )
       else
         c
@@ -513,6 +560,14 @@ class Ritournelle::Parser
   # @raise [RuntimeError]
   def raise_error(message)
     raise RuntimeError, message, ["#{@file_path}:#{@line_index}"]
+  end
+
+  # @param [String] name
+  # @raise [RuntimeError]
+  def check_class_or_interface_don_t_exist(name)
+    if @world.interfaces_declarations.key?(name) || @world.classes_declarations.key?(name)
+      raise_error("Class or interface [#{name}] already exists")
+    end
   end
 
 end

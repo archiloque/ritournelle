@@ -12,10 +12,15 @@ class Ritournelle::IntermediateRepresentation::ClassDeclaration < Ritournelle::I
   attr_reader :constructors
 
   # @return [Array<Ritournelle::IntermediateRepresentation::MethodDeclaration>]
-  attr_reader :methodz
+  attr_reader :methods_declarations
+
+  alias_method :callables_declarations, :methods_declarations
 
   # @return [Hash{String=>Ritournelle::IntermediateRepresentation::MethodDeclaration}]
   attr_reader :members
+
+  # @return [Array<String>]
+  attr_reader :implemented_interfaces
 
   # @param [String] file_path
   # @param [Integer] line_index
@@ -25,7 +30,8 @@ class Ritournelle::IntermediateRepresentation::ClassDeclaration < Ritournelle::I
     @name = name
     @rdoc_name = rdoc_name
     @constructors = []
-    @methodz = []
+    @methods_declarations = []
+    @implemented_interfaces = []
     @members = {}
   end
 

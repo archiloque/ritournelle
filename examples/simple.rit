@@ -36,7 +36,14 @@ Int n = self.add_two(m)
 Float o = self.add_two(10.0)
 Float p = self.add_two(o)
 
+interface Drawable
+
+  def abstract Void draw()
+
+end
+
 class Circle
+  implements Drawable
   Float @x getter
   Float @y getter
   Float @radius getter setter
@@ -55,6 +62,5 @@ class Circle
   end
 end
 
-Circle c = Circle.new(1.0, 2.0, 3.0)
-c.draw
-c.x()
+Drawable d = Circle.new(1.0, 2.0, 3.0)
+d.draw

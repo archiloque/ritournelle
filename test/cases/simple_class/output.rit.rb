@@ -4,19 +4,17 @@ class MyClass
   def initialize(constructor_index, *parameters)
     send("initialize—#{constructor_index}", *parameters)
   end
-  
   # @return [Ritournelle::Runtime::StdLib::Int]
+  # @note Declared name is member2
   def member2—0()
     return @member2
   end
-  
-  
   # @param [Ritournelle::Runtime::StdLib::Int] member3
   # @return [void]
+  # @note Declared name is member3=
   def member3—1(member3)
     @member3 = member3
   end
-  
   
   # @param [Ritournelle::Runtime::StdLib::Float] member1
   # @param [Ritournelle::Runtime::StdLib::Int] member2
@@ -27,12 +25,11 @@ class MyClass
     @member3 = member3
   end
   
-  
   # @return [Ritournelle::Runtime::StdLib::Int]
+  # @note Declared name is member2_plus2
   def member2_plus2—2()
     return @member2.plus_Int(Ritournelle::Runtime::StdLib::Int.new(2))
   end
-  
 end
 
 # @type [MyClass]

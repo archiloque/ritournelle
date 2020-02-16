@@ -1,0 +1,7 @@
+interface MyInterface
+  def abstract Int member2_plus2(Int i)
+end
+
+class MyClass
+  implements MyInterface
+end

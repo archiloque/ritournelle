@@ -9,8 +9,11 @@ class Ritournelle::CodeGenerator::World < Ritournelle::CodeGenerator::Base
         parent: nil,
         statement: ir,
         context_type: Ritournelle::CodeGenerator::Context::CONTEXT_TYPE_WORLD)
-    ir.clazzez.each_pair do |class_name, clazz|
-      context.declare_class(name: class_name, clazz: clazz, generator: self)
+    ir.classes_declarations.each_pair do |class_name, class_declaration|
+      context.declare_class(name: class_name, class_declaration: class_declaration)
+    end
+    ir.interfaces_declarations.each_pair do |interface_name, interface_declaration|
+      context.declare_interface(name: interface_name, interface_declaration: interface_declaration)
     end
     super(ir: ir, context: context)
     @result = generate(ir.statements)

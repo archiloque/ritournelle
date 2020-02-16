@@ -1,0 +1,23 @@
+interface MyInterface1
+  def abstract Int member2_plus2()
+end
+
+interface MyInterface2
+  def abstract Int member2_plus2()
+end
+
+class MyClass
+  implements MyInterface1
+  Int @member2
+
+  def constructor(Int member2)
+    @member2 = member2
+  end
+
+  def Int member2_plus2()
+    return @member2.plus(2)
+  end
+end
+
+MyInterface2 m = MyClass.new(2)
+m.member2_plus2()

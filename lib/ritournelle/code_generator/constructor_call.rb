@@ -9,7 +9,7 @@ class Ritournelle::CodeGenerator::ConstructorCall < Ritournelle::CodeGenerator::
     super(ir: ir, context: context)
     constructor = context.find_constructor(constructor_call: ir, generator: self)
     clazz = constructor.parent
-    if[Ritournelle::BaseClasses::INT_CLASS_NAME, Ritournelle::BaseClasses::FLOAT_CLASS_NAME].include?(clazz.name)
+    if [Ritournelle::BaseClasses::INT_CLASS_NAME, Ritournelle::BaseClasses::FLOAT_CLASS_NAME].include?(clazz.name)
       line = "#{clazz.rdoc_name}.new("
     else
       line = "#{clazz.rdoc_name}.new(#{constructor.index}, "

@@ -1,10 +1,9 @@
-
 # @param [Ritournelle::Runtime::StdLib::Int] number
 # @return [Ritournelle::Runtime::StdLib::Int]
+# @note Declared name is add_two
 def add_two—0(number)
   return number.plus_Int(Ritournelle::Runtime::StdLib::Int.new(2))
 end
-
 # @type [Ritournelle::Runtime::StdLib::Int]
 i =
   Ritournelle::Runtime::StdLib::Int.new(10)

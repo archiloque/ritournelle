@@ -34,7 +34,9 @@ class Ritournelle::CodeGenerator::Context
     # @type [Hash{String=>Ritournelle::CodeGenerator::Context::Member}]
     @members = {}
     # @type [Hash{String=>Ritournelle::IntermediateRepresentation::ClassDeclaration}]
-    @clazzez = {}
+    @classes_declarations = {}
+    # @type [Hash{String=>Ritournelle::IntermediateRepresentation::InterfaceDeclaration}]
+    @interfaces_declarations = {}
   end
 
   def to_s
@@ -61,16 +63,31 @@ class Ritournelle::CodeGenerator::Context
   # @raise [RuntimeError]
   def find_element(name:, types_to_look_for:, generator:)
     if (types_to_look_for & ELEMENT_SELF) && (name == Ritournelle::Keywords::KEYWORD_SELF)
-      return Ritournelle::CodeGenerator::Context::Self.new(@statement)
-    end
-    if (types_to_look_for & ELEMENT_PARAMETER) && @parameters.key?(name)
-      return @parameters[name]
+      Ritournelle::CodeGenerator::Context::Self.new(@statement)
+    elsif (types_to_look_for & ELEMENT_PARAMETER) && @parameters.key?(name)
+      @parameters[name]
     elsif (types_to_look_for & ELEMENT_VARIABLE) && @variables.key?(name)
-      return @variables[name]
+      @variables[name]
     elsif (types_to_look_for & ELEMENT_MEMBER) && @parent && @parent.members.key?(name)
-      return @parent.members[name]
+      @parent.members[name]
     else
       generator.raise_error("Can't find element [#{name}] in #{self}")
+    end
+  end
+
+  # @param [Object] value
+  # @param [Ritournelle::CodeGenerator::Base] generator
+  # @return [Ritournelle::IntermediateRepresentation::ClassDeclaration, Ritournelle::IntermediateRepresentation::InterfaceDeclaration]
+  def find_type(value:, generator:)
+    case value
+    when Ritournelle::IntermediateRepresentation::ConstructorCall
+      find_class_or_interface_declaration(name: value.type, generator: generator)
+    when Ritournelle::IntermediateRepresentation::MethodCall
+      method = find_method(method_call: value, generator: generator)
+      find_class_or_interface_declaration(name: method.return_class, generator: generator)
+    else
+      element = find_element(name: value, types_to_look_for: ELEMENT_ANY, generator: generator)
+      find_class_or_interface_declaration(name: element.type, generator: generator)
     end
   end
 
@@ -116,14 +133,34 @@ class Ritournelle::CodeGenerator::Context
 
   # @param [String] name
   # @param [Ritournelle::CodeGenerator::Base] generator
-  # @return [Ritournelle::IntermediateRepresentation::ClassDeclaration]
+  # @return [Ritournelle::IntermediateRepresentation::ClassDeclaration,Ritournelle::IntermediateRepresentation::InterfaceDeclaration]
   # @raise [RuntimeError]
-  def find_class(name:, generator:)
-    if @clazzez.key?(name)
-      @clazzez[name]
+  def find_class_or_interface_declaration(name:, generator:)
+    if @classes_declarations.key?(name)
+      @classes_declarations[name]
+    elsif @interfaces_declarations.key?(name)
+      @interfaces_declarations[name]
     elsif @parent
       begin
-        @parent.find_class(name: name, generator: generator)
+        @parent.find_class_or_interface_declaration(name: name, generator: generator)
+      rescue
+        generator.raise_error("Can't find class or interface [#{name}] in #{self}")
+      end
+    else
+      generator.raise_error("Can't find class or interface [#{name}] in #{self}")
+    end
+  end
+
+  # @param [String] name
+  # @param [Ritournelle::CodeGenerator::Base] generator
+  # @return [Ritournelle::IntermediateRepresentation::ClassDeclaration]
+  # @raise [RuntimeError]
+  def find_class_declaration(name:, generator:)
+    if @classes_declarations.key?(name)
+      @classes_declarations[name]
+    elsif @parent
+      begin
+        @parent.find_class_declaration(name: name, generator: generator)
       rescue
         generator.raise_error("Can't find class [#{name}] in #{self}")
       end
@@ -133,15 +170,35 @@ class Ritournelle::CodeGenerator::Context
   end
 
   # @param [String] name
-  # @param [Ritournelle::IntermediateRepresentation::ClassDeclaration] clazz
   # @param [Ritournelle::CodeGenerator::Base] generator
-  # @return [void]
-  def declare_class(name:, clazz:, generator:)
-    if @clazzez.key(name)
-      generator.raise_error("Class already exists [#{name}] in #{self}")
+  # @return [Ritournelle::IntermediateRepresentation::InterfaceDeclaration]
+  # @raise [RuntimeError]
+  def find_interface_declaration(name:, generator:)
+    if @interfaces_declarations.key?(name)
+      @interfaces_declarations[name]
+    elsif @parent
+      begin
+        @parent.find_interface_declaration(name: name, generator: generator)
+      rescue
+        generator.raise_error("Can't find interface [#{name}] in #{self}")
+      end
     else
-      @clazzez[name] = clazz
+      generator.raise_error("Can't find interface [#{name}] in #{self}")
     end
+  end
+
+  # @param [String] name
+  # @param [Ritournelle::IntermediateRepresentation::ClassDeclaration] class_declaration
+  # @return [void]
+  def declare_class(name:, class_declaration:)
+    @classes_declarations[name] = class_declaration
+  end
+
+  # @param [String] name
+  # @param [Ritournelle::IntermediateRepresentation::InterfaceDeclaration] interface_declaration
+  # @return [void]
+  def declare_interface(name:, interface_declaration:)
+    @interfaces_declarations[name] = interface_declaration
   end
 
   # @param [Ritournelle::IntermediateRepresentation::MethodCall] method_call
@@ -155,11 +212,11 @@ class Ritournelle::CodeGenerator::Context
         types_to_look_for: (ELEMENT_MEMBER | ELEMENT_VARIABLE | ELEMENT_SELF | ELEMENT_PARAMETER),
         generator: generator
     ).type
-    caller_class = find_class(name: caller_type, generator: generator)
+    caller_class = find_class_or_interface_declaration(name: caller_type, generator: generator)
     find_callable(
         name: method_call.method_name,
         parameters: method_call.parameters,
-        callables: caller_class.methodz,
+        callables: caller_class.callables_declarations,
         start_of_signature: "#{caller_class.name}##{method_call.method_name}",
         generator: generator)
   end
@@ -169,7 +226,7 @@ class Ritournelle::CodeGenerator::Context
   # @return [Ritournelle::IntermediateRepresentation::ConstructorDeclaration]
   # @raise [RuntimeError]
   def find_constructor(constructor_call:, generator:)
-    clazz = find_class(name: constructor_call.type, generator: self)
+    clazz = find_class_declaration(name: constructor_call.type, generator: self)
     find_callable(
         name: 'constructor',
         parameters: constructor_call.parameters,

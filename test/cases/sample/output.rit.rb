@@ -12,32 +12,29 @@ f =
 # @type [Ritournelle::Runtime::StdLib::Float]
 g =
   j.to_float()
-
 # @return [Ritournelle::Runtime::StdLib::Int]
+# @note Declared name is two
 def two—0()
   # @type [Ritournelle::Runtime::StdLib::Int]
   t =
     Ritournelle::Runtime::StdLib::Int.new(2)
   return t
 end
-
 # @type [Ritournelle::Runtime::StdLib::Int]
 l =
   self.two—0()
-
 # @param [Ritournelle::Runtime::StdLib::Int] number
 # @return [Ritournelle::Runtime::StdLib::Int]
+# @note Declared name is add_two
 def add_two—1(number)
   return number.plus_Int(Ritournelle::Runtime::StdLib::Int.new(2))
 end
-
-
 # @param [Ritournelle::Runtime::StdLib::Float] number
 # @return [Ritournelle::Runtime::StdLib::Float]
+# @note Declared name is add_two
 def add_two—2(number)
   return number.plus_Float(Ritournelle::Runtime::StdLib::Float.new(2.0))
 end
-
 # @type [Ritournelle::Runtime::StdLib::Int]
 m =
   self.add_two—1(Ritournelle::Runtime::StdLib::Int.new(10))

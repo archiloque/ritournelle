@@ -16,41 +16,37 @@ g =
   j.to_float()
 # @type [Ritournelle::Runtime::StdLib::Float]
 h = g
-
 # @return [Ritournelle::Runtime::StdLib::Int]
+# @note Declared name is two
 def two—0()
   # @type [Ritournelle::Runtime::StdLib::Int]
   t =
     Ritournelle::Runtime::StdLib::Int.new(2)
   return Ritournelle::Runtime::StdLib::Int.new(2)
 end
-
-
 # @return [Ritournelle::Runtime::StdLib::Int]
+# @note Declared name is three
 def three—1()
   # @type [Ritournelle::Runtime::StdLib::Int]
   t =
     Ritournelle::Runtime::StdLib::Int.new(3)
   return t
 end
-
 # @type [Ritournelle::Runtime::StdLib::Int]
 l =
   self.two—0()
-
 # @param [Ritournelle::Runtime::StdLib::Int] number
 # @return [Ritournelle::Runtime::StdLib::Int]
+# @note Declared name is add_two
 def add_two—2(number)
   return number.plus_Int(Ritournelle::Runtime::StdLib::Int.new(2))
 end
-
-
 # @param [Ritournelle::Runtime::StdLib::Float] number
 # @return [Ritournelle::Runtime::StdLib::Float]
+# @note Declared name is add_two
 def add_two—3(number)
   return number.plus_Float(Ritournelle::Runtime::StdLib::Float.new(2.0))
 end
-
 # @type [Ritournelle::Runtime::StdLib::Int]
 m =
   self.add_two—2(Ritournelle::Runtime::StdLib::Int.new(10))
@@ -64,36 +60,47 @@ o =
 p =
   self.add_two—3(o)
 
+# @!parse
+#   # @abstract
+#   module Drawable
+#     # @return [void]
+#     # @abstract
+#     # @note Declared name is draw
+#     def draw—4()
+#     end
+#     
+#   end
+
+
 class Circle
+  # @!parse
+  #   include Drawable
+
   # @param [Integer] constructor_index
   def initialize(constructor_index, *parameters)
     send("initialize—#{constructor_index}", *parameters)
   end
-  
   # @return [Ritournelle::Runtime::StdLib::Float]
-  def x—0()
+  # @note Declared name is x
+  def x—5()
     return @x
   end
-  
-  
   # @return [Ritournelle::Runtime::StdLib::Float]
-  def y—1()
+  # @note Declared name is y
+  def y—6()
     return @y
   end
-  
-  
   # @return [Ritournelle::Runtime::StdLib::Float]
-  def radius—2()
+  # @note Declared name is radius
+  def radius—7()
     return @radius
   end
-  
-  
   # @param [Ritournelle::Runtime::StdLib::Float] radius
   # @return [void]
-  def radius—3(radius)
+  # @note Declared name is radius=
+  def radius—8(radius)
     @radius = radius
   end
-  
   
   # @param [Ritournelle::Runtime::StdLib::Float] x
   # @param [Ritournelle::Runtime::StdLib::Float] y
@@ -104,21 +111,18 @@ class Circle
     @radius = radius
   end
   
-  
   # @return [void]
+  # @note Declared name is draw
   def draw—4()
   end
-  
-  
   # @return [Ritournelle::Runtime::StdLib::Float]
-  def x_plus2—5()
+  # @note Declared name is x_plus2
+  def x_plus2—9()
     return @x.plus_Float(Ritournelle::Runtime::StdLib::Float.new(2.0))
   end
-  
 end
 
-# @type [Circle]
-c =
+# @type [Drawable]
+d =
   Circle.new(0, Ritournelle::Runtime::StdLib::Float.new(1.0), Ritournelle::Runtime::StdLib::Float.new(2.0), Ritournelle::Runtime::StdLib::Float.new(3.0))
-c.draw—4()
-c.x—0()
+d.draw—4()

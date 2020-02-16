@@ -1,6 +1,4 @@
-class Ritournelle::IntermediateRepresentation::MethodDeclaration < Ritournelle::IntermediateRepresentation::Callable
-
-  include Ritournelle::IntermediateRepresentation::WithStatements
+class Ritournelle::IntermediateRepresentation::AbstractMethodDeclaration < Ritournelle::IntermediateRepresentation::Callable
 
   # @return [String]
   attr_reader :declared_name
@@ -28,12 +26,11 @@ class Ritournelle::IntermediateRepresentation::MethodDeclaration < Ritournelle::
     @parent = parent
     @declared_name = declared_name
     @return_class = return_class
-    @method_index = method_index
   end
 
   # :nocov:
   def to_s
-    "Method declaration #{return_class} #{@parent.name}##{declared_name}(" +
+    "Abstract method declaration #{return_class} #{@parent.name}##{declared_name}(" +
         0.upto(number_of_parameters - 1).map do |index|
           "#{parameters_classes[index]} #{parameters_names[index]}"
         end.join(', ') + ')'

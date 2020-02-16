@@ -40,6 +40,12 @@ Int n = self.add_two(m)
 Float o = self.add_two(10.0)
 Float p = self.add_two(o)
 
+interface Drawable
+
+  def abstract Void draw()
+
+end
+
 class Circle
   Float @x
   Float @y
@@ -55,7 +61,8 @@ class Circle
   end
 end
 
-Circle c = Circle.new(1.0, 2.0, 3.0)
+Drawable d = Circle.new(1.0, 2.0, 3.0)
+d.draw
 ----
 
 == Commands
