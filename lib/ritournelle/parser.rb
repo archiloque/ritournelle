@@ -42,10 +42,16 @@ class Ritournelle::Parser
   ASSIGN = "(?<name>@?#{VARIABLE_NAME}) = "
   METHOD_CALL = "(?<element>@?#{VARIABLE_NAME})\\.(?<method>#{METHOD_NAME})(?:\\((?<parameters>.*)\\))?\\z"
 
+  def self.declaration_param(index)
+    "(?<param_class_#{index}>#{CLASS_NAME}) (?<param_name_#{index}>#{VARIABLE_NAME})"
+  end
+
+  DECLARATION_PARAMETERS = "\\((#{declaration_param(0)}(, #{declaration_param(1)}(, #{declaration_param(2)}(, #{declaration_param(3)}(, #{declaration_param(4)})?)?)?)?)?\\)\\z"
+
   RX_DECLARE_VARIABLE = /\A(?<type>#{CLASS_NAME}) (?<name>#{VARIABLE_NAME})\z/
 
-  RX_DECLARE_METHOD = /\Adef (?<return_class>#{CLASS_NAME}) (?<name>#{METHOD_NAME})\(((?<param_class_0>#{CLASS_NAME}) (?<param_name_0>#{VARIABLE_NAME})(, (?<param_class_1>#{CLASS_NAME}) (?<param_name_1>#{VARIABLE_NAME})(, (?<param_class_2>#{CLASS_NAME}) (?<param_name_2>#{VARIABLE_NAME})(, (?<param_class_3>#{CLASS_NAME}) (?<param_name_3>#{VARIABLE_NAME})(, (?<param_class_4>#{CLASS_NAME}) (?<param_name_4>#{VARIABLE_NAME}))?)?)?)?)?\)\z/
-  RX_DECLARE_CONSTRUCTOR = /\Adef constructor\(((?<param_class_0>#{CLASS_NAME}) (?<param_name_0>#{VARIABLE_NAME})(, (?<param_class_1>#{CLASS_NAME}) (?<param_name_1>#{VARIABLE_NAME})(, (?<param_class_2>#{CLASS_NAME}) (?<param_name_2>#{VARIABLE_NAME})(, (?<param_class_3>#{CLASS_NAME}) (?<param_name_3>#{VARIABLE_NAME})(, (?<param_class_4>#{CLASS_NAME}) (?<param_name_4>#{VARIABLE_NAME}))?)?)?)?)?\)\z/
+  RX_DECLARE_METHOD = /\Adef (?<return_class>#{CLASS_NAME}) (?<name>#{METHOD_NAME})#{DECLARATION_PARAMETERS}/
+  RX_DECLARE_CONSTRUCTOR = /\Adef constructor#{DECLARATION_PARAMETERS}/
   RX_DECLARE_CLASS = /\Aclass (?<class>#{CLASS_NAME})\z/
   RX_DECLARE_CLASS_MEMBER = /\A(?<type>#{CLASS_NAME}) @(?<name>#{VARIABLE_NAME})(?<accessors>( #{GETTER}| #{SETTER}| #{GETTER} #{SETTER}| #{SETTER} #{GETTER})?)\z/
 
