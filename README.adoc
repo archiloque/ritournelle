@@ -41,12 +41,11 @@ Float o = self.add_two(10.0)
 Float p = self.add_two(o)
 
 interface Drawable
-
   def abstract Void draw()
-
 end
 
 class Circle
+  implements Drawable
   Float @x
   Float @y
   Float @radius
