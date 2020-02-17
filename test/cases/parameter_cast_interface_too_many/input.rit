@@ -1,0 +1,26 @@
+interface MyInterface1
+
+end
+
+interface MyInterface2
+
+end
+
+class MyClass
+  implements MyInterface1
+  implements MyInterface2
+
+  def constructor()
+  end
+
+end
+
+def Int add_two(MyInterface1 my_interface, Int value)
+  return value.plus(2)
+end
+def Int add_two(MyInterface2 my_interface, Int value)
+  return value.plus(2)
+end
+
+MyClass my_class = MyClass.new()
+self.add_two(my_class, 5)

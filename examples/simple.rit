@@ -62,5 +62,9 @@ class Circle
   end
 end
 
-Drawable d = Circle.new(1.0, 2.0, 3.0)
-d.draw
+def Void do_something(Drawable d)
+end
+
+Circle c = Circle.new(1.0, 2.0, 3.0)
+c.draw
+self.do_something(c)

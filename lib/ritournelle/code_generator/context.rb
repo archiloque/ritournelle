@@ -340,7 +340,7 @@ class Ritournelle::CodeGenerator::Context
   # @return [Ritournelle::IntermediateRepresentation::Callable]
   # @raise [RuntimeError]
   def find_callable(name:, parameters:, callables:, start_of_signature:, generator:)
-    parameters_classes = parameters.collect do |parameter|
+    parameters_classes_names = parameters.collect do |parameter|
       case parameter
       when Integer
         Ritournelle::BaseClasses::SMALL_INT_CLASS_NAME
@@ -356,12 +356,42 @@ class Ritournelle::CodeGenerator::Context
     end
     callable = callables.find do |possible_method|
       (possible_method.declared_name == name) &&
-          (possible_method.parameters_classes == parameters_classes)
+          (possible_method.parameters_classes == parameters_classes_names)
     end
-    if callable.nil?
-      generator.raise_error("Can't find callable [#{start_of_signature}(#{parameters_classes.join(', ')})]")
+    if callable
+      return callable
     end
-    callable
+    has_at_least_of_interface = false
+    possible_param_types = parameters_classes_names.map do |parameter_class_name|
+      parameter_class = find_class_declaration(name: parameter_class_name, generator: generator)
+      implemented_interfaces = parameter_class.implemented_interfaces
+      if implemented_interfaces.length > 0
+        has_at_least_of_interface = true
+      end
+      [parameter_class_name] + implemented_interfaces
+    end
+    if has_at_least_of_interface
+      if possible_param_types.length == 1
+        possible_combinations = possible_param_types[0].product()
+      else
+        possible_combinations = possible_param_types[0].product(*possible_param_types[1..-1])
+      end
+      candidates = []
+      possible_combinations.select do |possible_parameters_classes|
+        callables.each do |possible_method|
+          if (possible_method.declared_name == name) &&
+              (possible_method.parameters_classes == possible_parameters_classes)
+            candidates << possible_method
+          end
+        end
+      end
+      if candidates.length == 1
+        return candidates[0]
+      elsif candidates.length > 1
+        generator.raise_error("Callable [#{start_of_signature}(#{parameters_classes_names.join(', ')})] matched several candidates: #{candidates.map { |candidate| "#{start_of_signature}(#{candidate.parameters_classes.join(', ')})" }.join(', ')}")
+      end
+    end
+    generator.raise_error("Can't find callable [#{start_of_signature}(#{parameters_classes_names.join(', ')})]")
   end
 
 end

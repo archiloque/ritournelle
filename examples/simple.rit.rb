@@ -122,7 +122,13 @@ class Circle
   end
 end
 
-# @type [Drawable]
-d =
+# @param [Drawable] d
+# @return [void]
+# @note Declared name is do_something
+def do_something—10(d)
+end
+# @type [Circle]
+c =
   Circle.new(0, Ritournelle::Runtime::StdLib::Float.new(1.0), Ritournelle::Runtime::StdLib::Float.new(2.0), Ritournelle::Runtime::StdLib::Float.new(3.0))
-d.draw—4()
+c.draw—4()
+self.do_something—10(c)

@@ -1,0 +1,19 @@
+interface MyInterface
+
+  def Int add_two(Int value)
+
+end
+
+class MyClass
+  implements MyInterface
+
+  def constructor()
+  end
+
+  def Int add_two(Int value)
+    return value.plus(2)
+  end
+end
+
+MyInterface interface = MyClass.new()
+interface.add_two(5)

@@ -17,7 +17,7 @@ module Ritournelle::CodeGenerator::Callable
   def generate_parameters_rdoc(ir:, context:)
     0.upto(ir.number_of_parameters - 1).map do |parameter_index|
       parameter_class_name = ir.parameters_classes[parameter_index]
-      parameter_class = context.find_class_declaration(name: parameter_class_name, generator: self)
+      parameter_class = context.find_class_or_interface_declaration(name: parameter_class_name, generator: self)
       parameter_name = ir.parameters_names[parameter_index]
       "# @param [#{parameter_class.rdoc_name}] #{parameter_name}"
     end
