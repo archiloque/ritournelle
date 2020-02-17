@@ -20,13 +20,19 @@ class MyClass
 end
 
 # @param [MyInterface] my_interface
+# @return [void]
+# @note Declared name is do_nothing
+def do_nothing—0(my_interface)
+end
+# @param [MyInterface] my_interface
 # @param [Ritournelle::Runtime::StdLib::Int] value
 # @return [Ritournelle::Runtime::StdLib::Int]
 # @note Declared name is add_two
-def add_two—0(my_interface, value)
+def add_two—1(my_interface, value)
   return value.plus_Int(Ritournelle::Runtime::StdLib::Int.new(2))
 end
 # @type [MyClass]
 my_class =
   MyClass.new(0, )
-self.add_two—0(my_class, Ritournelle::Runtime::StdLib::Int.new(5))
+self.do_nothing—0(my_class)
+self.add_two—1(my_class, Ritournelle::Runtime::StdLib::Int.new(5))

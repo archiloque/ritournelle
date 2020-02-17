@@ -10,9 +10,13 @@ class MyClass
 
 end
 
+def Void do_nothing(MyInterface my_interface)
+end
+
 def Int add_two(MyInterface my_interface, Int value)
   return value.plus(2)
 end
 
 MyClass my_class = MyClass.new()
+self.do_nothing(my_class)
 self.add_two(my_class, 5)
