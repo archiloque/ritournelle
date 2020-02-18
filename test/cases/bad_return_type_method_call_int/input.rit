@@ -1,4 +1,3 @@
 def Float add_two(Int number)
-  Int i
-  return i
+  return number.plus(2)
 end

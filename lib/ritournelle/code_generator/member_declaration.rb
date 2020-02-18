@@ -8,8 +8,8 @@ class Ritournelle::CodeGenerator::MemberDeclaration < Ritournelle::CodeGenerator
   def initialize(ir:, context:)
     super(ir: ir, context: context)
     context.declare_member(
-        ir: ir,
-        generator: self)
+        ir: ir
+    )
     @result = []
   end
 end

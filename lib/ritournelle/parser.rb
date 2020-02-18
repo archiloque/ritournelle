@@ -321,6 +321,9 @@ class Ritournelle::Parser
   def parse_declare_member(match)
     short_name = match['name']
     name = "@#{short_name}"
+    if @stack.last.members.key?(name)
+      raise_error("Member [#{name}] already exists")
+    end
     type = match['type']
     accessors = match['accessors'].split(' ').map(&:strip)
     getter = accessors.include?(GETTER)

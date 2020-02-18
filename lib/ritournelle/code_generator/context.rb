@@ -104,16 +104,10 @@ class Ritournelle::CodeGenerator::Context
   end
 
   # @param [Ritournelle::IntermediateRepresentation::MemberDeclaration] ir
-  # @param [Ritournelle::CodeGenerator::Base] generator
   # @return [void]
   # @raise [RuntimeError]
-  def declare_member(ir:, generator:)
-    if @members.key?(ir.name)
-      generator.raise_error("Member [#{ir.name}] already exists in #{self}")
-    else
-      @members[ir.name] = Ritournelle::CodeGenerator::Context::Member.new(ir)
-    end
-
+  def declare_member(ir:)
+    @members[ir.name] = Ritournelle::CodeGenerator::Context::Member.new(ir)
   end
 
   # @param [String] name
