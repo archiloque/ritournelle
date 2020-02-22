@@ -6,7 +6,10 @@ class Ritournelle::IntermediateRepresentation::Variable < Ritournelle::Intermedi
 
   FORBIDDEN_NAMES = [
       KEYWORD_CLASS,
-      KEYWORD_RETURN
+      KEYWORD_RETURN,
+      KEYWORD_TRUE,
+      KEYWORD_FALSE,
+      KEYWORD_SELF,
   ]
 
   # @return [String]

@@ -3,6 +3,7 @@ end
 
 require_relative 'intermediate_representation/base'
 require_relative 'intermediate_representation/with_statements'
+require_relative 'intermediate_representation/call'
 require_relative 'intermediate_representation/callable'
 
 require_relative 'intermediate_representation/abstract_method_declaration'

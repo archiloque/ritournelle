@@ -40,6 +40,29 @@ class Ritournelle::IntermediateRepresentation::World
   end
 
   def load_stdlib
+    primitive_boolean_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
+        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
+        line_index: -1,
+        name: BOOLEAN_CLASS_NAME
+    )
+    classes_declarations[BOOLEAN_CLASS_NAME] = primitive_boolean_class
+
+    boolean_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
+        file_path: 'lib/ritournelle/boolermediate_representation/world.rb',
+        line_index: -1,
+        name: BOOLEAN_CLASS_NAME,
+        rdoc_name: Ritournelle::Runtime::StdLib::Bool.name
+    )
+    boolean_constructor = Ritournelle::IntermediateRepresentation::ConstructorDeclaration.new(
+        file_path: 'lib/ritournelle/boolermediate_representation/world.rb',
+        line_index: -1,
+        parent: boolean_class,
+        parameters_classes: [SMALL_BOOLEAN_CLASS_NAME],
+        parameters_names: ['value']
+    )
+    boolean_class.constructors << boolean_constructor
+    classes_declarations[BOOLEAN_CLASS_NAME] = boolean_class
+
     primitive_int_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,

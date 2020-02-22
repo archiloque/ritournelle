@@ -210,6 +210,7 @@ class Ritournelle::CodeGenerator::Context
     find_callable(
         name: method_call.method_name,
         parameters: method_call.parameters,
+        parameters_types: method_call.parameters_types,
         callables: caller_class.callables_declarations,
         start_of_signature: "#{caller_class.name}##{method_call.method_name}",
         generator: generator)
@@ -224,6 +225,7 @@ class Ritournelle::CodeGenerator::Context
     find_callable(
         name: 'constructor',
         parameters: constructor_call.parameters,
+        parameters_types: constructor_call.parameters_types,
         callables: clazz.constructors,
         start_of_signature: "#{clazz.name}#constructor",
         generator: generator)
@@ -328,24 +330,27 @@ class Ritournelle::CodeGenerator::Context
 
   # @param [String] name
   # @param [Array] parameters
+  # @param [Array<String>] parameters_types
   # @param [Array<Ritournelle::IntermediateRepresentation::Callable>] callables
   # @param [Ritournelle::CodeGenerator::Base] generator
   # @param [String] start_of_signature
   # @return [Ritournelle::IntermediateRepresentation::Callable]
   # @raise [RuntimeError]
-  def find_callable(name:, parameters:, callables:, start_of_signature:, generator:)
-    parameters_classes_names = parameters.collect do |parameter|
-      case parameter
-      when Integer
+  def find_callable(name:, parameters:, parameters_types:, callables:, start_of_signature:, generator:)
+    parameters_classes_names = parameters_types.map.with_index do |parameter_type, parameter_index|
+      case parameter_type
+      when Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_INTEGER
         Ritournelle::BaseClasses::SMALL_INT_CLASS_NAME
-      when Float
+      when Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_FLOAT
         Ritournelle::BaseClasses::SMALL_FLOAT_CLASS_NAME
-      when String
-        find_element(name: parameter, types_to_look_for: ELEMENT_ANY, generator: generator).type
-      when Ritournelle::IntermediateRepresentation::ConstructorCall
-        parameter.type
+      when Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_BOOLEAN
+        Ritournelle::BaseClasses::SMALL_BOOLEAN_CLASS_NAME
+      when Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_CONSTRUCTOR
+        parameters[parameter_index].type
+      when Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_OTHER
+        find_element(name: parameters[parameter_index], types_to_look_for: ELEMENT_ANY, generator: generator).type
       else
-        generator.raise_error(parameter.to_s)
+        generator.raise_error(parameter_type)
       end
     end
     callable = callables.find do |possible_method|

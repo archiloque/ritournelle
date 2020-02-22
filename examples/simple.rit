@@ -7,6 +7,8 @@ i.plus(j)
 Float f = 10.5
 Float g = j.to_float()
 
+Boolean b = true
+
 Float h = g
 
 def Int two()

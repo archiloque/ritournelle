@@ -14,6 +14,9 @@ f =
 # @type [Ritournelle::Runtime::StdLib::Float]
 g =
   j.to_float()
+# @type [Ritournelle::Runtime::StdLib::Bool]
+b =
+  Ritournelle::Runtime::StdLib::Bool.new(true)
 # @type [Ritournelle::Runtime::StdLib::Float]
 h = g
 # @return [Ritournelle::Runtime::StdLib::Int]
