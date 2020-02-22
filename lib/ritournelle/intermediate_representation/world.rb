@@ -96,6 +96,38 @@ class Ritournelle::IntermediateRepresentation::World
     int_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
+        declared_name: 'less_than',
+        implementation_name: 'less_than_Int',
+        parameters_classes: [INT_CLASS_NAME],
+        return_class: BOOLEAN_CLASS_NAME
+    )
+    int_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
+        line_index: -1,
+        declared_name: 'less_than_or_equal_to',
+        implementation_name: 'less_than_or_equal_to_Int',
+        parameters_classes: [INT_CLASS_NAME],
+        return_class: BOOLEAN_CLASS_NAME
+    )
+    int_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
+        line_index: -1,
+        declared_name: 'more_than',
+        implementation_name: 'more_than_Int',
+        parameters_classes: [INT_CLASS_NAME],
+        return_class: BOOLEAN_CLASS_NAME
+    )
+    int_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
+        line_index: -1,
+        declared_name: 'more_than_or_equal_to',
+        implementation_name: 'more_than_or_equal_to_Int',
+        parameters_classes: [INT_CLASS_NAME],
+        return_class: BOOLEAN_CLASS_NAME
+    )
+    int_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
+        line_index: -1,
         declared_name: 'to_float',
         implementation_name: 'to_float',
         parameters_classes: [],
@@ -134,7 +166,39 @@ class Ritournelle::IntermediateRepresentation::World
         parameters_classes: [FLOAT_CLASS_NAME],
         return_class: FLOAT_CLASS_NAME
     )
-
+    float_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
+        line_index: -1,
+        declared_name: 'less_than',
+        implementation_name: 'less_than_Float',
+        parameters_classes: [FLOAT_CLASS_NAME],
+        return_class: BOOLEAN_CLASS_NAME
+    )
+    float_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
+        line_index: -1,
+        declared_name: 'less_than_or_equal_to',
+        implementation_name: 'less_than_or_equal_to_Float',
+        parameters_classes: [FLOAT_CLASS_NAME],
+        return_class: BOOLEAN_CLASS_NAME
+    )
+    float_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
+        line_index: -1,
+        declared_name: 'more_than',
+        implementation_name: 'more_than_Float',
+        parameters_classes: [FLOAT_CLASS_NAME],
+        return_class: BOOLEAN_CLASS_NAME
+    )
+    float_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
+        line_index: -1,
+        declared_name: 'more_than_or_equal_to',
+        implementation_name: 'more_than_or_equal_to_Float',
+        parameters_classes: [FLOAT_CLASS_NAME],
+        return_class: BOOLEAN_CLASS_NAME
+    )
+    
     classes_declarations[FLOAT_CLASS_NAME] = float_class
 
     void_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(

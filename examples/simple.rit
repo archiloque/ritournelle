@@ -8,6 +8,7 @@ Float f = 10.5
 Float g = j.to_float()
 
 Boolean b = true
+b = i.less_than(j)
 
 Float h = g
 

@@ -17,6 +17,30 @@ class Ritournelle::Runtime::StdLib::Int
     Ritournelle::Runtime::StdLib::Float.new(@value.to_f)
   end
 
+  # @param [Ritournelle::Runtime::StdLib::Int] other_int
+  # @return [Ritournelle::Runtime::StdLib::Bool]
+  def less_than_Int(other_int)
+    Ritournelle::Runtime::StdLib::Bool.new(@value < other_int.value)
+  end
+
+  # @param [Ritournelle::Runtime::StdLib::Int] other_int
+  # @return [Ritournelle::Runtime::StdLib::Bool]
+  def less_than_or_equal_to_Int(other_int)
+    Ritournelle::Runtime::StdLib::Bool.new(@value <= other_int.value)
+  end
+
+  # @param [Ritournelle::Runtime::StdLib::Int] other_int
+  # @return [Ritournelle::Runtime::StdLib::Bool]
+  def more_than_Int(other_int)
+    Ritournelle::Runtime::StdLib::Bool.new(@value > other_int.value)
+  end
+
+  # @param [Ritournelle::Runtime::StdLib::Int] other_int
+  # @return [Ritournelle::Runtime::StdLib::Bool]
+  def more_than_or_equal_to_Int(other_int)
+    Ritournelle::Runtime::StdLib::Bool.new(@value >= other_int.value)
+  end
+  
   # :nocov:
   def to_s
     "Integer #{@value}"

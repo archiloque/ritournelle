@@ -17,6 +17,8 @@ g =
 # @type [Ritournelle::Runtime::StdLib::Bool]
 b =
   Ritournelle::Runtime::StdLib::Bool.new(true)
+b =
+  i.less_than_Int(j)
 # @type [Ritournelle::Runtime::StdLib::Float]
 h = g
 # @return [Ritournelle::Runtime::StdLib::Int]
