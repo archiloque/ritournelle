@@ -12,6 +12,12 @@ class Ritournelle::Runtime::StdLib::Integer
     Ritournelle::Runtime::StdLib::Integer.new(@value + other_Integer.value)
   end
 
+  # @param [Ritournelle::Runtime::StdLib::Integer] other_Integer
+  # @return [Ritournelle::Runtime::StdLib::Integer]
+  def minus_Integer(other_Integer)
+    Ritournelle::Runtime::StdLib::Integer.new(@value - other_Integer.value)
+  end
+
   # @return [Ritournelle::Runtime::StdLib::Float]
   def to_float()
     Ritournelle::Runtime::StdLib::Float.new(@value.to_f)

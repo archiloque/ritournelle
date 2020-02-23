@@ -82,6 +82,14 @@ class Ritournelle::IntermediateRepresentation::World
     integer_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
+        declared_name: 'minus',
+        implementation_name: 'minus_Integer',
+        parameters_classes: [INTEGER_CLASS_NAME],
+        return_class: INTEGER_CLASS_NAME
+    )
+    integer_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
+        line_index: -1,
         declared_name: 'equal_to',
         implementation_name: 'equal_to_Integer',
         parameters_classes: [INTEGER_CLASS_NAME],
@@ -150,6 +158,14 @@ class Ritournelle::IntermediateRepresentation::World
         line_index: -1,
         declared_name: 'plus',
         implementation_name: 'plus_Float',
+        parameters_classes: [FLOAT_CLASS_NAME],
+        return_class: FLOAT_CLASS_NAME
+    )
+    float_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
+        line_index: -1,
+        declared_name: 'minus',
+        implementation_name: 'minus_Float',
         parameters_classes: [FLOAT_CLASS_NAME],
         return_class: FLOAT_CLASS_NAME
     )

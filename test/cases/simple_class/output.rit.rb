@@ -35,4 +35,5 @@ end
 # @type [MyClass]
 m =
   MyClass.new(0, Ritournelle::Runtime::StdLib::Float.new(1.0), Ritournelle::Runtime::StdLib::Integer.new(2), Ritournelle::Runtime::StdLib::Integer.new(2))
+m.member3—1(Ritournelle::Runtime::StdLib::Integer.new(12))
 m.member2—0()

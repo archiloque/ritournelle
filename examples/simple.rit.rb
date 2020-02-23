@@ -143,5 +143,6 @@ end
 # @type [Circle]
 c =
   Circle.new(0, Ritournelle::Runtime::StdLib::Float.new(1.0), Ritournelle::Runtime::StdLib::Float.new(2.0), Ritournelle::Runtime::StdLib::Float.new(3.0))
+c.radius—8(Ritournelle::Runtime::StdLib::Float.new(12.0))
 c.draw—4()
 self.do_something—10(c)

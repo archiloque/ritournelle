@@ -15,4 +15,5 @@ class MyClass
 end
 
 MyClass m = MyClass.new(1.0, 2, 2)
+m.member3= 12
 m.member2()

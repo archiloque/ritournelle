@@ -74,6 +74,8 @@ d.draw
 bin/compile examples/simple.rit
 ----
 
+The Ruby generated file heavily use link:http://yardoc.org[Yard] annotations, you can run Yard on it to generate a documentation.
+
 === Run a file
 
 [source,sh]
@@ -87,6 +89,135 @@ bin/run examples/simple.rit.rb
 ----
 rake test
 ----
+
+== Syntax
+
+=== Default types
+
+==== Boolean
+
+[source]
+----
+Boolean b1 = true
+Boolean b2 = false
+----
+
+==== Integer
+
+[source]
+----
+Integer i1 = 2
+Integer i2 = i1.plus(2)
+Integer i3 = i1.minus(-10)
+Float i4 = i1.to_float
+
+Boolean b1 = i1.equal_to(i2)
+Boolean b2 = i1.less_than(i2)
+Boolean b3 = i1.less_than_or_equal_to(i2)
+Boolean b4 = i1.more_than(i2)
+Boolean b5 = i1.more_than_or_equal_to(i2)
+----
+
+==== Float
+
+==== Integer
+
+[source]
+----
+Float f1 = 2
+Float f2 = f1.plus(2)
+Float f3 = f1.minus(3)
+
+Boolean b1 = f1.equal_to(f2)
+Boolean b2 = f1.less_than(f2)
+Boolean b3 = f1.less_than_or_equal_to(f2)
+Boolean b4 = f1.more_than(f2)
+Boolean b5 = f1.more_than_or_equal_to(f2)
+----
+
+=== Methods
+
+You can skip parenthesis when calling a method without parameters
+
+[source]
+----
+def Integer add_two(Integer number)
+  return number.plus(2)
+end
+
+def Void do_nothing()
+end
+----
+
+=== Classes
+
+[source]
+----
+class Circle
+  Float @x
+  Float @y getter
+  Float @radius getter setter
+
+  def constructor(Float x, Float y, Float radius)
+    @x = x
+    @y = y
+    @radius = radius
+  end
+
+  def Void draw()
+  end
+end
+
+Circle c = Circle.new(1.0, 2.0, 3.0)
+c.y
+c.radius = 12
+c.draw
+
+----
+
+- Members start with an `@` and must be declared
+- Members are private
+- `getter` and `setter` creates methods to access the member
+
+=== Interfaces
+
+[source]
+----
+interface Drawable
+
+  def Void draw()
+
+end
+
+class Circle
+  implements Drawable
+
+  …
+
+  def Void draw()
+  end
+end
+
+Drawable d = Circle.new(1.0, 2.0, 3.0)
+----
+
+Interfaces declare methods that should be implemented by classes.
+
+=== Conditional expressions
+
+For the moment only `if` is implemented:
+
+[source]
+----
+Integer i = 10
+Integer j = -20
+
+if i.less_than(j)
+  i = 40
+end
+----
+
+The expression to be evaluated must return a boolean, there is no automatic cast from int or float to boolean.
 
 == How it works?
 

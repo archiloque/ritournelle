@@ -106,6 +106,7 @@ class Ritournelle::Parser
   RX_DECLARE_ASSIGN_VARIABLE = declare_assign_regex("@?#{VARIABLE_NAME}")
 
   RX_METHOD_CALL = /\A#{METHOD_CALL}/
+  RX_SETTER_CALL = /\A(?<element>@?#{VARIABLE_NAME})\.(?<method>#{METHOD_NAME})\ ?=\ ?(?:(?<parameters>.*))?\z/
 
   RX_RETURN_METHOD_CALL = /#{RETURN}#{METHOD_CALL}/
 
@@ -140,6 +141,7 @@ class Ritournelle::Parser
       {regex: RX_ASSIGN_VARIABLE_OR_MEMBER, method: :parse_assign_variable_or_member},
 
       {regex: RX_METHOD_CALL, method: :parse_method_call},
+      {regex: RX_SETTER_CALL, method: :parse_setter_call},
 
       {regex: RX_ASSIGN_METHOD_CALL, method: :parse_assign_method_call},
       {regex: RX_DECLARE_VARIABLE_ASSIGN_METHOD_CALL, method: :parse_declare_variable_assign_method_call},
@@ -369,6 +371,19 @@ class Ritournelle::Parser
         line_index: @line_index,
         element_name: match['element'],
         method_name: match['method'],
+        parameters: call_parameters.map { |v| v[:value] },
+        parameters_types: call_parameters.map { |v| v[:type] }
+    ))
+  end
+
+  # @param [MatchData] match
+  def parse_setter_call(match)
+    call_parameters = process_method_call_parameters(match)
+    add_statement(Ritournelle::IntermediateRepresentation::MethodCall.new(
+        file_path: @file_path,
+        line_index: @line_index,
+        element_name: match['element'],
+        method_name: "#{match['method']}=",
         parameters: call_parameters.map { |v| v[:value] },
         parameters_types: call_parameters.map { |v| v[:type] }
     ))

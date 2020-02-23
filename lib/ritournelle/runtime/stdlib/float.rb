@@ -13,6 +13,12 @@ class Ritournelle::Runtime::StdLib::Float
   end
 
   # @param [Ritournelle::Runtime::StdLib::Float] other_float
+  # @return [Ritournelle::Runtime::StdLib::Float]
+  def minus_Float(other_float)
+    Ritournelle::Runtime::StdLib::Float.new(@value - other_float.value)
+  end
+
+  # @param [Ritournelle::Runtime::StdLib::Float] other_float
   # @return [Ritournelle::Runtime::StdLib::Bool]
   def equal_to_Float(other_float)
     Ritournelle::Runtime::StdLib::Boolean.new(@value == other_float.value)
