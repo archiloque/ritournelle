@@ -19,6 +19,12 @@ class Ritournelle::Runtime::StdLib::Integer
 
   # @param [Ritournelle::Runtime::StdLib::Integer] other_Integer
   # @return [Ritournelle::Runtime::StdLib::Bool]
+  def equal_to_Integer(other_Integer)
+    Ritournelle::Runtime::StdLib::Boolean.new(@value == other_Integer.value)
+  end
+
+  # @param [Ritournelle::Runtime::StdLib::Integer] other_Integer
+  # @return [Ritournelle::Runtime::StdLib::Bool]
   def less_than_Integer(other_Integer)
     Ritournelle::Runtime::StdLib::Boolean.new(@value < other_Integer.value)
   end
