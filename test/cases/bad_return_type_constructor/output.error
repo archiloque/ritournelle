@@ -1,1 +1,1 @@
-Method declaration Int World#two() should return a Int but returns a Float
+Method declaration Integer World#two() should return a Integer but returns a Float

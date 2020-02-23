@@ -3,12 +3,13 @@ end
 
 require_relative 'intermediate_representation/base'
 require_relative 'intermediate_representation/with_statements'
-require_relative 'intermediate_representation/call'
+require_relative 'intermediate_representation/type'
 require_relative 'intermediate_representation/callable'
 
 require_relative 'intermediate_representation/abstract_method_declaration'
 require_relative 'intermediate_representation/assignment'
 require_relative 'intermediate_representation/class_declaration'
+require_relative 'intermediate_representation/conditional_expression'
 require_relative 'intermediate_representation/constructor_declaration'
 require_relative 'intermediate_representation/constructor_call'
 require_relative 'intermediate_representation/interface_declaration'

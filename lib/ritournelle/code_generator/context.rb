@@ -50,7 +50,7 @@ class Ritournelle::CodeGenerator::Context
   def generator(statement:, generator:)
     generator_class = Ritournelle::CodeGenerator::GENERATORS[statement.class]
     unless generator_class
-      generator.raise_error("Can't find a generator for [#{statement.class}]")
+      raise "Can't find a generator for [#{statement.class}]"
     end
     generator_class.new(ir: statement, context: self)
   end
@@ -339,15 +339,15 @@ class Ritournelle::CodeGenerator::Context
   def find_callable(name:, parameters:, parameters_types:, callables:, start_of_signature:, generator:)
     parameters_classes_names = parameters_types.map.with_index do |parameter_type, parameter_index|
       case parameter_type
-      when Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_INTEGER
-        Ritournelle::BaseClasses::SMALL_INT_CLASS_NAME
-      when Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_FLOAT
-        Ritournelle::BaseClasses::SMALL_FLOAT_CLASS_NAME
-      when Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_BOOLEAN
-        Ritournelle::BaseClasses::SMALL_BOOLEAN_CLASS_NAME
-      when Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_CONSTRUCTOR
+      when Ritournelle::IntermediateRepresentation::Type::TYPE_INTEGER
+        Ritournelle::BaseClasses::INTEGER_CLASS_NAME
+      when Ritournelle::IntermediateRepresentation::Type::TYPE_FLOAT
+        Ritournelle::BaseClasses::FLOAT_CLASS_NAME
+      when Ritournelle::IntermediateRepresentation::Type::TYPE_BOOLEAN
+        Ritournelle::BaseClasses::BOOLEAN_CLASS_NAME
+      when Ritournelle::IntermediateRepresentation::Type::TYPE_CONSTRUCTOR
         parameters[parameter_index].type
-      when Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_OTHER
+      when Ritournelle::IntermediateRepresentation::Type::VARIABLE_OR_MEMBER
         find_element(name: parameters[parameter_index], types_to_look_for: ELEMENT_ANY, generator: generator).type
       else
         generator.raise_error(parameter_type)

@@ -1,5 +1,5 @@
 interface MyInterface
-  def abstract Int member2_plus2(Int i)
+  def abstract Integer member2_plus2(Integer i)
 end
 
 class MyClass

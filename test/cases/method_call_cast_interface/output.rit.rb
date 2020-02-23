@@ -2,8 +2,8 @@
 # @!parse
 #   # @abstract
 #   module MyInterface
-#     # @param [Ritournelle::Runtime::StdLib::Int] value
-#     # @return [Ritournelle::Runtime::StdLib::Int]
+#     # @param [Ritournelle::Runtime::StdLib::Integer] value
+#     # @return [Ritournelle::Runtime::StdLib::Integer]
 #     # @abstract
 #     # @note Declared name is add_two
 #     def add_two—0(value)
@@ -24,15 +24,15 @@ class MyClass
   def initialize—0()
   end
   
-  # @param [Ritournelle::Runtime::StdLib::Int] value
-  # @return [Ritournelle::Runtime::StdLib::Int]
+  # @param [Ritournelle::Runtime::StdLib::Integer] value
+  # @return [Ritournelle::Runtime::StdLib::Integer]
   # @note Declared name is add_two
   def add_two—0(value)
-    return value.plus_Int(Ritournelle::Runtime::StdLib::Int.new(2))
+    return value.plus_Integer(Ritournelle::Runtime::StdLib::Integer.new(2))
   end
 end
 
 # @type [MyInterface]
 interface =
   MyClass.new(0, )
-interface.add_two—0(Ritournelle::Runtime::StdLib::Int.new(5))
+interface.add_two—0(Ritournelle::Runtime::StdLib::Integer.new(5))

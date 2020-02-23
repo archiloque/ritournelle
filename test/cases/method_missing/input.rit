@@ -1,4 +1,4 @@
-Int i
+Integer i
 i = 10
 Float f
 f = 10.5

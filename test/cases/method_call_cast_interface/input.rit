@@ -1,6 +1,6 @@
 interface MyInterface
 
-  def Int add_two(Int value)
+  def Integer add_two(Integer value)
 
 end
 
@@ -10,7 +10,7 @@ class MyClass
   def constructor()
   end
 
-  def Int add_two(Int value)
+  def Integer add_two(Integer value)
     return value.plus(2)
   end
 end

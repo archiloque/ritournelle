@@ -14,9 +14,10 @@ end
 require_relative 'code_generator/base'
 require_relative 'code_generator/callable'
 
-require_relative 'code_generator/abtract_method_declaration'
+require_relative 'code_generator/abstract_method_declaration'
 require_relative 'code_generator/assignment'
 require_relative 'code_generator/class_declaration'
+require_relative 'code_generator/conditional_expression'
 require_relative 'code_generator/constructor_declaration'
 require_relative 'code_generator/constructor_call'
 require_relative 'code_generator/interface_declaration'
@@ -31,9 +32,10 @@ require_relative 'code_generator/context'
 
 class Ritournelle::CodeGenerator
   GENERATORS = {
-      Ritournelle::IntermediateRepresentation::AbstractMethodDeclaration => Ritournelle::CodeGenerator::AbtractMethodDeclaration,
+      Ritournelle::IntermediateRepresentation::AbstractMethodDeclaration => Ritournelle::CodeGenerator::AbstractMethodDeclaration,
       Ritournelle::IntermediateRepresentation::Assignment => Ritournelle::CodeGenerator::Assignment,
       Ritournelle::IntermediateRepresentation::ClassDeclaration => Ritournelle::CodeGenerator::ClassDeclaration,
+      Ritournelle::IntermediateRepresentation::ConditionalExpression => Ritournelle::CodeGenerator::ConditionalExpression,
       Ritournelle::IntermediateRepresentation::ConstructorCall => Ritournelle::CodeGenerator::ConstructorCall,
       Ritournelle::IntermediateRepresentation::ConstructorDeclaration => Ritournelle::CodeGenerator::ConstructorDeclaration,
       Ritournelle::IntermediateRepresentation::InterfaceDeclaration => Ritournelle::CodeGenerator::InterfaceDeclaration,

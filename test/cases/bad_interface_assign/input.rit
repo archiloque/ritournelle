@@ -1,20 +1,20 @@
 interface MyInterface1
-  def abstract Int member2_plus2()
+  def abstract Integer member2_plus2()
 end
 
 interface MyInterface2
-  def abstract Int member2_plus2()
+  def abstract Integer member2_plus2()
 end
 
 class MyClass
   implements MyInterface1
-  Int @member2
+  Integer @member2
 
-  def constructor(Int member2)
+  def constructor(Integer member2)
     @member2 = member2
   end
 
-  def Int member2_plus2()
+  def Integer member2_plus2()
     return @member2.plus(2)
   end
 end

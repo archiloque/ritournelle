@@ -2,7 +2,7 @@
 # @!parse
 #   # @abstract
 #   module MyInterface
-#     # @return [Ritournelle::Runtime::StdLib::Int]
+#     # @return [Ritournelle::Runtime::StdLib::Integer]
 #     # @abstract
 #     # @note Declared name is member2_plus2
 #     def member2_plus2—0()
@@ -20,15 +20,15 @@ class MyClass1
     send("initialize—#{constructor_index}", *parameters)
   end
   
-  # @param [Ritournelle::Runtime::StdLib::Int] member2
+  # @param [Ritournelle::Runtime::StdLib::Integer] member2
   def initialize—0(member2)
     @member2 = member2
   end
   
-  # @return [Ritournelle::Runtime::StdLib::Int]
+  # @return [Ritournelle::Runtime::StdLib::Integer]
   # @note Declared name is member2_plus2
   def member2_plus2—0()
-    return @member2.plus_Int(Ritournelle::Runtime::StdLib::Int.new(2))
+    return @member2.plus_Integer(Ritournelle::Runtime::StdLib::Integer.new(2))
   end
 end
 
@@ -42,23 +42,23 @@ class MyClass2
     send("initialize—#{constructor_index}", *parameters)
   end
   
-  # @param [Ritournelle::Runtime::StdLib::Int] member2
+  # @param [Ritournelle::Runtime::StdLib::Integer] member2
   def initialize—0(member2)
     @member2 = member2
   end
   
-  # @return [Ritournelle::Runtime::StdLib::Int]
+  # @return [Ritournelle::Runtime::StdLib::Integer]
   # @note Declared name is member2_plus2
   def member2_plus2—0()
-    return @member2.plus_Int(Ritournelle::Runtime::StdLib::Int.new(2))
+    return @member2.plus_Integer(Ritournelle::Runtime::StdLib::Integer.new(2))
   end
 end
 
 # @type [MyInterface]
 m1 =
-  MyClass1.new(0, Ritournelle::Runtime::StdLib::Int.new(2))
+  MyClass1.new(0, Ritournelle::Runtime::StdLib::Integer.new(2))
 m1.member2_plus2—0()
 # @type [MyInterface]
 m2 =
-  MyClass2.new(0, Ritournelle::Runtime::StdLib::Int.new(2))
+  MyClass2.new(0, Ritournelle::Runtime::StdLib::Integer.new(2))
 m2.member2_plus2—0()

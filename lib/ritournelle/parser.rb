@@ -43,6 +43,7 @@ class Ritournelle::Parser
   GETTER = 'getter'
   SETTER = 'setter'
   RETURN = "\\Areturn "
+  IF = "\\Aif "
 
   ASSIGN = "(?<name>@?#{VARIABLE_NAME}) = "
   METHOD_CALL = "(?<element>@?#{VARIABLE_NAME})\\.(?<method>#{METHOD_NAME})(?:\\((?<parameters>.*)\\))?\\z"
@@ -67,6 +68,12 @@ class Ritournelle::Parser
   # @return [Regexp]
   def self.declare_assign_regex(type_regex)
     /\A(?<type>#{CLASS_NAME}) #{ASSIGN}(?<value>#{type_regex})\z/
+  end
+
+  # @param [String] type_regex
+  # @return [Regexp]
+  def self.if_regex(type_regex)
+    /#{IF}(?<value>#{type_regex})\z/
   end
 
   DECLARATION_PARAMETERS = "\\((#{declaration_param(0)}(, #{declaration_param(1)}(, #{declaration_param(2)}(, #{declaration_param(3)}(, #{declaration_param(4)})?)?)?)?)?\\)\\z"
@@ -112,6 +119,9 @@ class Ritournelle::Parser
   RX_PARAMETER_FLOAT = /\A(?<value>#{PRIMITIVE_FLOAT})\z/
   RX_PARAMETER_BOOLEAN = /\A(?<value>#{PRIMITIVE_BOOLEAN})\z/
 
+  RX_IF_VARIABLE_OR_MEMBER = if_regex("@?#{VARIABLE_NAME}")
+  RX_IF_METHOD_CALL = if_regex(METHOD_CALL)
+
   RX_END = /\Aend\z/
 
   RULES_IN_CODE = [
@@ -136,9 +146,17 @@ class Ritournelle::Parser
 
       {regex: RX_ASSIGN_CONSTRUCTOR_CALL, method: :parse_assign_constructor_call},
       {regex: RX_DECLARE_ASSIGN_CONSTRUCTOR_CALL, method: :parse_declare_assign_constructor_call},
+
+      {regex: RX_IF_VARIABLE_OR_MEMBER, method: :parse_if_variable_or_member},
+      {regex: RX_IF_METHOD_CALL, method: :parse_if_method_call},
   ]
 
   RULES_FOR_IN_CLASS_CODE = RULES_IN_CODE.concat(
+      [
+          {regex: RX_END, method: :parse_end},
+      ])
+
+  RULES_FOR_IN_CONDITIONAL_EXPRESSION = RULES_IN_CODE.concat(
       [
           {regex: RX_END, method: :parse_end},
       ])
@@ -170,7 +188,8 @@ class Ritournelle::Parser
               {regex: RX_RETURN_VARIABLE_OR_MEMBER, method: :parse_return_variable_or_member},
               {regex: RX_RETURN_METHOD_CALL, method: :parse_return_method_call},
           ]),
-      Ritournelle::IntermediateRepresentation::ConstructorDeclaration => RULES_FOR_IN_CLASS_CODE
+      Ritournelle::IntermediateRepresentation::ConstructorDeclaration => RULES_FOR_IN_CLASS_CODE,
+      Ritournelle::IntermediateRepresentation::ConditionalExpression => RULES_FOR_IN_CONDITIONAL_EXPRESSION
   }
 
   def parse_next_line
@@ -206,7 +225,8 @@ class Ritournelle::Parser
         file_path: @file_path,
         line_index: @line_index,
         value: match['value'],
-        parent: @stack.last
+        parent: @stack.last,
+        type: Ritournelle::IntermediateRepresentation::Type::VARIABLE_OR_MEMBER
     ))
   end
 
@@ -215,8 +235,8 @@ class Ritournelle::Parser
     parse_assign_primitive_value(
         name: match['name'],
         value: Integer(match['value']),
-        clazz: world.classes_declarations[INT_CLASS_NAME],
-        type: Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_INTEGER
+        clazz: world.classes_declarations[INTEGER_CLASS_NAME],
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_INTEGER
     )
   end
 
@@ -226,7 +246,7 @@ class Ritournelle::Parser
         name: match['name'],
         value: Float(match['value']),
         clazz: world.classes_declarations[FLOAT_CLASS_NAME],
-        type: Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_FLOAT
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_FLOAT
     )
   end
 
@@ -236,7 +256,7 @@ class Ritournelle::Parser
         name: match['name'],
         value: (match['value'] == 'true'),
         clazz: world.classes_declarations[BOOLEAN_CLASS_NAME],
-        type: Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_BOOLEAN
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_BOOLEAN
     )
   end
 
@@ -278,8 +298,8 @@ class Ritournelle::Parser
   def parse_return_integer(match)
     parse_return_primitive_value(
         value: Integer(match['value']),
-        clazz: world.classes_declarations[INT_CLASS_NAME],
-        type: Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_INTEGER
+        clazz: world.classes_declarations[INTEGER_CLASS_NAME],
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_INTEGER
     )
   end
 
@@ -288,7 +308,7 @@ class Ritournelle::Parser
     parse_return_primitive_value(
         value: Float(match['value']),
         clazz: world.classes_declarations[FLOAT_CLASS_NAME],
-        type: Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_FLOAT
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_FLOAT
     )
   end
 
@@ -297,7 +317,7 @@ class Ritournelle::Parser
     parse_return_primitive_value(
         value: match['value'] == true,
         clazz: world.classes_declarations[BOOLEAN_CLASS_NAME],
-        type: Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_BOOLEAN
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_BOOLEAN
 
     )
   end
@@ -336,6 +356,7 @@ class Ritournelle::Parser
         file_path: @file_path,
         line_index: @line_index,
         value: constructor_call,
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_CONSTRUCTOR,
         parent: @stack.last)
     )
   end
@@ -417,6 +438,7 @@ class Ritournelle::Parser
           file_path: @file_path,
           line_index: @line_index,
           value: name,
+          type: Ritournelle::IntermediateRepresentation::Type::VARIABLE_OR_MEMBER,
           parent: method
       ))
       @stack.pop
@@ -523,6 +545,7 @@ class Ritournelle::Parser
         file_path: @file_path,
         line_index: @line_index,
         value: method_call,
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_METHOD_CALL,
         parent: @stack.last
     ))
   end
@@ -609,49 +632,83 @@ class Ritournelle::Parser
       c = call_parameter.strip
       if RX_PARAMETER_INT.match(c)
         {
-            type: Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_CONSTRUCTOR,
+            type: Ritournelle::IntermediateRepresentation::Type::TYPE_CONSTRUCTOR,
             value:
                 Ritournelle::IntermediateRepresentation::ConstructorCall.new(
                     file_path: @file_path,
                     line_index: @line_index,
                     parameters: [Integer(c)],
-                    type: world.classes_declarations[INT_CLASS_NAME].name,
-                    parameters_types: [Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_INTEGER]
+                    type: world.classes_declarations[INTEGER_CLASS_NAME].name,
+                    parameters_types: [Ritournelle::IntermediateRepresentation::Type::TYPE_INTEGER]
                 )
         }
       elsif RX_PARAMETER_FLOAT.match(c)
         {
-            type: Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_CONSTRUCTOR,
+            type: Ritournelle::IntermediateRepresentation::Type::TYPE_CONSTRUCTOR,
             value:
                 Ritournelle::IntermediateRepresentation::ConstructorCall.new(
                     file_path: @file_path,
                     line_index: @line_index,
                     parameters: [Float(c)],
                     type: world.classes_declarations[FLOAT_CLASS_NAME].name,
-                    parameters_types: [Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_FLOAT]
+                    parameters_types: [Ritournelle::IntermediateRepresentation::Type::TYPE_FLOAT]
                 )
         }
       elsif RX_PARAMETER_BOOLEAN.match(c)
         {
-            type: Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_CONSTRUCTOR,
+            type: Ritournelle::IntermediateRepresentation::Type::TYPE_CONSTRUCTOR,
             value:
                 Ritournelle::IntermediateRepresentation::ConstructorCall.new(
                     file_path: @file_path,
                     line_index: @line_index,
                     parameters: [c == 'true'],
                     type: world.classes_declarations[BOOLEAN_CLASS_NAME].name,
-                    parameters_types: [Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_BOOLEAN]
+                    parameters_types: [Ritournelle::IntermediateRepresentation::Type::TYPE_BOOLEAN]
                 )
         }
       else
         {
-            type: Ritournelle::IntermediateRepresentation::Call::PARAMETER_TYPE_OTHER,
+            type: Ritournelle::IntermediateRepresentation::Type::VARIABLE_OR_MEMBER,
             value: c
         }
       end
     end
   end
 
+  # @param [MatchData] match
+  def parse_if_variable_or_member(match)
+    value = match['value']
+    conditional_expression = Ritournelle::IntermediateRepresentation::ConditionalExpression.new(
+        file_path: @file_path,
+        line_index: @line_index,
+        conditional_statement: value,
+        conditional_statement_type: Ritournelle::IntermediateRepresentation::Type::VARIABLE_OR_MEMBER,
+    )
+    add_statement(conditional_expression)
+    @stack << conditional_expression
+  end
+
+  # @param [MatchData] match
+  def parse_if_method_call(match)
+    call_parameters = process_method_call_parameters(match)
+    method_call = Ritournelle::IntermediateRepresentation::MethodCall.new(
+        file_path: @file_path,
+        line_index: @line_index,
+        element_name: match['element'],
+        method_name: match['method'],
+        parameters: call_parameters.map { |v| v[:value] },
+        parameters_types: call_parameters.map { |v| v[:type] }
+    )
+    value = match['value']
+    conditional_expression = Ritournelle::IntermediateRepresentation::ConditionalExpression.new(
+        file_path: @file_path,
+        line_index: @line_index,
+        conditional_statement: method_call,
+        conditional_statement_type: Ritournelle::IntermediateRepresentation::Type::TYPE_METHOD_CALL,
+        )
+    add_statement(conditional_expression)
+    @stack << conditional_expression
+  end
   # @param [String] message
   # @raise [RuntimeError]
   def raise_error(message)

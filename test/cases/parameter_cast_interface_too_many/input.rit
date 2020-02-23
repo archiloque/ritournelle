@@ -15,10 +15,10 @@ class MyClass
 
 end
 
-def Int add_two(MyInterface1 my_interface, Int value)
+def Integer add_two(MyInterface1 my_interface, Integer value)
   return value.plus(2)
 end
-def Int add_two(MyInterface2 my_interface, Int value)
+def Integer add_two(MyInterface2 my_interface, Integer value)
   return value.plus(2)
 end
 

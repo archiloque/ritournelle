@@ -40,92 +40,78 @@ class Ritournelle::IntermediateRepresentation::World
   end
 
   def load_stdlib
-    primitive_boolean_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
+    boolean_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
-        name: BOOLEAN_CLASS_NAME
-    )
-    classes_declarations[BOOLEAN_CLASS_NAME] = primitive_boolean_class
-
-    boolean_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
-        file_path: 'lib/ritournelle/boolermediate_representation/world.rb',
-        line_index: -1,
         name: BOOLEAN_CLASS_NAME,
-        rdoc_name: Ritournelle::Runtime::StdLib::Bool.name
+        rdoc_name: Ritournelle::Runtime::StdLib::Boolean.name
     )
     boolean_constructor = Ritournelle::IntermediateRepresentation::ConstructorDeclaration.new(
-        file_path: 'lib/ritournelle/boolermediate_representation/world.rb',
+        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         parent: boolean_class,
-        parameters_classes: [SMALL_BOOLEAN_CLASS_NAME],
+        parameters_classes: [BOOLEAN_CLASS_NAME],
         parameters_names: ['value']
     )
     boolean_class.constructors << boolean_constructor
     classes_declarations[BOOLEAN_CLASS_NAME] = boolean_class
 
-    primitive_int_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
+    integer_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
-        name: SMALL_INT_CLASS_NAME
-    )
-    classes_declarations[SMALL_INT_CLASS_NAME] = primitive_int_class
-
-    int_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
-        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
-        line_index: -1,
-        name: INT_CLASS_NAME,
-        rdoc_name: Ritournelle::Runtime::StdLib::Int.name
+        name: INTEGER_CLASS_NAME,
+        rdoc_name: Ritournelle::Runtime::StdLib::Integer.name
     )
     int_constructor = Ritournelle::IntermediateRepresentation::ConstructorDeclaration.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
-        parent: int_class,
-        parameters_classes: [SMALL_INT_CLASS_NAME],
+        parent: integer_class,
+        parameters_classes: [INTEGER_CLASS_NAME],
         parameters_names: ['value']
     )
-    int_class.constructors << int_constructor
+    integer_class.constructors << int_constructor
 
-    int_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+    integer_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         declared_name: 'plus',
-        implementation_name: 'plus_Int',
-        parameters_classes: [INT_CLASS_NAME],
-        return_class: INT_CLASS_NAME
+        implementation_name: 'plus_Integer',
+        parameters_classes: [INTEGER_CLASS_NAME],
+        return_class: INTEGER_CLASS_NAME
     )
-    int_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+    integer_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         declared_name: 'less_than',
-        implementation_name: 'less_than_Int',
-        parameters_classes: [INT_CLASS_NAME],
+        implementation_name: 'less_than_Integer',
+        parameters_classes: [INTEGER_CLASS_NAME],
         return_class: BOOLEAN_CLASS_NAME
     )
-    int_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+    integer_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         declared_name: 'less_than_or_equal_to',
-        implementation_name: 'less_than_or_equal_to_Int',
-        parameters_classes: [INT_CLASS_NAME],
+        implementation_name: 'less_than_or_equal_to_Integer',
+        parameters_classes: [INTEGER_CLASS_NAME],
         return_class: BOOLEAN_CLASS_NAME
     )
-    int_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+    integer_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         declared_name: 'more_than',
-        implementation_name: 'more_than_Int',
-        parameters_classes: [INT_CLASS_NAME],
+        implementation_name: 'more_than_Integer',
+        parameters_classes: [INTEGER_CLASS_NAME],
         return_class: BOOLEAN_CLASS_NAME
     )
-    int_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+    integer_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         declared_name: 'more_than_or_equal_to',
-        implementation_name: 'more_than_or_equal_to_Int',
-        parameters_classes: [INT_CLASS_NAME],
+        implementation_name: 'more_than_or_equal_to_Integer',
+        parameters_classes: [INTEGER_CLASS_NAME],
         return_class: BOOLEAN_CLASS_NAME
     )
-    int_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
+    integer_class.methods_declarations << Ritournelle::IntermediateRepresentation::IntrinsicMethod.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         declared_name: 'to_float',
@@ -134,14 +120,7 @@ class Ritournelle::IntermediateRepresentation::World
         return_class: FLOAT_CLASS_NAME
     )
 
-    classes_declarations[INT_CLASS_NAME] = int_class
-
-    primitive_float_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
-        file_path: 'lib/ritournelle/intermediate_representation/world.rb',
-        line_index: -1,
-        name: SMALL_FLOAT_CLASS_NAME
-    )
-    classes_declarations[SMALL_FLOAT_CLASS_NAME] = primitive_float_class
+    classes_declarations[INTEGER_CLASS_NAME] = integer_class
 
     float_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
@@ -153,7 +132,7 @@ class Ritournelle::IntermediateRepresentation::World
         file_path: 'lib/ritournelle/intermediate_representation/world.rb',
         line_index: -1,
         parent: float_class,
-        parameters_classes: [SMALL_FLOAT_CLASS_NAME],
+        parameters_classes: [FLOAT_CLASS_NAME],
         parameters_names: ['value']
     )
     float_class.constructors << float_constructor

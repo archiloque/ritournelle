@@ -1,0 +1,10 @@
+Boolean b = true
+Integer i = 10
+
+if b
+  i = i.plus(10)
+end
+
+if i.more_than(10)
+  i = i.plus(10)
+end

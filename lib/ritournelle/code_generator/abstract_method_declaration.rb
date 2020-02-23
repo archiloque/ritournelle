@@ -1,4 +1,4 @@
-class Ritournelle::CodeGenerator::AbtractMethodDeclaration < Ritournelle::CodeGenerator::Base
+class Ritournelle::CodeGenerator::AbstractMethodDeclaration < Ritournelle::CodeGenerator::Base
 
   include Ritournelle::CodeGenerator::Callable
 

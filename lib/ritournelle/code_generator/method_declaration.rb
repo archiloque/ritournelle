@@ -20,10 +20,7 @@ class Ritournelle::CodeGenerator::MethodDeclaration < Ritournelle::CodeGenerator
     result << "# @note Declared name is #{ir.declared_name}"
     @result << generate_signature(ir)
     @result.concat(generate_body(ir))
-    @result.concat(
-        [
-            "end"
-        ])
+    @result << 'end'
   end
 
 end

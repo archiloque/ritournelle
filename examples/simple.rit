@@ -1,6 +1,7 @@
-Int i = 10
-Int j = 20
-Int k
+Integer w
+Integer i = 10
+Integer j = 20
+Integer k
 j = 20
 i.plus(10)
 i.plus(j)
@@ -10,22 +11,29 @@ Float g = j.to_float()
 Boolean b = true
 b = i.less_than(j)
 
+if b
+  i = 30
+end
+if i.less_than(j)
+  i = 40
+end
+
 Float h = g
 
-def Int two()
-    Int t = 2
+def Integer two()
+    Integer t = 2
     return 2
 end
 
-def Int three()
-    Int t = 3
+def Integer three()
+    Integer t = 3
     return t
 end
 
-Int l
+Integer l
 l = self.two()
 
-def Int add_two(Int number)
+def Integer add_two(Integer number)
     return number.plus(2)
 end
 
@@ -33,8 +41,8 @@ def Float add_two(Float number)
     return number.plus(2.0)
 end
 
-Int m = self.add_two(10)
-Int n = self.add_two(m)
+Integer m = self.add_two(10)
+Integer n = self.add_two(m)
 
 Float o = self.add_two(10.0)
 Float p = self.add_two(o)

@@ -1,15 +1,15 @@
-# @param [Ritournelle::Runtime::StdLib::Int] number
-# @return [Ritournelle::Runtime::StdLib::Int]
+# @param [Ritournelle::Runtime::StdLib::Integer] number
+# @return [Ritournelle::Runtime::StdLib::Integer]
 # @note Declared name is add_two
 def add_two—0(number)
-  return number.plus_Int(Ritournelle::Runtime::StdLib::Int.new(2))
+  return number.plus_Integer(Ritournelle::Runtime::StdLib::Integer.new(2))
 end
-# @type [Ritournelle::Runtime::StdLib::Int]
+# @type [Ritournelle::Runtime::StdLib::Integer]
 i =
-  Ritournelle::Runtime::StdLib::Int.new(10)
-# @type [Ritournelle::Runtime::StdLib::Int]
+  Ritournelle::Runtime::StdLib::Integer.new(10)
+# @type [Ritournelle::Runtime::StdLib::Integer]
 j =
   self.add_two—0(i)
-# @type [Ritournelle::Runtime::StdLib::Int]
+# @type [Ritournelle::Runtime::StdLib::Integer]
 k =
-  self.add_two—0(Ritournelle::Runtime::StdLib::Int.new(10))
+  self.add_two—0(Ritournelle::Runtime::StdLib::Integer.new(10))

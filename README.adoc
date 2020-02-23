@@ -1,3 +1,4 @@
+
 = Ritournelle
 
 A WIP toy language, see link:https://archiloque.net/blog/prog-lang-idea/[here] for some info.
@@ -10,9 +11,9 @@ What you can do with current code:
 
 [source]
 ----
-Int i = 10
-Int j = 20
-Int k
+Integer i = 10
+Integer j = 20
+Integer k
 i.plus(10)
 i.plus(j)
 Float f = 10.5
@@ -20,13 +21,13 @@ Float g = j.to_float()
 
 Float h = g
 
-def Int two()
+def Integer two()
     return 2
 end
 
-Int l = self.two()
+Integer l = self.two()
 
-def Int add_two(Int number)
+def Integer add_two(Integer number)
     return number.plus(2)
 end
 
@@ -34,8 +35,8 @@ def Float add_two(Float number)
     return number.plus(2.0)
 end
 
-Int m = self.add_two(10)
-Int n = self.add_two(m)
+Integer m = self.add_two(10)
+Integer n = self.add_two(m)
 
 Float o = self.add_two(10.0)
 Float p = self.add_two(o)

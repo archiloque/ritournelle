@@ -1,3 +1,3 @@
-def Int add_two(Int number)
+def Integer add_two(Integer number)
   return i.plus(2)
 end

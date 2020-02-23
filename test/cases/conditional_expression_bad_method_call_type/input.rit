@@ -1,0 +1,5 @@
+Integer i = 10
+
+if i.plus(10)
+  i = i.plus(10)
+end

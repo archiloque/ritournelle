@@ -1,3 +1,0 @@
-def Float add_two(Int number)
-  return number.plus(2)
-end

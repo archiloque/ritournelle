@@ -1,1 +1,1 @@
-Callable [World#add_two(MyClass, Int)] matched several candidates: World#add_two(MyInterface1, Int), World#add_two(MyInterface2, Int)
+Callable [World#add_two(MyClass, Integer)] matched several candidates: World#add_two(MyInterface1, Integer), World#add_two(MyInterface2, Integer)

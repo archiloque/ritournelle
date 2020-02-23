@@ -1,4 +1,4 @@
-class Ritournelle::Runtime::StdLib::Bool
+class Ritournelle::Runtime::StdLib::Boolean
 
   attr_reader :value
 

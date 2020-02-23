@@ -13,7 +13,7 @@ end
 def Void do_nothing(MyInterface my_interface)
 end
 
-def Int add_two(MyInterface my_interface, Int value)
+def Integer add_two(MyInterface my_interface, Integer value)
   return value.plus(2)
 end
 

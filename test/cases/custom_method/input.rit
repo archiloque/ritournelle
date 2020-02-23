@@ -1,7 +1,7 @@
-def Int add_two(Int number)
+def Integer add_two(Integer number)
   return number.plus(2)
 end
 
-Int i = 10
-Int j = self.add_two(i)
-Int k = self.add_two(10)
+Integer i = 10
+Integer j = self.add_two(i)
+Integer k = self.add_two(10)
