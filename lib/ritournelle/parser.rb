@@ -699,7 +699,6 @@ class Ritournelle::Parser
         parameters: call_parameters.map { |v| v[:value] },
         parameters_types: call_parameters.map { |v| v[:type] }
     )
-    value = match['value']
     conditional_expression = Ritournelle::IntermediateRepresentation::ConditionalExpression.new(
         file_path: @file_path,
         line_index: @line_index,
