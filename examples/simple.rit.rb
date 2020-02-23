@@ -3,7 +3,7 @@ i =
   Ritournelle::Runtime::StdLib::Integer.new(10)
 # @type [Ritournelle::Runtime::StdLib::Integer]
 j =
-  Ritournelle::Runtime::StdLib::Integer.new(20)
+  Ritournelle::Runtime::StdLib::Integer.new(-20)
 j =
   Ritournelle::Runtime::StdLib::Integer.new(20)
 i.plus_Integer(Ritournelle::Runtime::StdLib::Integer.new(10))

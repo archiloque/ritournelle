@@ -1,6 +1,6 @@
 Integer w
 Integer i = 10
-Integer j = 20
+Integer j = -20
 Integer k
 j = 20
 i.plus(10)
