@@ -22,6 +22,9 @@ class Ritournelle::IntermediateRepresentation::ClassDeclaration < Ritournelle::I
   # @return [Array<String>]
   attr_reader :implemented_interfaces
 
+  # @return [Array<Ritournelle::IntermediateRepresentation::GenericDeclaration>]
+  attr_reader :generics_declarations
+
   # @param [String] file_path
   # @param [Integer] line_index
   # @param [String] name
@@ -33,6 +36,7 @@ class Ritournelle::IntermediateRepresentation::ClassDeclaration < Ritournelle::I
     @methods_declarations = []
     @implemented_interfaces = []
     @members = {}
+    @generics_declarations = []
   end
 
   # :nocov:

@@ -1,6 +1,6 @@
 require_relative '../keywords'
 
-class Ritournelle::IntermediateRepresentation::Variable < Ritournelle::IntermediateRepresentation::Base
+class Ritournelle::IntermediateRepresentation::VariableDeclaration < Ritournelle::IntermediateRepresentation::Base
 
   include Ritournelle::Keywords
 
@@ -18,17 +18,22 @@ class Ritournelle::IntermediateRepresentation::Variable < Ritournelle::Intermedi
   # @return [String]
   attr_reader :name
 
+  # @return [Array<String>]
+  attr_reader :generics
+
   # @param [String] file_path
   # @param [Integer] line_index
   # @param [String] type
   # @param [String] name
-  def initialize(file_path:, line_index:, type:, name:)
+  # @param [Array<String>] generics
+  def initialize(file_path:, line_index:, type:, name:, generics:)
     super(file_path: file_path, line_index: line_index)
     @type = type
     if FORBIDDEN_NAMES.include?(name)
       raise_error("Forbidden variable name [#{name}]")
     end
     @name = name
+    @generics = generics
   end
 
   # :nocov:

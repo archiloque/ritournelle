@@ -11,7 +11,12 @@ class Ritournelle::CodeGenerator::AbstractMethodDeclaration < Ritournelle::CodeG
     super(ir: ir, context: context)
     @result = []
     @result.concat(generate_parameters_rdoc(ir: ir, context: context))
-    result << "# @return [#{context.find_class_declaration(name: ir.return_class, generator: self).rdoc_name}]"
+    rdoc_name = context.find_class_like_declaration(
+        name: ir.return_class,
+        types_to_look_for: Ritournelle::CodeGenerator::Context::TYPE_CLASS,
+        generator: self
+    ).rdoc_name
+    result << "# @return [#{rdoc_name}]"
     result << "# @abstract"
     result << "# @note Declared name is #{ir.declared_name}"
     @result << generate_signature(ir)

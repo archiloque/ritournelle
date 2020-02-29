@@ -11,6 +11,11 @@ class Ritournelle::CodeGenerator::ClassDeclaration < Ritournelle::CodeGenerator:
         statement: ir,
         context_type: Ritournelle::CodeGenerator::Context::CONTEXT_TYPE_CLASS)
     super(ir: ir, context: class_context)
+    ir.generics_declarations.each do |generic_declaration|
+      class_context.declare_generic(
+          generic_declaration: generic_declaration
+      )
+    end
     validate_interfaces_implementations(ir: ir, context: context)
     @result = [
         "",
@@ -46,7 +51,11 @@ class Ritournelle::CodeGenerator::ClassDeclaration < Ritournelle::CodeGenerator:
   # @param [Ritournelle::CodeGenerator::Context] context
   def validate_interfaces_implementations(ir:, context:)
     ir.implemented_interfaces.each do |interface_name|
-      interface_declaration = context.find_interface_declaration(name: interface_name, generator: self)
+      interface_declaration = context.find_class_like_declaration(
+          name: interface_name,
+          types_to_look_for: Ritournelle::CodeGenerator::Context::TYPE_INTERFACE,
+          generator: self
+      )
       interface_declaration.abstract_methods_declarations.each do |abstract_method_definition|
         found_method = ir.methods_declarations.any? do |method_declaration|
           (abstract_method_definition.declared_name == method_declaration.declared_name) &&

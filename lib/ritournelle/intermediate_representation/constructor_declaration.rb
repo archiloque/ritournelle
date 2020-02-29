@@ -30,7 +30,7 @@ class Ritournelle::IntermediateRepresentation::ConstructorDeclaration < Ritourne
 
   # @return [String]
   def declared_name
-    'constructor'
+    Ritournelle::Keywords::KEYWORD_CONSTRUCTOR
   end
 
   # :nocov:

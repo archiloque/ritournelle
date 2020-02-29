@@ -47,6 +47,7 @@ class Ritournelle::Parser
 
   ASSIGN = "(?<name>@?#{VARIABLE_NAME}) = "
   METHOD_CALL = "(?<element>@?#{VARIABLE_NAME})\\.(?<method>#{METHOD_NAME})(?:\\((?<parameters>.*)\\))?\\z"
+  GENERICS_LIST = "(<(?<generics>(:?#{CLASS_NAME}, *)*)(?<last_generic>#{CLASS_NAME})>)?"
 
   def self.declaration_param(index)
     "(?<param_class_#{index}>#{CLASS_NAME}) (?<param_name_#{index}>#{VARIABLE_NAME})"
@@ -67,7 +68,7 @@ class Ritournelle::Parser
   # @param [String] type_regex
   # @return [Regexp]
   def self.declare_assign_regex(type_regex)
-    /\A(?<type>#{CLASS_NAME}) #{ASSIGN}(?<value>#{type_regex})\z/
+    /\A(?<type>#{CLASS_NAME})#{GENERICS_LIST} #{ASSIGN}(?<value>#{type_regex})\z/
   end
 
   # @param [String] type_regex
@@ -78,12 +79,12 @@ class Ritournelle::Parser
 
   DECLARATION_PARAMETERS = "\\((#{declaration_param(0)}(, #{declaration_param(1)}(, #{declaration_param(2)}(, #{declaration_param(3)}(, #{declaration_param(4)})?)?)?)?)?\\)\\z"
 
-  RX_DECLARE_VARIABLE = /\A(?<type>#{CLASS_NAME}) (?<name>#{VARIABLE_NAME})\z/
+  RX_DECLARE_VARIABLE = /\A(?<type>#{CLASS_NAME})#{GENERICS_LIST} (?<name>#{VARIABLE_NAME})\z/
 
   RX_DECLARE_ABSTRACT_METHOD = /\Adef abstract (?<return_class>#{CLASS_NAME}) (?<name>#{METHOD_NAME})#{DECLARATION_PARAMETERS}/
   RX_DECLARE_METHOD = /\Adef (?<return_class>#{CLASS_NAME}) (?<name>#{METHOD_NAME})#{DECLARATION_PARAMETERS}/
-  RX_DECLARE_CONSTRUCTOR = /\Adef constructor#{DECLARATION_PARAMETERS}/
-  RX_DECLARE_CLASS = /\Aclass (?<name>#{CLASS_NAME})\z/
+  RX_DECLARE_CONSTRUCTOR = /\Adef #{KEYWORD_CONSTRUCTOR}#{DECLARATION_PARAMETERS}/
+  RX_DECLARE_CLASS = /\Aclass (?<name>#{CLASS_NAME})#{GENERICS_LIST}\z/
   RX_DECLARE_INTERFACE = /\Ainterface (?<name>#{CLASS_NAME})\z/
 
   RX_DECLARE_IMPLEMENTED_INTERFACE = /\Aimplements (?<type>#{CLASS_NAME})\z/
@@ -111,10 +112,10 @@ class Ritournelle::Parser
   RX_RETURN_METHOD_CALL = /#{RETURN}#{METHOD_CALL}/
 
   RX_ASSIGN_METHOD_CALL = /\A#{ASSIGN}#{METHOD_CALL}/
-  RX_DECLARE_VARIABLE_ASSIGN_METHOD_CALL = /\A(?<type>#{CLASS_NAME}) #{ASSIGN}#{METHOD_CALL}/
+  RX_DECLARE_VARIABLE_ASSIGN_METHOD_CALL = /\A(?<type>#{CLASS_NAME})#{GENERICS_LIST} #{ASSIGN}#{METHOD_CALL}/
 
-  RX_ASSIGN_CONSTRUCTOR_CALL = /\A#{ASSIGN}(?<class>#{CLASS_NAME})\.new\((?<parameters>.*)\)\z/
-  RX_DECLARE_ASSIGN_CONSTRUCTOR_CALL = /\A(?<type>#{CLASS_NAME}) #{ASSIGN}(?<class>#{CLASS_NAME})\.new\((?<parameters>.*)\)\z/
+  RX_ASSIGN_CONSTRUCTOR_CALL = /\A#{ASSIGN}(?<class>#{CLASS_NAME})#{GENERICS_LIST}\.new\((?<parameters>.*)\)\z/
+  RX_DECLARE_ASSIGN_CONSTRUCTOR_CALL = /\A(?<type>#{CLASS_NAME})#{GENERICS_LIST} #{ASSIGN}(?<class>#{CLASS_NAME})#{GENERICS_LIST}\.new\((?<parameters>.*)\)\z/
 
   RX_PARAMETER_INT = /\A(?<value>#{PRIMITIVE_INT})\z/
   RX_PARAMETER_FLOAT = /\A(?<value>#{PRIMITIVE_FLOAT})\z/
@@ -213,11 +214,16 @@ class Ritournelle::Parser
 
   # @param [MatchData] match
   def parse_declare_variable(match)
-    add_statement(Ritournelle::IntermediateRepresentation::Variable.new(
-        file_path: @file_path,
-        line_index: @line_index,
-        type: match['type'],
-        name: match['name'])
+    generics = extract_generics(match)
+
+    add_statement(
+        Ritournelle::IntermediateRepresentation::VariableDeclaration.new(
+            file_path: @file_path,
+            line_index: @line_index,
+            type: match['type'],
+            name: match['name'],
+            generics: generics
+        )
     )
   end
 
@@ -238,7 +244,8 @@ class Ritournelle::Parser
         name: match['name'],
         value: Integer(match['value']),
         clazz: world.classes_declarations[INTEGER_CLASS_NAME],
-        type: Ritournelle::IntermediateRepresentation::Type::TYPE_INTEGER
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_INTEGER,
+        match: match
     )
   end
 
@@ -248,7 +255,8 @@ class Ritournelle::Parser
         name: match['name'],
         value: Float(match['value']),
         clazz: world.classes_declarations[FLOAT_CLASS_NAME],
-        type: Ritournelle::IntermediateRepresentation::Type::TYPE_FLOAT
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_FLOAT,
+        match: match
     )
   end
 
@@ -258,7 +266,8 @@ class Ritournelle::Parser
         name: match['name'],
         value: (match['value'] == 'true'),
         clazz: world.classes_declarations[BOOLEAN_CLASS_NAME],
-        type: Ritournelle::IntermediateRepresentation::Type::TYPE_BOOLEAN
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_BOOLEAN,
+        match: match
     )
   end
 
@@ -301,7 +310,8 @@ class Ritournelle::Parser
     parse_return_primitive_value(
         value: Integer(match['value']),
         clazz: world.classes_declarations[INTEGER_CLASS_NAME],
-        type: Ritournelle::IntermediateRepresentation::Type::TYPE_INTEGER
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_INTEGER,
+        match: match
     )
   end
 
@@ -310,7 +320,8 @@ class Ritournelle::Parser
     parse_return_primitive_value(
         value: Float(match['value']),
         clazz: world.classes_declarations[FLOAT_CLASS_NAME],
-        type: Ritournelle::IntermediateRepresentation::Type::TYPE_FLOAT
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_FLOAT,
+        match: match
     )
   end
 
@@ -319,8 +330,8 @@ class Ritournelle::Parser
     parse_return_primitive_value(
         value: match['value'] == true,
         clazz: world.classes_declarations[BOOLEAN_CLASS_NAME],
-        type: Ritournelle::IntermediateRepresentation::Type::TYPE_BOOLEAN
-
+        type: Ritournelle::IntermediateRepresentation::Type::TYPE_BOOLEAN,
+        match: match
     )
   end
 
@@ -328,13 +339,15 @@ class Ritournelle::Parser
   # @param [Integer|Float] value
   # @param [Ritournelle::IntermediateRepresentation::ClassDeclaration] clazz
   # @param [String] type
-  def parse_assign_primitive_value(name:, value:, clazz:, type:)
+  # @param [MatchData] match
+  def parse_assign_primitive_value(name:, value:, clazz:, type:, match:)
     constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
         file_path: @file_path,
         line_index: @line_index,
         type: clazz.name,
         parameters: [value],
-        parameters_types: [type]
+        parameters_types: [type],
+        generics: []
     )
     add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
         file_path: @file_path,
@@ -346,13 +359,15 @@ class Ritournelle::Parser
 
   # @param [Integer|Float] value
   # @param [String] type
-  def parse_return_primitive_value(value:, clazz:, type:)
+  # @param [MatchData] match
+  def parse_return_primitive_value(value:, clazz:, type:, match:)
     constructor_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
         file_path: @file_path,
         line_index: @line_index,
         type: clazz.name,
         parameters: [value],
-        parameters_types: [type]
+        parameters_types: [type],
+        generics: []
     )
     add_statement(Ritournelle::IntermediateRepresentation::Return.new(
         file_path: @file_path,
@@ -401,6 +416,24 @@ class Ritournelle::Parser
     add_statement(class_declaration)
     @world.classes_declarations[class_name] = class_declaration
     @stack << class_declaration
+    extract_generics(match).each do |name|
+      declare_generic(name)
+    end
+  end
+
+  def declare_generic(name)
+    @stack.last.generics_declarations.each do |generic_declaration|
+      if generic_declaration.name == name
+        raise_error("Generic [#{name}] already exists")
+      end
+    end
+    generic_declaration = Ritournelle::IntermediateRepresentation::GenericDeclaration.new(
+        file_path: @file_path,
+        line_index: @line_index,
+        name: name
+    )
+    add_statement(generic_declaration)
+    @stack.last.generics_declarations << generic_declaration
   end
 
   # @param [MatchData] match
@@ -522,13 +555,15 @@ class Ritournelle::Parser
 
   # @param [MatchData] match
   def parse_assign_constructor_call(match)
+    generics = extract_generics(match)
     call_parameters = process_method_call_parameters(match)
     method_call = Ritournelle::IntermediateRepresentation::ConstructorCall.new(
         file_path: @file_path,
         line_index: @line_index,
         type: match['class'],
         parameters: call_parameters.map { |v| v[:value] },
-        parameters_types: call_parameters.map { |v| v[:type] }
+        parameters_types: call_parameters.map { |v| v[:type] },
+        generics: generics
     )
     add_statement(Ritournelle::IntermediateRepresentation::Assignment.new(
         file_path: @file_path,
@@ -654,7 +689,8 @@ class Ritournelle::Parser
                     line_index: @line_index,
                     parameters: [Integer(c)],
                     type: world.classes_declarations[INTEGER_CLASS_NAME].name,
-                    parameters_types: [Ritournelle::IntermediateRepresentation::Type::TYPE_INTEGER]
+                    parameters_types: [Ritournelle::IntermediateRepresentation::Type::TYPE_INTEGER],
+                    generics: []
                 )
         }
       elsif RX_PARAMETER_FLOAT.match(c)
@@ -666,7 +702,8 @@ class Ritournelle::Parser
                     line_index: @line_index,
                     parameters: [Float(c)],
                     type: world.classes_declarations[FLOAT_CLASS_NAME].name,
-                    parameters_types: [Ritournelle::IntermediateRepresentation::Type::TYPE_FLOAT]
+                    parameters_types: [Ritournelle::IntermediateRepresentation::Type::TYPE_FLOAT],
+                    generics: []
                 )
         }
       elsif RX_PARAMETER_BOOLEAN.match(c)
@@ -678,7 +715,8 @@ class Ritournelle::Parser
                     line_index: @line_index,
                     parameters: [c == 'true'],
                     type: world.classes_declarations[BOOLEAN_CLASS_NAME].name,
-                    parameters_types: [Ritournelle::IntermediateRepresentation::Type::TYPE_BOOLEAN]
+                    parameters_types: [Ritournelle::IntermediateRepresentation::Type::TYPE_BOOLEAN],
+                    generics: []
                 )
         }
       else
@@ -719,14 +757,15 @@ class Ritournelle::Parser
         line_index: @line_index,
         conditional_statement: method_call,
         conditional_statement_type: Ritournelle::IntermediateRepresentation::Type::TYPE_METHOD_CALL,
-        )
+    )
     add_statement(conditional_expression)
     @stack << conditional_expression
   end
+
   # @param [String] message
   # @raise [RuntimeError]
   def raise_error(message)
-    raise RuntimeError, message, ["#{@file_path}:#{@line_index}"]
+    raise RuntimeError, message, ["#{@file_path}:#{@line_index + 1}"]
   end
 
   # @param [String] name
@@ -734,6 +773,24 @@ class Ritournelle::Parser
   def check_class_or_interface_don_t_exist(name)
     if @world.interfaces_declarations.key?(name) || @world.classes_declarations.key?(name)
       raise_error("Class or interface [#{name}] already exists")
+    end
+  end
+
+  # @param [MatchData] match
+  # @return [Array<String>]
+  def extract_generics(match)
+    if match['last_generic'] && (!match['last_generic'].empty?)
+      generics = []
+      unless match['generics'].empty?
+        match['generics'].split(',').map(&:strip).each do |name|
+          unless name.empty?
+            generics << name
+          end
+        end
+      end
+      generics + [match['last_generic']]
+    else
+      []
     end
   end
 

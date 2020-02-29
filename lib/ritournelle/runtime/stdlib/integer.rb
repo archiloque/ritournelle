@@ -52,7 +52,7 @@ class Ritournelle::Runtime::StdLib::Integer
   def more_than_or_equal_to_Integer(other_Integer)
     Ritournelle::Runtime::StdLib::Boolean.new(@value >= other_Integer.value)
   end
-  
+
   # :nocov:
   def to_s
     "Integereger #{@value}"

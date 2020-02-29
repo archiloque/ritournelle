@@ -5,5 +5,6 @@ module Ritournelle::Keywords
   KEYWORD_SELF = 'self'
   KEYWORD_TRUE = 'true'
   KEYWORD_FALSE = 'false'
+  KEYWORD_CONSTRUCTOR = 'constructor'
 
 end

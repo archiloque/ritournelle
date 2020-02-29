@@ -209,7 +209,7 @@ class Ritournelle::IntermediateRepresentation::World
         parameters_classes: [FLOAT_CLASS_NAME],
         return_class: BOOLEAN_CLASS_NAME
     )
-    
+
     classes_declarations[FLOAT_CLASS_NAME] = float_class
 
     void_class = Ritournelle::IntermediateRepresentation::ClassDeclaration.new(
@@ -225,6 +225,10 @@ class Ritournelle::IntermediateRepresentation::World
 
   def name
     'World'
+  end
+
+  def generics_declarations
+    []
   end
 
   # :nocov:

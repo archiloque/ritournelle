@@ -16,7 +16,11 @@ class Ritournelle::CodeGenerator::MethodDeclaration < Ritournelle::CodeGenerator
     declare_parameters(ir: ir, context: method_context)
     @result = (generate_parameters_rdoc(ir: ir, context: method_context))
 
-    result << "# @return [#{method_context.find_class_declaration(name: ir.return_class, generator: self).rdoc_name}]"
+    return_type = method_context.find_class_like_declaration(
+        name: ir.return_class,
+        types_to_look_for: Ritournelle::CodeGenerator::Context::TYPE_CLASS,
+        generator: self)
+    result << "# @return [#{return_type.rdoc_name}]"
     result << "# @note Declared name is #{ir.declared_name}"
     @result << generate_signature(ir)
     @result.concat(generate_body(ir))

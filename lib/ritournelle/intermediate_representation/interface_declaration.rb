@@ -29,4 +29,8 @@ class Ritournelle::IntermediateRepresentation::InterfaceDeclaration < Ritournell
   end
   # :nocov:
 
+  def generics_declarations
+    []
+  end
+
 end
