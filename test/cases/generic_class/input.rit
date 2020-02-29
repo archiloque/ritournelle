@@ -1,0 +1,16 @@
+class MyClass<X, Y>
+
+  X @x getter setter
+  Y @y getter
+
+  def constructor(X x, Y y)
+    @x = x
+    @y = y
+  end
+
+end
+
+MyClass<Integer, Float> c
+c = MyClass<Integer, Float>.new(10, 12.5)
+c.x = 11
+Integer i = c.x

@@ -27,6 +27,7 @@ class Ritournelle::IntermediateRepresentation::InterfaceDeclaration < Ritournell
   def to_s
     "Interface declaration #{@name}"
   end
+
   # :nocov:
 
   def generics_declarations

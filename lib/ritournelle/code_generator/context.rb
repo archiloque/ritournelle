@@ -117,7 +117,7 @@ class Ritournelle::CodeGenerator::Context
           generator: generator
       )
       if declared_class.generics_declarations.length != ir.generics.length
-        generator.raise_error("Class requires #{declared_class.generics_declarations.length} generics but #{ir.generics.length} generics detected")
+        generator.raise_error("Class [#{declared_class.name}] requires #{declared_class.generics_declarations.length} generic(s) but #{ir.generics.length} generic(s) detected")
       end
       @variables[ir.name] = Ritournelle::CodeGenerator::Context::Variable.new(ir)
     end
@@ -266,7 +266,7 @@ class Ritournelle::CodeGenerator::Context
         generator: self
     )
     if constructor_call.generics.length != clazz.generics_declarations.length
-      generator.raise_error("Class #{clazz.name} requires #{clazz.generics_declarations.length} generics but #{constructor_call.generics.length} generics detected")
+      generator.raise_error("Class [#{clazz.name}] requires #{clazz.generics_declarations.length} generic(s) but #{constructor_call.generics.length} generic(s) detected")
     end
     find_callable(
         name: Ritournelle::Keywords::KEYWORD_CONSTRUCTOR,

@@ -1,0 +1,13 @@
+class MyClass<X, Y>
+
+  X @x getter setter
+  Y @y getter
+
+  def constructor(X x, Y y)
+    @x = x
+    @y = y
+  end
+
+end
+
+MyClass<Integer> c
