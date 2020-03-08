@@ -1,3 +1,4 @@
+
 class Ritournelle::Runtime::StdLib::Integer
 
   attr_reader :value
@@ -55,7 +56,7 @@ class Ritournelle::Runtime::StdLib::Integer
 
   # :nocov:
   def to_s
-    "Integereger #{@value}"
+    "Integer #{@value}"
   end
   # :nocov:
 

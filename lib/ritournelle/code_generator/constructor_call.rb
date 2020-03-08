@@ -9,11 +9,7 @@ class Ritournelle::CodeGenerator::ConstructorCall < Ritournelle::CodeGenerator::
     super(ir: ir, context: context)
     constructor = context.find_constructor(constructor_call: ir, generator: self)
     clazz = constructor.parent
-    if [
-        Ritournelle::BaseClasses::INTEGER_CLASS_NAME,
-        Ritournelle::BaseClasses::FLOAT_CLASS_NAME,
-        Ritournelle::BaseClasses::BOOLEAN_CLASS_NAME
-    ].include?(clazz.name)
+    if Ritournelle::BaseClasses::PRIMITIVES_CLASSES.include?(clazz.name)
       line = "#{clazz.rdoc_name}.new("
     else
       line = "#{clazz.rdoc_name}.new(#{constructor.index}, "
@@ -21,11 +17,11 @@ class Ritournelle::CodeGenerator::ConstructorCall < Ritournelle::CodeGenerator::
     line << ir.parameters_types.map.with_index do |parameter_type, parameter_index|
       parameter = ir.parameters[parameter_index]
       case parameter_type
-      when Ritournelle::IntermediateRepresentation::Type::TYPE_INTEGER
+      when Ritournelle::BaseClasses::INTEGER_CLASS_NAME
         parameter
-      when Ritournelle::IntermediateRepresentation::Type::TYPE_FLOAT
+      when Ritournelle::BaseClasses::FLOAT_CLASS_NAME
         parameter
-      when Ritournelle::IntermediateRepresentation::Type::TYPE_BOOLEAN
+      when Ritournelle::BaseClasses::BOOLEAN_CLASS_NAME
         parameter
       when Ritournelle::IntermediateRepresentation::Type::TYPE_CONSTRUCTOR
         generate([parameter]).first

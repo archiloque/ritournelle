@@ -10,5 +10,5 @@ class MyClass<X, Y>
 
 end
 
-MyClass<Integer, Float> c
+MyClass<Integer> c
 c = MyClass<Integer>.new(10, 12.5)

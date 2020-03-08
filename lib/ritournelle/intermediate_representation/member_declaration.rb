@@ -27,4 +27,9 @@ class Ritournelle::IntermediateRepresentation::MemberDeclaration < Ritournelle::
     @name = name
   end
 
+  # @return [Array<String>]
+  def generics
+    []
+  end
+
 end

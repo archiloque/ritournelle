@@ -20,7 +20,7 @@ class Ritournelle::CodeGenerator::Return < Ritournelle::CodeGenerator::Base
       unless found_class == expected_class
         raise_error("#{ir.parent} should return a #{expected_class} but returns a #{found_class}")
       end
-    when Ritournelle::IntermediateRepresentation::Type::VARIABLE_OR_MEMBER
+    when Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE_OR_MEMBER
       target = context.find_element(
           name: ir.value,
           types_to_look_for: Ritournelle::CodeGenerator::Context::ELEMENT_ANY,
@@ -34,7 +34,7 @@ class Ritournelle::CodeGenerator::Return < Ritournelle::CodeGenerator::Base
     end
 
     case ir.type
-    when Ritournelle::IntermediateRepresentation::Type::VARIABLE_OR_MEMBER
+    when Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE_OR_MEMBER
       @result = ["return #{ir.value}"]
     when Ritournelle::IntermediateRepresentation::Type::TYPE_METHOD_CALL
       inner_code = generate([ir.value])

@@ -100,7 +100,6 @@ class Ritournelle::CodeGenerator::Context
         types_to_look_for: TYPE_CLASS | TYPE_INTERFACE,
         generator: generator
     )
-
   end
 
   # @param [Ritournelle::IntermediateRepresentation::VariableDeclaration] ir
@@ -481,15 +480,15 @@ class Ritournelle::CodeGenerator::Context
   def calculate_parameters_classes_names(generator, parameters, parameters_types)
     parameters_types.map.with_index do |parameter_type, parameter_index|
       case parameter_type
-      when Ritournelle::IntermediateRepresentation::Type::TYPE_INTEGER
+      when Ritournelle::BaseClasses::INTEGER_CLASS_NAME
         Ritournelle::BaseClasses::INTEGER_CLASS_NAME
-      when Ritournelle::IntermediateRepresentation::Type::TYPE_FLOAT
+      when Ritournelle::BaseClasses::FLOAT_CLASS_NAME
         Ritournelle::BaseClasses::FLOAT_CLASS_NAME
-      when Ritournelle::IntermediateRepresentation::Type::TYPE_BOOLEAN
+      when Ritournelle::BaseClasses::BOOLEAN_CLASS_NAME
         Ritournelle::BaseClasses::BOOLEAN_CLASS_NAME
       when Ritournelle::IntermediateRepresentation::Type::TYPE_CONSTRUCTOR
         parameters[parameter_index].type
-      when Ritournelle::IntermediateRepresentation::Type::VARIABLE_OR_MEMBER
+      when Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE_OR_MEMBER
         find_element(name: parameters[parameter_index], types_to_look_for: ELEMENT_ANY, generator: generator).type
       else
         generator.raise_error(parameter_type)

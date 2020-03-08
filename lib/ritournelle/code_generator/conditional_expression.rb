@@ -9,7 +9,7 @@ class Ritournelle::CodeGenerator::ConditionalExpression < Ritournelle::CodeGener
     super(ir: ir, context: context)
     @result = []
     case ir.conditional_statement_type
-    when Ritournelle::IntermediateRepresentation::Type::VARIABLE_OR_MEMBER
+    when Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE_OR_MEMBER
       element = context.find_element(
           name: ir.conditional_statement,
           types_to_look_for: Ritournelle::CodeGenerator::Context::ELEMENT_ANY,

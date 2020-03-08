@@ -15,6 +15,11 @@ class Ritournelle::IntermediateRepresentation::GenericDeclaration < Ritournelle:
     @rdoc_name = name
   end
 
+  # @return [Array<String>]
+  def generics_declarations
+    []
+  end
+
   # :nocov:
   def to_s
     "Generic declaration #{@name}"
