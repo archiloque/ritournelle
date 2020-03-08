@@ -27,9 +27,9 @@ class Ritournelle::CodeGenerator::Assignment < Ritournelle::CodeGenerator::Base
     end
     variable_value = ir.value
     case ir.value_type
-    when Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE_OR_MEMBER
-      @result << "#{target_name} = #{variable_value}"
-    when Ritournelle::IntermediateRepresentation::Type::TYPE_PARAMETER
+    when Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE,
+        Ritournelle::IntermediateRepresentation::Type::TYPE_MEMBER,
+        Ritournelle::IntermediateRepresentation::Type::TYPE_PARAMETER
       @result << "#{target_name} = #{variable_value}"
     else
       @result << "#{target_name} ="
@@ -66,8 +66,12 @@ class Ritournelle::CodeGenerator::Assignment < Ritournelle::CodeGenerator::Base
     case ir.value_type
     when Ritournelle::IntermediateRepresentation::Type::TYPE_PARAMETER
       value_generics = []
-    when Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE_OR_MEMBER
-      value_generics = []
+    when Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE
+      target = context.find_element(
+          name: ir.value,
+          types_to_look_for: (Ritournelle::CodeGenerator::Context::ELEMENT_VARIABLE),
+          generator: self)
+      value_generics = target.ir.generics
     when Ritournelle::IntermediateRepresentation::Type::TYPE_METHOD_CALL
       value_generics = []
     when Ritournelle::IntermediateRepresentation::Type::TYPE_CONSTRUCTOR

@@ -8,10 +8,6 @@ class Ritournelle::Parser
   include Ritournelle::Keywords
   include Ritournelle::BaseClasses
 
-  CONTEXT_ROOT = :root
-  CONTEXT_IN_CLASS = :in_class
-  CONTEXT_IN_METHOD = :in_method
-
   # @return [Ritournelle::IntermediateRepresentation::World]
   attr_reader :world
 
@@ -229,12 +225,13 @@ class Ritournelle::Parser
 
   # @param [MatchData] match
   def parse_return_variable_or_member(match)
+    value_name = match['value']
     add_statement(Ritournelle::IntermediateRepresentation::Return.new(
         file_path: @file_path,
         line_index: @line_index,
-        value: match['value'],
+        value: value_name,
         parent: @stack.last,
-        type: Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE_OR_MEMBER
+        type: type_variable_or_member_or_parameter(value_name)
     ))
   end
 
@@ -255,7 +252,7 @@ class Ritournelle::Parser
         name: match['name'],
         value: Float(match['value']),
         clazz: world.classes_declarations[FLOAT_CLASS_NAME],
-        type:FLOAT_CLASS_NAME,
+        type: FLOAT_CLASS_NAME,
         match: match
     )
   end
@@ -297,13 +294,14 @@ class Ritournelle::Parser
 
   # @param [MatchData] match
   def parse_assign_variable_or_member(match)
+    value_name = match['value']
     add_statement(
         Ritournelle::IntermediateRepresentation::Assignment.new(
             file_path: @file_path,
             line_index: @line_index,
             target_name: match['name'],
-            value: match['value'],
-            value_type: Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE_OR_MEMBER
+            value: value_name,
+            value_type: type_variable_or_member_or_parameter(value_name)
         )
     )
   end
@@ -492,7 +490,7 @@ class Ritournelle::Parser
           file_path: @file_path,
           line_index: @line_index,
           value: name,
-          type: Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE_OR_MEMBER,
+          type: Ritournelle::IntermediateRepresentation::Type::TYPE_MEMBER,
           parent: method
       ))
       @stack.pop
@@ -734,7 +732,7 @@ class Ritournelle::Parser
         }
       else
         {
-            type: Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE_OR_MEMBER,
+            type: type_variable_or_member_or_parameter(c),
             value: c
         }
       end
@@ -748,7 +746,7 @@ class Ritournelle::Parser
         file_path: @file_path,
         line_index: @line_index,
         conditional_statement: value,
-        conditional_statement_type: Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE_OR_MEMBER,
+        conditional_statement_type: type_variable_or_member_or_parameter(value)
     )
     add_statement(conditional_expression)
     @stack << conditional_expression
@@ -805,6 +803,26 @@ class Ritournelle::Parser
     else
       []
     end
+  end
+
+  # @param [String] name
+  # @return [String]
+  def type_variable_or_member_or_parameter(name)
+    if (in_method? || in_constructor?) && @stack.last.parameters_names.include?(name)
+      Ritournelle::IntermediateRepresentation::Type::TYPE_PARAMETER
+    elsif name.start_with?('@')
+      Ritournelle::IntermediateRepresentation::Type::TYPE_MEMBER
+    else
+      Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE
+    end
+  end
+
+  def in_method?
+    @stack.last.is_a?(Ritournelle::IntermediateRepresentation::MethodDeclaration)
+  end
+
+  def in_constructor?
+    @stack.last.is_a?(Ritournelle::IntermediateRepresentation::ConstructorDeclaration)
   end
 
 end

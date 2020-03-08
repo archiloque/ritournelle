@@ -488,7 +488,8 @@ class Ritournelle::CodeGenerator::Context
         Ritournelle::BaseClasses::BOOLEAN_CLASS_NAME
       when Ritournelle::IntermediateRepresentation::Type::TYPE_CONSTRUCTOR
         parameters[parameter_index].type
-      when Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE_OR_MEMBER
+      when Ritournelle::IntermediateRepresentation::Type::TYPE_VARIABLE,
+          Ritournelle::IntermediateRepresentation::Type::TYPE_MEMBER
         find_element(name: parameters[parameter_index], types_to_look_for: ELEMENT_ANY, generator: generator).type
       else
         generator.raise_error(parameter_type)

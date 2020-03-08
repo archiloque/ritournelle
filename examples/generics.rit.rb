@@ -37,3 +37,5 @@ c.x—1(Ritournelle::Runtime::StdLib::Integer.new(11))
 # @type [Ritournelle::Runtime::StdLib::Integer]
 i =
   c.x—0()
+# @type [MyClass<Integer, Float>]
+d = c

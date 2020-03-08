@@ -10,8 +10,7 @@ class MyClass<X, Y>
 
 end
 
-MyClass<Integer, Float> c = MyClass<Integer, Float>.new(10, 12.5)
-c.x = 11
-Integer i = c.x
-MyClass<Integer, Float> d
+MyClass<Integer, Float> c
+c = MyClass<Integer, Float>.new(10, 12.5)
+MyClass<Integer, Integer> d
 d = c
